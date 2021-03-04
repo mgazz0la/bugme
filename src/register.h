@@ -16,12 +16,17 @@ public:
   void increment() { value_ += 1; }
   void decrement() { value_ -= 1; }
 
-  bool get_bit(std::uint8_t bit) const { return (value_ >> bit) & 1; }
-  void set_bit(std::uint8_t bit, bool bit_value) {
-    value_ |= (bit_value << bit);
+  bool get_bit(std::uint8_t bit) const { return !!(value_ & (1 << bit)); }
+  void set_bit(std::uint8_t bit) { value_ |= (1 << bit); }
+  void clear_bit(std::uint8_t bit) { value_ &= ~(1 << bit); }
+  void flip_bit(std::uint8_t bit) { value_ ^= (1 << bit); }
+  void write_bit(std::uint8_t bit, bool bit_value) {
+    bit_value ? set_bit(bit) : clear_bit(bit);
   }
 
-  bool operator==(uint8_t other) const { return value_ == other; }
+  bool operator==(const ByteRegister &other) const {
+    return value_ == other.value();
+  }
 
 private:
   std::uint8_t value_ = 0x0;
@@ -64,6 +69,7 @@ private:
 };
 
 class ByteRegisterPair : WordValuedRegister {
+public:
   ByteRegisterPair(ByteRegister &high, ByteRegister &low)
       : high_(high), low_(low) {}
   virtual ~ByteRegisterPair() = default;
