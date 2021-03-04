@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "cpu.h"
+#include "cpu.hh"
 
 int main(int argc, char **argv) {
   (void)argc;

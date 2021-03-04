@@ -1,4 +1,4 @@
-#include "register.h"
+#include "register.hh"
 #include <cstdint>
 #include <gtest/gtest.h>
 

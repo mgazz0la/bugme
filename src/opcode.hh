@@ -1,8 +1,8 @@
 #ifndef GBC_OPCODE_H
 #define GBC_OPCODE_H
 
-#include "opcode_cycles.h"
-#include "opcode_names.h"
+#include "opcode_cycles.hh"
+#include "opcode_names.hh"
 
 namespace gbc {
 

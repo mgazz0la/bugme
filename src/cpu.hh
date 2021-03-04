@@ -1,8 +1,8 @@
 #ifndef GBC_CPU_H
 #define GBC_CPU_H
 
-#include "opcode.h"
-#include "register.h"
+#include "opcode.hh"
+#include "register.hh"
 
 namespace gbc {
 
