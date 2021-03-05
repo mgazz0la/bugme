@@ -166,3 +166,154 @@ TEST(ByteRegisterPairTest, Underflows) {
   ab.decrement();
   EXPECT_EQ(UINT16_MAX, ab.value());
 }
+
+TEST(FlagRegisterTest, SetsFlags) {
+  gbc::FlagRegister f;
+  f.reset();
+
+  EXPECT_EQ(0, f.zero_flag());
+  EXPECT_EQ(0, f.subtract_flag());
+  EXPECT_EQ(0, f.half_carry_flag());
+  EXPECT_EQ(0, f.carry_flag());
+
+  f.set_zero_flag();
+  f.set_subtract_flag();
+  f.set_half_carry_flag();
+  f.set_carry_flag();
+
+  EXPECT_EQ(1, f.zero_flag());
+  EXPECT_EQ(1, f.subtract_flag());
+  EXPECT_EQ(1, f.half_carry_flag());
+  EXPECT_EQ(1, f.carry_flag());
+}
+
+TEST(FlagRegisterTest, ClearsFlags) {
+  gbc::FlagRegister f;
+  f.reset();
+
+  f.set_zero_flag();
+  f.set_subtract_flag();
+  f.set_half_carry_flag();
+  f.set_carry_flag();
+
+  EXPECT_EQ(1, f.zero_flag());
+  EXPECT_EQ(1, f.subtract_flag());
+  EXPECT_EQ(1, f.half_carry_flag());
+  EXPECT_EQ(1, f.carry_flag());
+
+  f.clear_zero_flag();
+  f.clear_subtract_flag();
+  f.clear_half_carry_flag();
+  f.clear_carry_flag();
+
+  EXPECT_EQ(0, f.zero_flag());
+  EXPECT_EQ(0, f.subtract_flag());
+  EXPECT_EQ(0, f.half_carry_flag());
+  EXPECT_EQ(0, f.carry_flag());
+}
+
+TEST(FlagRegisterTest, FlipsFlags) {
+  gbc::FlagRegister f;
+  f.reset();
+
+  EXPECT_EQ(0, f.zero_flag());
+  EXPECT_EQ(0, f.subtract_flag());
+  EXPECT_EQ(0, f.half_carry_flag());
+  EXPECT_EQ(0, f.carry_flag());
+
+  f.flip_zero_flag();
+  f.flip_subtract_flag();
+  f.flip_half_carry_flag();
+  f.flip_carry_flag();
+
+  EXPECT_EQ(1, f.zero_flag());
+  EXPECT_EQ(1, f.subtract_flag());
+  EXPECT_EQ(1, f.half_carry_flag());
+  EXPECT_EQ(1, f.carry_flag());
+
+  f.flip_zero_flag();
+  f.flip_subtract_flag();
+  f.flip_half_carry_flag();
+  f.flip_carry_flag();
+
+  EXPECT_EQ(0, f.zero_flag());
+  EXPECT_EQ(0, f.subtract_flag());
+  EXPECT_EQ(0, f.half_carry_flag());
+  EXPECT_EQ(0, f.carry_flag());
+}
+
+TEST(FlagRegisterTest, WritesFlags) {
+  gbc::FlagRegister f;
+  f.reset();
+
+  EXPECT_EQ(0, f.zero_flag());
+  EXPECT_EQ(0, f.subtract_flag());
+  EXPECT_EQ(0, f.half_carry_flag());
+  EXPECT_EQ(0, f.carry_flag());
+
+  f.write_zero_flag(1);
+  f.write_subtract_flag(1);
+  f.write_half_carry_flag(1);
+  f.write_carry_flag(1);
+
+  EXPECT_EQ(1, f.zero_flag());
+  EXPECT_EQ(1, f.subtract_flag());
+  EXPECT_EQ(1, f.half_carry_flag());
+  EXPECT_EQ(1, f.carry_flag());
+
+  f.write_zero_flag(0);
+  f.write_subtract_flag(0);
+  f.write_half_carry_flag(0);
+  f.write_carry_flag(0);
+
+  EXPECT_EQ(0, f.zero_flag());
+  EXPECT_EQ(0, f.subtract_flag());
+  EXPECT_EQ(0, f.half_carry_flag());
+  EXPECT_EQ(0, f.carry_flag());
+}
+
+TEST(FlagRegisterTest, DoesNotWriteToLowerNibble) {
+  gbc::FlagRegister f;
+
+  f.reset();
+  EXPECT_EQ(0, f.get_bit(0));
+  EXPECT_EQ(0, f.get_bit(1));
+  EXPECT_EQ(0, f.get_bit(2));
+  EXPECT_EQ(0, f.get_bit(3));
+
+  f.increment();
+  EXPECT_EQ(0, f.get_bit(0));
+  EXPECT_EQ(0, f.get_bit(1));
+  EXPECT_EQ(0, f.get_bit(2));
+  EXPECT_EQ(0, f.get_bit(3));
+
+  f.decrement();
+  EXPECT_EQ(0, f.get_bit(0));
+  EXPECT_EQ(0, f.get_bit(1));
+  EXPECT_EQ(0, f.get_bit(2));
+  EXPECT_EQ(0, f.get_bit(3));
+
+  f.set(0xFF);
+  EXPECT_EQ(0, f.get_bit(0));
+  EXPECT_EQ(0, f.get_bit(1));
+  EXPECT_EQ(0, f.get_bit(2));
+  EXPECT_EQ(0, f.get_bit(3));
+
+  f.set_bit(0); f.set_bit(1); f.set_bit(2); f.set_bit(3);
+  EXPECT_EQ(0, f.get_bit(0));
+  EXPECT_EQ(0, f.get_bit(1));
+  EXPECT_EQ(0, f.get_bit(2));
+  EXPECT_EQ(0, f.get_bit(3));
+
+  f.flip_bit(0); f.flip_bit(1); f.flip_bit(2); f.flip_bit(3);
+  EXPECT_EQ(0, f.get_bit(0));
+  EXPECT_EQ(0, f.get_bit(1));
+  EXPECT_EQ(0, f.get_bit(2));
+  EXPECT_EQ(0, f.get_bit(3));
+
+  f.write_bit(0, 1); f.write_bit(1, 1); f.write_bit(2, 1); f.write_bit(3, 1);
+  EXPECT_EQ(0, f.get_bit(0));
+  EXPECT_EQ(0, f.get_bit(1));
+  EXPECT_EQ(0, f.get_bit(2));
+  EXPECT_EQ(0, f.get_bit(3));
+}

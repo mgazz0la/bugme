@@ -26,6 +26,7 @@ private:
   void ld(const std::uint16_t addr, WordValuedRegister& reg);
   void inc(ByteRegister& reg);
   void inc(WordValuedRegister& reg);
+  void inc(const std::uint16_t addr);
   void dec(ByteRegister& reg);
   void dec(WordValuedRegister& reg);
 
@@ -33,9 +34,7 @@ private:
   ByteRegisterPair af, bc, de, hl;
   WordRegister pc;
   WordRegister sp;
-
-  // TODO: Make a separate class for the flags register.
-  ByteRegister f;
+  FlagRegister f;
 
   Mmu& mmu_;
 

@@ -43,10 +43,22 @@ inline void Cpu::ld(const std::uint16_t addr, WordValuedRegister& reg) {
 
 inline void Cpu::inc(ByteRegister& reg) {
   reg.increment();
+  f.write_zero_flag(reg.value() == 0);
+  f.clear_subtract_flag();
+  f.write_half_carry_flag((reg.value() & 0x0F) == 0);
 }
 
 inline void Cpu::inc(WordValuedRegister& reg) {
   reg.increment();
+}
+
+inline void Cpu::inc(const std::uint16_t addr) {
+  std::uint8_t result = static_cast<std::uint8_t>(mmu_.read(addr) + 1);
+  mmu_.write(addr, result);
+
+  f.write_zero_flag(result == 0);
+  f.clear_subtract_flag();
+  f.write_half_carry_flag((result & 0x0F) == 0);
 }
 
 inline void Cpu::dec(ByteRegister& reg) {
