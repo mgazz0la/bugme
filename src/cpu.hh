@@ -18,8 +18,16 @@ private:
 
   void nop() const;
   void ld(ByteRegister& reg);
+  void ld(ByteRegister& reg, const std::uint16_t addr);
   void ld(ByteRegister& reg, const ByteRegister& other);
   void ld(WordValuedRegister& reg);
+  void ld(const std::uint16_t addr);
+  void ld(const std::uint16_t addr, ByteRegister& reg);
+  void ld(const std::uint16_t addr, WordValuedRegister& reg);
+  void inc(ByteRegister& reg);
+  void inc(WordValuedRegister& reg);
+  void dec(ByteRegister& reg);
+  void dec(WordValuedRegister& reg);
 
   ByteRegister a, b, c, d, e, h, l;
   ByteRegisterPair af, bc, de, hl;
