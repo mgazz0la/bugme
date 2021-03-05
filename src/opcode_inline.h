@@ -69,6 +69,15 @@ inline void Cpu::dec(WordValuedRegister& reg) {
   reg.decrement();
 }
 
+inline void Cpu::dec(const std::uint16_t addr) {
+  std::uint8_t result = static_cast<std::uint8_t>(mmu_.read(addr) - 1);
+  mmu_.write(addr, result);
+
+  f.write_zero_flag(result == 0);
+  f.set_subtract_flag();
+  f.write_half_carry_flag((result & 0x0F) == 0);
+}
+
 }  // gbc
 
 #endif

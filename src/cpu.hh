@@ -16,6 +16,7 @@ private:
   std::uint8_t step_pc();
   std::uint16_t step_pc_word();
 
+  // inlined functions
   void nop() const;
   void ld(ByteRegister& reg);
   void ld(ByteRegister& reg, const std::uint16_t addr);
@@ -29,6 +30,7 @@ private:
   void inc(const std::uint16_t addr);
   void dec(ByteRegister& reg);
   void dec(WordValuedRegister& reg);
+  void dec(const std::uint16_t addr);
 
   ByteRegister a, b, c, d, e, h, l;
   ByteRegisterPair af, bc, de, hl;

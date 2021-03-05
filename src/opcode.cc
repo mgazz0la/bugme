@@ -54,8 +54,8 @@ void Cpu::op_30() { /* TODO */ }  // JR
 void Cpu::op_31() { ld(sp); }
 void Cpu::op_32() { /* TODO */ }  // LDD
 void Cpu::op_33() { inc(sp); }
-void Cpu::op_34() { /* TODO */ }  // INC (HL)
-void Cpu::op_35() { /* TODO */ }  // DEC (HL)
+void Cpu::op_34() { inc(hl.value()); }  // INC (HL)
+void Cpu::op_35() { dec(hl.value()); }  // DEC (HL)
 void Cpu::op_36() { ld(hl.value()); }
 void Cpu::op_37() { /* TODO */ }  // SCF
 void Cpu::op_38() { /* TODO */ }  // JR
