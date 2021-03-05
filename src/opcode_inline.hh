@@ -78,6 +78,30 @@ inline void Cpu::dec(const std::uint16_t addr) {
   f.write_half_carry_flag((result & 0x0F) == 0);
 }
 
+inline void Cpu::rlc(ByteRegister& reg) {
+  std::uint16_t v = reg.value();
+  bool carry_bit = (v >> 7) & 1;
+  std::uint8_t result = static_cast<std::uint8_t>((v << 1) | carry_bit);
+  reg.set(result);
+
+  f.write_carry_flag(carry_bit);
+  f.write_zero_flag(result == 0);
+  f.clear_half_carry_flag();
+  f.clear_subtract_flag();
+}
+
+inline void Cpu::rlc(const std::uint8_t addr) {
+  std::uint16_t v = mmu_.read(addr);
+  bool carry_bit = (v >> 7) & 1;
+  std::uint8_t result = static_cast<std::uint8_t>(v << 1 | carry_bit);
+  mmu_.write(addr, result);
+
+  f.write_carry_flag(carry_bit);
+  f.write_zero_flag(result == 0);
+  f.clear_half_carry_flag();
+  f.clear_subtract_flag();
+}
+
 }  // gbc
 
 #endif

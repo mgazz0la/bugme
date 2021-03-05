@@ -31,6 +31,8 @@ private:
   void dec(ByteRegister& reg);
   void dec(WordValuedRegister& reg);
   void dec(const std::uint16_t addr);
+  void rlc(ByteRegister& reg);
+  void rlc(const std::uint8_t addr);
 
   ByteRegister a, b, c, d, e, h, l;
   ByteRegisterPair af, bc, de, hl;
