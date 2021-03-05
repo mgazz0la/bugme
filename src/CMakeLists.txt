@@ -1,7 +1,7 @@
 add_library(register INTERFACE)
 target_include_directories(register INTERFACE .)
 
-add_library(cpu cpu.cc)
+add_library(cpu cpu.cc opcode.cc)
 target_include_directories(cpu PUBLIC .)
 target_link_libraries(cpu LINK_PRIVATE register)
 

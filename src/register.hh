@@ -47,7 +47,7 @@ public:
   virtual void decrement() = 0;
 };
 
-class WordRegister : WordValuedRegister {
+class WordRegister : public WordValuedRegister {
 public:
   virtual ~WordRegister() = default;
 
@@ -68,7 +68,7 @@ private:
   std::uint16_t value_ = 0x0;
 };
 
-class ByteRegisterPair : WordValuedRegister {
+class ByteRegisterPair : public WordValuedRegister {
 public:
   ByteRegisterPair(ByteRegister &high, ByteRegister &low)
       : high_(high), low_(low) {}
