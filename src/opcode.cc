@@ -10,7 +10,7 @@ void Cpu::op_03() { inc(bc); }
 void Cpu::op_04() { inc(b); }
 void Cpu::op_05() { dec(b); }
 void Cpu::op_06() { ld(b); }
-void Cpu::op_07() { rlc(a); f.clear_zero_flag(); }  // RLCA
+void Cpu::op_07() { rlc(a); f.clear_zero_flag(); }
 void Cpu::op_08() { ld(step_pc(), sp); }
 void Cpu::op_09() { /* TODO */ }  // ADD
 void Cpu::op_0a() { ld(a, bc.value()); }
@@ -18,7 +18,7 @@ void Cpu::op_0b() { dec(bc); }
 void Cpu::op_0c() { inc(c); }
 void Cpu::op_0d() { dec(c); }
 void Cpu::op_0e() { ld(c); }
-void Cpu::op_0f() { /* TODO */ }  // RRCA
+void Cpu::op_0f() { rrc(a); f.clear_zero_flag(); }
 void Cpu::op_10() { /* TODO */ }  // STOP
 void Cpu::op_11() { ld(de); }
 void Cpu::op_12() { ld(de.value(), a); }

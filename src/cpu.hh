@@ -33,6 +33,8 @@ private:
   void dec(const std::uint16_t addr);
   void rlc(ByteRegister &reg);
   void rlc(const std::uint8_t addr);
+  void rrc(ByteRegister &reg);
+  void rrc(const std::uint8_t addr);
 
   ByteRegister a, b, c, d, e, h, l;
   ByteRegisterPair af, bc, de, hl;

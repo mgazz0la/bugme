@@ -97,6 +97,30 @@ inline void Cpu::rlc(const std::uint8_t addr) {
   f.clear_subtract_flag();
 }
 
+inline void Cpu::rrc(ByteRegister &reg) {
+  std::uint16_t v = reg.value();
+  bool carry_bit = v & 1;
+  std::uint8_t result = static_cast<std::uint8_t>((v >> 1) | (carry_bit << 7));
+  reg.set(result);
+
+  f.write_carry_flag(carry_bit);
+  f.write_zero_flag(result == 0);
+  f.clear_half_carry_flag();
+  f.clear_subtract_flag();
+}
+
+inline void Cpu::rrc(const std::uint8_t addr) {
+  std::uint16_t v = mmu_.read(addr);
+  bool carry_bit = v & 1;
+  std::uint8_t result = static_cast<std::uint8_t>((v >> 1) | (carry_bit << 7));
+  mmu_.write(addr, result);
+
+  f.write_carry_flag(carry_bit);
+  f.write_zero_flag(result == 0);
+  f.clear_half_carry_flag();
+  f.clear_subtract_flag();
+}
+
 } // namespace gbc
 
 #endif
