@@ -107,16 +107,14 @@ public:
   void decrement() override {}
 
   void set_bit(std::uint8_t bit) override {
-    if (4 <= bit && bit <= 7)
-      ByteRegister::set_bit(bit);
+    [[likely]] if (4 <= bit && bit <= 7) ByteRegister::set_bit(bit);
   }
   void flip_bit(std::uint8_t bit) override {
-    if (4 <= bit && bit <= 7)
-      ByteRegister::flip_bit(bit);
+    [[likely]] if (4 <= bit && bit <= 7) ByteRegister::flip_bit(bit);
   }
   void write_bit(std::uint8_t bit, bool bit_value) override {
-    if (4 <= bit && bit <= 7)
-      ByteRegister::write_bit(bit, bit_value);
+    [[likely]] if (4 <= bit && bit <= 7)
+        ByteRegister::write_bit(bit, bit_value);
   }
 
   void set_zero_flag() { set_bit(7); }
