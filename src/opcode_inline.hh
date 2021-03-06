@@ -281,6 +281,90 @@ inline void Cpu::adc(ByteRegister &reg) {
   f.write_carry_flag((result & 0x100) != 0);
 }
 
+inline void Cpu::sub(ByteRegister &reg, const ByteRegister &other) {
+  std::uint8_t old_register_value = reg.value();
+  std::uint8_t other_value = other.value();
+  std::uint16_t result = reg.value() - other_value;
+  reg.set(static_cast<std::uint8_t>(result));
+
+  f.write_zero_flag(reg.value() == 0);
+  f.set_subtract_flag();
+  f.write_half_carry_flag(((old_register_value & 0xF) - (other_value & 0xF)) <
+                          0);
+  f.write_carry_flag(old_register_value < other_value);
+}
+
+inline void Cpu::sub(ByteRegister &reg, const std::uint16_t addr) {
+  std::uint8_t old_register_value = reg.value();
+  std::uint8_t other_value = mmu_.read(addr);
+  std::uint16_t result = reg.value() - other_value;
+  reg.set(static_cast<std::uint8_t>(result));
+
+  f.write_zero_flag(reg.value() == 0);
+  f.set_subtract_flag();
+  f.write_half_carry_flag(((old_register_value & 0xF) - (other_value & 0xF)) <
+                          0);
+  f.write_carry_flag(old_register_value < other_value);
+}
+
+inline void Cpu::sub(ByteRegister &reg) {
+  std::uint8_t old_register_value = reg.value();
+  std::uint8_t other_value = step_pc();
+  std::uint16_t result = reg.value() - other_value;
+  reg.set(static_cast<std::uint8_t>(result));
+
+  f.write_zero_flag(reg.value() == 0);
+  f.set_subtract_flag();
+  f.write_half_carry_flag(((old_register_value & 0xF) - (other_value & 0xF)) <
+                          0);
+  f.write_carry_flag(old_register_value < other_value);
+}
+
+inline void Cpu::sbc(ByteRegister &reg, const ByteRegister &other) {
+  std::uint8_t old_register_value = reg.value();
+  std::uint8_t other_value = other.value();
+  std::uint8_t carry = f.carry_flag() ? 1 : 0;
+
+  std::uint16_t result = reg.value() - other_value - carry;
+  reg.set(static_cast<std::uint8_t>(result));
+
+  f.write_zero_flag(reg.value() == 0);
+  f.set_subtract_flag();
+  f.write_half_carry_flag(
+      ((old_register_value & 0xF) - (other_value & 0xF) - carry) < 0);
+  f.write_carry_flag(old_register_value < other_value);
+}
+
+inline void Cpu::sbc(ByteRegister &reg, const std::uint16_t addr) {
+  std::uint8_t old_register_value = reg.value();
+  std::uint8_t other_value = mmu_.read(addr);
+  std::uint8_t carry = f.carry_flag() ? 1 : 0;
+
+  std::uint16_t result = reg.value() - other_value - carry;
+  reg.set(static_cast<std::uint8_t>(result));
+
+  f.write_zero_flag(reg.value() == 0);
+  f.set_subtract_flag();
+  f.write_half_carry_flag(
+      ((old_register_value & 0xF) - (other_value & 0xF) - carry) < 0);
+  f.write_carry_flag(old_register_value < other_value);
+}
+
+inline void Cpu::sbc(ByteRegister &reg) {
+  std::uint8_t old_register_value = reg.value();
+  std::uint8_t other_value = step_pc();
+  std::uint8_t carry = f.carry_flag() ? 1 : 0;
+
+  std::uint16_t result = reg.value() - other_value - carry;
+  reg.set(static_cast<std::uint8_t>(result));
+
+  f.write_zero_flag(reg.value() == 0);
+  f.set_subtract_flag();
+  f.write_half_carry_flag(
+      ((old_register_value & 0xF) - (other_value & 0xF) - carry) < 0);
+  f.write_carry_flag(old_register_value < other_value);
+}
+
 inline void Cpu::stop() { stopped_ = true; }
 
 inline void Cpu::halt() { halted_ = true; }

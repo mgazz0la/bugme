@@ -56,7 +56,12 @@ private:
   void adc(ByteRegister &reg, const ByteRegister &other);
   void adc(ByteRegister &reg, const std::uint16_t addr);
   void adc(ByteRegister &reg);
-  void adc(WordValuedRegister &reg, const WordValuedRegister &other);
+  void sub(ByteRegister &reg, const ByteRegister &other);
+  void sub(ByteRegister &reg, const std::uint16_t addr);
+  void sub(ByteRegister &reg);
+  void sbc(ByteRegister &reg, const ByteRegister &other);
+  void sbc(ByteRegister &reg, const std::uint16_t addr);
+  void sbc(ByteRegister &reg);
 
   void stop();
   void halt();
