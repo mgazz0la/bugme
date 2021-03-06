@@ -139,14 +139,14 @@ void Cpu::op_84() { add(a, h); }
 void Cpu::op_85() { add(a, l); }
 void Cpu::op_86() { add(a, hl.value()); }
 void Cpu::op_87() { add(a, a); }
-void Cpu::op_88() { /* TODO */ }
-void Cpu::op_89() { /* TODO */ }
-void Cpu::op_8a() { /* TODO */ }
-void Cpu::op_8b() { /* TODO */ }
-void Cpu::op_8c() { /* TODO */ }
-void Cpu::op_8d() { /* TODO */ }
-void Cpu::op_8e() { /* TODO */ }
-void Cpu::op_8f() { /* TODO */ }
+void Cpu::op_88() { adc(a, b); }
+void Cpu::op_89() { adc(a, c); }
+void Cpu::op_8a() { adc(a, d); }
+void Cpu::op_8b() { adc(a, e); }
+void Cpu::op_8c() { adc(a, h); }
+void Cpu::op_8d() { adc(a, l); }
+void Cpu::op_8e() { adc(a, hl.value()); }
+void Cpu::op_8f() { adc(a, a); }
 void Cpu::op_90() { /* TODO */ }
 void Cpu::op_91() { /* TODO */ }
 void Cpu::op_92() { /* TODO */ }

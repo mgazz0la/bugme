@@ -53,6 +53,10 @@ private:
   void add(ByteRegister &reg, const std::uint16_t addr);
   void add(ByteRegister &reg);
   void add(WordValuedRegister &reg, const WordValuedRegister &other);
+  void adc(ByteRegister &reg, const ByteRegister &other);
+  void adc(ByteRegister &reg, const std::uint16_t addr);
+  void adc(ByteRegister &reg);
+  void adc(WordValuedRegister &reg, const WordValuedRegister &other);
 
   void stop();
   void halt();

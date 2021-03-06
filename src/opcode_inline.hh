@@ -123,7 +123,7 @@ inline void Cpu::rl(ByteRegister &reg) {
 
   f.clear_subtract_flag();
   f.clear_half_carry_flag();
-  f.write_zero_flag(result == 0);
+  f.write_zero_flag(static_cast<std::uint8_t>(result) == 0);
   f.write_carry_flag(result > 0xFF);
 }
 
@@ -133,7 +133,7 @@ inline void Cpu::rl(const std::uint8_t addr) {
 
   f.clear_subtract_flag();
   f.clear_half_carry_flag();
-  f.write_zero_flag(result == 0);
+  f.write_zero_flag(static_cast<std::uint8_t>(result) == 0);
   f.write_carry_flag(result > 0xFF);
 }
 
@@ -169,7 +169,7 @@ inline void Cpu::rr(ByteRegister &reg) {
 
   f.clear_subtract_flag();
   f.clear_half_carry_flag();
-  f.write_zero_flag(result == 0);
+  f.write_zero_flag(static_cast<std::uint8_t>(result) == 0);
   f.write_carry_flag(result > 0xFF);
 }
 
@@ -181,16 +181,16 @@ inline void Cpu::rr(const std::uint8_t addr) {
 
   f.clear_subtract_flag();
   f.clear_half_carry_flag();
-  f.write_zero_flag(result == 0);
+  f.write_zero_flag(static_cast<std::uint8_t>(result) == 0);
   f.write_carry_flag(result > 0xFF);
 }
 
 inline void Cpu::add(ByteRegister &reg, const ByteRegister &other) {
   std::uint8_t old_register_value = reg.value();
-  std::uint32_t result = reg.value() + other.value();
+  std::uint16_t result = reg.value() + other.value();
   reg.set(static_cast<std::uint8_t>(result));
 
-  f.write_zero_flag(a.value() == 0);
+  f.write_zero_flag(reg.value() == 0);
   f.clear_subtract_flag();
   f.write_half_carry_flag(((old_register_value & 0xF) + (other.value() & 0xF)) >
                           0xF);
@@ -201,10 +201,10 @@ inline void Cpu::add(ByteRegister &reg, const std::uint16_t addr) {
   std::uint8_t old_register_value = reg.value();
   std::uint8_t other_value = mmu_.read(addr);
 
-  std::uint32_t result = reg.value() + other_value;
+  std::uint16_t result = reg.value() + other_value;
   reg.set(static_cast<std::uint8_t>(result));
 
-  f.write_zero_flag(a.value() == 0);
+  f.write_zero_flag(reg.value() == 0);
   f.clear_subtract_flag();
   f.write_half_carry_flag(((old_register_value & 0xF) + (other_value & 0xF)) >
                           0xF);
@@ -218,7 +218,7 @@ inline void Cpu::add(ByteRegister &reg) {
   std::uint16_t result = reg.value() + other_value;
   reg.set(static_cast<std::uint8_t>(result));
 
-  f.write_zero_flag(a.value() == 0);
+  f.write_zero_flag(reg.value() == 0);
   f.clear_subtract_flag();
   f.write_half_carry_flag(((old_register_value & 0xF) + (other_value & 0xF)) >
                           0xF);
@@ -236,6 +236,49 @@ inline void Cpu::add(WordValuedRegister &reg, const WordValuedRegister &other) {
       ((old_register_value & 0xFFF) + (other_value & 0xFFF)) > 0xFFF);
   f.write_carry_flag((result & 0x10000) != 0);
   f.clear_subtract_flag();
+}
+
+inline void Cpu::adc(ByteRegister &reg, const ByteRegister &other) {
+  std::uint8_t old_register_value = reg.value();
+  std::uint8_t carry = f.carry_flag() ? 1 : 0;
+  std::uint16_t result = reg.value() + other.value() + carry;
+  reg.set(static_cast<std::uint8_t>(result));
+
+  f.write_zero_flag(reg.value() == 0);
+  f.clear_subtract_flag();
+  f.write_half_carry_flag(
+      ((old_register_value & 0xF) + (other.value() & 0xF) + carry) > 0xF);
+  f.write_carry_flag((result & 0x100) != 0);
+}
+
+inline void Cpu::adc(ByteRegister &reg, const std::uint16_t addr) {
+  std::uint8_t old_register_value = reg.value();
+  std::uint8_t other_value = mmu_.read(addr);
+  std::uint8_t carry = f.carry_flag() ? 1 : 0;
+
+  std::uint16_t result = reg.value() + other_value + carry;
+  reg.set(static_cast<std::uint8_t>(result));
+
+  f.write_zero_flag(a.value() == 0);
+  f.clear_subtract_flag();
+  f.write_half_carry_flag(
+      ((old_register_value & 0xF) + (other_value & 0xF) + carry) > 0xF);
+  f.write_carry_flag((result & 0x100) != 0);
+}
+
+inline void Cpu::adc(ByteRegister &reg) {
+  std::uint8_t old_register_value = reg.value();
+  std::uint8_t other_value = step_pc();
+  std::uint8_t carry = f.carry_flag() ? 1 : 0;
+
+  std::uint16_t result = reg.value() + other_value + carry;
+  reg.set(static_cast<std::uint8_t>(result));
+
+  f.write_zero_flag(reg.value() == 0);
+  f.clear_subtract_flag();
+  f.write_half_carry_flag(
+      ((old_register_value & 0xF) + (other_value & 0xF) + carry) > 0xF);
+  f.write_carry_flag((result & 0x100) != 0);
 }
 
 inline void Cpu::stop() { stopped_ = true; }
