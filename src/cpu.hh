@@ -35,6 +35,10 @@ private:
   void rlc(const std::uint8_t addr);
   void rrc(ByteRegister &reg);
   void rrc(const std::uint8_t addr);
+  void add(ByteRegister &reg, const ByteRegister &other);
+  void add(ByteRegister &reg, const std::uint16_t addr);
+  void add(ByteRegister &reg);
+  void add(WordValuedRegister &reg, const WordValuedRegister &other);
 
   ByteRegister a, b, c, d, e, h, l;
   ByteRegisterPair af, bc, de, hl;

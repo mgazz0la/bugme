@@ -121,6 +121,59 @@ inline void Cpu::rrc(const std::uint8_t addr) {
   f.clear_subtract_flag();
 }
 
+inline void Cpu::add(ByteRegister &reg, const ByteRegister &other) {
+  std::uint8_t old_register_value = reg.value();
+  std::uint32_t result = reg.value() + other.value();
+  reg.set(static_cast<std::uint8_t>(result));
+
+  f.write_zero_flag(a.value() == 0);
+  f.clear_subtract_flag();
+  f.write_half_carry_flag(((old_register_value & 0xF) + (other.value() & 0xF)) >
+                          0xF);
+  f.write_carry_flag((result & 0x100) != 0);
+}
+
+inline void Cpu::add(ByteRegister &reg, const std::uint16_t addr) {
+  std::uint8_t old_register_value = reg.value();
+  std::uint8_t other_value = mmu_.read(addr);
+
+  std::uint32_t result = reg.value() + other_value;
+  reg.set(static_cast<std::uint8_t>(result));
+
+  f.write_zero_flag(a.value() == 0);
+  f.clear_subtract_flag();
+  f.write_half_carry_flag(((old_register_value & 0xF) + (other_value & 0xF)) >
+                          0xF);
+  f.write_carry_flag((result & 0x100) != 0);
+}
+
+inline void Cpu::add(ByteRegister &reg) {
+  std::uint8_t old_register_value = reg.value();
+  std::uint8_t other_value = step_pc();
+
+  std::uint16_t result = reg.value() + other_value;
+  reg.set(static_cast<std::uint8_t>(result));
+
+  f.write_zero_flag(a.value() == 0);
+  f.clear_subtract_flag();
+  f.write_half_carry_flag(((old_register_value & 0xF) + (other_value & 0xF)) >
+                          0xF);
+  f.write_carry_flag((result & 0x100) != 0);
+}
+
+inline void Cpu::add(WordValuedRegister &reg, const WordValuedRegister &other) {
+  std::uint16_t old_register_value = reg.value();
+  std::uint16_t other_value = other.value();
+
+  std::uint32_t result = reg.value() + other_value;
+  reg.set(static_cast<std::uint16_t>(result));
+
+  f.write_half_carry_flag(
+      ((old_register_value & 0xFFF) + (other_value & 0xFFF)) > 0xFFF);
+  f.write_carry_flag((result & 0x10000) != 0);
+  f.clear_subtract_flag();
+}
+
 } // namespace gbc
 
 #endif
