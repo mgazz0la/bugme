@@ -26,7 +26,7 @@ void Cpu::op_13() { inc(de); }
 void Cpu::op_14() { inc(d); }
 void Cpu::op_15() { dec(d); }
 void Cpu::op_16() { ld(d); }
-void Cpu::op_17() { /* TODO */ }  // RL
+void Cpu::op_17() { rl(a); f.clear_zero_flag(); }  // RL
 void Cpu::op_18() { /* TODO */ }  // JR
 void Cpu::op_19() { add(hl, de); }
 void Cpu::op_1a() { ld(a, de.value()); }
@@ -259,38 +259,38 @@ void Cpu::op_fc() { /* TODO */ }
 void Cpu::op_fd() { /* TODO */ }
 void Cpu::op_fe() { /* TODO */ }
 void Cpu::op_ff() { /* TODO */ }
-void Cpu::op_cb_00() { /* TODO */ }
-void Cpu::op_cb_01() { /* TODO */ }
-void Cpu::op_cb_02() { /* TODO */ }
-void Cpu::op_cb_03() { /* TODO */ }
-void Cpu::op_cb_04() { /* TODO */ }
-void Cpu::op_cb_05() { /* TODO */ }
-void Cpu::op_cb_06() { /* TODO */ }
-void Cpu::op_cb_07() { /* TODO */ }
-void Cpu::op_cb_08() { /* TODO */ }
-void Cpu::op_cb_09() { /* TODO */ }
-void Cpu::op_cb_0a() { /* TODO */ }
-void Cpu::op_cb_0b() { /* TODO */ }
-void Cpu::op_cb_0c() { /* TODO */ }
-void Cpu::op_cb_0d() { /* TODO */ }
-void Cpu::op_cb_0e() { /* TODO */ }
-void Cpu::op_cb_0f() { /* TODO */ }
-void Cpu::op_cb_10() { /* TODO */ }
-void Cpu::op_cb_11() { /* TODO */ }
-void Cpu::op_cb_12() { /* TODO */ }
-void Cpu::op_cb_13() { /* TODO */ }
-void Cpu::op_cb_14() { /* TODO */ }
-void Cpu::op_cb_15() { /* TODO */ }
-void Cpu::op_cb_16() { /* TODO */ }
-void Cpu::op_cb_17() { /* TODO */ }
-void Cpu::op_cb_18() { /* TODO */ }
-void Cpu::op_cb_19() { /* TODO */ }
-void Cpu::op_cb_1a() { /* TODO */ }
-void Cpu::op_cb_1b() { /* TODO */ }
-void Cpu::op_cb_1c() { /* TODO */ }
-void Cpu::op_cb_1d() { /* TODO */ }
-void Cpu::op_cb_1e() { /* TODO */ }
-void Cpu::op_cb_1f() { /* TODO */ }
+void Cpu::op_cb_00() { rlc(b); }
+void Cpu::op_cb_01() { rlc(c); }
+void Cpu::op_cb_02() { rlc(d); }
+void Cpu::op_cb_03() { rlc(e); }
+void Cpu::op_cb_04() { rlc(h); }
+void Cpu::op_cb_05() { rlc(l); }
+void Cpu::op_cb_06() { rlc(hl.value()); }
+void Cpu::op_cb_07() { rlc(a); }
+void Cpu::op_cb_08() { rrc(b); }
+void Cpu::op_cb_09() { rrc(c); }
+void Cpu::op_cb_0a() { rrc(d); }
+void Cpu::op_cb_0b() { rrc(e); }
+void Cpu::op_cb_0c() { rrc(h); }
+void Cpu::op_cb_0d() { rrc(l); }
+void Cpu::op_cb_0e() { rrc(hl.value()); }
+void Cpu::op_cb_0f() { rrc(a); }
+void Cpu::op_cb_10() { rl(b); }
+void Cpu::op_cb_11() { rl(c); }
+void Cpu::op_cb_12() { rl(d); }
+void Cpu::op_cb_13() { rl(e); }
+void Cpu::op_cb_14() { rl(h); }
+void Cpu::op_cb_15() { rl(l); }
+void Cpu::op_cb_16() { rl(hl.value()); }
+void Cpu::op_cb_17() { rl(a); }
+void Cpu::op_cb_18() { rr(b); }
+void Cpu::op_cb_19() { rr(c); }
+void Cpu::op_cb_1a() { rr(d); }
+void Cpu::op_cb_1b() { rr(e); }
+void Cpu::op_cb_1c() { rr(h); }
+void Cpu::op_cb_1d() { rr(l); }
+void Cpu::op_cb_1e() { rr(hl.value()); }
+void Cpu::op_cb_1f() { rr(a); }
 void Cpu::op_cb_20() { /* TODO */ }
 void Cpu::op_cb_21() { /* TODO */ }
 void Cpu::op_cb_22() { /* TODO */ }

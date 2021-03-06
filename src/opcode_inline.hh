@@ -97,6 +97,26 @@ inline void Cpu::rlc(const std::uint8_t addr) {
   f.clear_subtract_flag();
 }
 
+inline void Cpu::rl(ByteRegister &reg) {
+  std::uint16_t result = (reg.value() << 1) | (f.carry_flag() ? 1 : 0);
+  reg.set(static_cast<std::uint8_t>(result));
+
+  f.clear_subtract_flag();
+  f.clear_half_carry_flag();
+  f.write_zero_flag(result == 0);
+  f.write_carry_flag(result > 0xFF);
+}
+
+inline void Cpu::rl(const std::uint8_t addr) {
+  std::uint16_t result = (mmu_.read(addr) << 1) | (f.carry_flag() ? 1 : 0);
+  mmu_.write(addr, static_cast<std::uint8_t>(result));
+
+  f.clear_subtract_flag();
+  f.clear_half_carry_flag();
+  f.write_zero_flag(result == 0);
+  f.write_carry_flag(result > 0xFF);
+}
+
 inline void Cpu::rrc(ByteRegister &reg) {
   std::uint16_t v = reg.value();
   bool carry_bit = v & 1;
@@ -119,6 +139,30 @@ inline void Cpu::rrc(const std::uint8_t addr) {
   f.write_zero_flag(result == 0);
   f.clear_half_carry_flag();
   f.clear_subtract_flag();
+}
+
+inline void Cpu::rr(ByteRegister &reg) {
+  const std::uint8_t value = reg.value();
+  std::uint16_t result =
+      (value >> 1) | ((f.carry_flag() ? 1 : 0) << 7) | ((value & 1) << 8);
+  reg.set(static_cast<std::uint8_t>(result));
+
+  f.clear_subtract_flag();
+  f.clear_half_carry_flag();
+  f.write_zero_flag(result == 0);
+  f.write_carry_flag(result > 0xFF);
+}
+
+inline void Cpu::rr(const std::uint8_t addr) {
+  const std::uint8_t value = mmu_.read(addr);
+  std::uint16_t result =
+      (value >> 1) | ((f.carry_flag() ? 1 : 0) << 7) | ((value & 1) << 8);
+  mmu_.write(addr, static_cast<std::uint8_t>(result));
+
+  f.clear_subtract_flag();
+  f.clear_half_carry_flag();
+  f.write_zero_flag(result == 0);
+  f.write_carry_flag(result > 0xFF);
 }
 
 inline void Cpu::add(ByteRegister &reg, const ByteRegister &other) {

@@ -16,8 +16,9 @@ private:
   std::uint8_t step_pc();
   std::uint16_t step_pc_word();
 
-  // inlined functions
+  // inlined "microcode" functions
   void nop() const;
+
   void ld(ByteRegister &reg);
   void ld(ByteRegister &reg, const std::uint16_t addr);
   void ld(ByteRegister &reg, const ByteRegister &other);
@@ -25,20 +26,30 @@ private:
   void ld(const std::uint16_t addr);
   void ld(const std::uint16_t addr, ByteRegister &reg);
   void ld(const std::uint16_t addr, WordValuedRegister &reg);
+
   void inc(ByteRegister &reg);
   void inc(WordValuedRegister &reg);
   void inc(const std::uint16_t addr);
+
   void dec(ByteRegister &reg);
   void dec(WordValuedRegister &reg);
   void dec(const std::uint16_t addr);
+
   void rlc(ByteRegister &reg);
   void rlc(const std::uint8_t addr);
+  void rl(ByteRegister &reg);
+  void rl(const std::uint8_t addr);
+
   void rrc(ByteRegister &reg);
   void rrc(const std::uint8_t addr);
+  void rr(ByteRegister &reg);
+  void rr(const std::uint8_t addr);
+
   void add(ByteRegister &reg, const ByteRegister &other);
   void add(ByteRegister &reg, const std::uint16_t addr);
   void add(ByteRegister &reg);
   void add(WordValuedRegister &reg, const WordValuedRegister &other);
+
   void stop();
   void halt();
 
