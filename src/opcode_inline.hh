@@ -222,6 +222,20 @@ inline void Cpu::stop() { stopped_ = true; }
 
 inline void Cpu::halt() { halted_ = true; }
 
+inline void Cpu::jr() {
+  std::int8_t offset = static_cast<std::int8_t>(step_pc());
+  pc.set(static_cast<uint16_t>(pc.value() + offset));
+}
+
+inline void Cpu::jr_if(bool condition) {
+  if (condition) {
+    did_branch_ = true;
+    jr();
+  } else {
+    step_pc(); // waste the unused argument
+  }
+}
+
 } // namespace gbc
 
 #endif

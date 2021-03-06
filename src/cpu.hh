@@ -53,6 +53,9 @@ private:
   void stop();
   void halt();
 
+  void jr();
+  void jr_if(bool condition);
+
   ByteRegister a, b, c, d, e, h, l;
   ByteRegisterPair af, bc, de, hl;
   WordRegister pc;
@@ -63,6 +66,7 @@ private:
 
   bool stopped_ = false;
   bool halted_ = false;
+  bool did_branch_ = false;
 
   /* clang-format off */
   void op_00();
