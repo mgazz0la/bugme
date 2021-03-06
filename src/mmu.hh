@@ -10,15 +10,16 @@ class Cpu;
 
 class Mmu {
 public:
-  Mmu(Cpu& cpu);
+  Mmu(Cpu &cpu);
 
   uint8_t read(std::uint16_t addr) const;
   void write(std::uint16_t addr, std::uint8_t byte);
+
 private:
-  Cpu& cpu_;
+  Cpu &cpu_;
   std::vector<std::uint8_t> memory_;
 };
 
-} // gbc
+} // namespace gbc
 
 #endif

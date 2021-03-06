@@ -10,7 +10,7 @@ class Mmu;
 
 class Cpu {
 public:
-  Cpu(Mmu& mmu);
+  Cpu(Mmu &mmu);
 
 private:
   std::uint8_t step_pc();
@@ -18,20 +18,20 @@ private:
 
   // inlined functions
   void nop() const;
-  void ld(ByteRegister& reg);
-  void ld(ByteRegister& reg, const std::uint16_t addr);
-  void ld(ByteRegister& reg, const ByteRegister& other);
-  void ld(WordValuedRegister& reg);
+  void ld(ByteRegister &reg);
+  void ld(ByteRegister &reg, const std::uint16_t addr);
+  void ld(ByteRegister &reg, const ByteRegister &other);
+  void ld(WordValuedRegister &reg);
   void ld(const std::uint16_t addr);
-  void ld(const std::uint16_t addr, ByteRegister& reg);
-  void ld(const std::uint16_t addr, WordValuedRegister& reg);
-  void inc(ByteRegister& reg);
-  void inc(WordValuedRegister& reg);
+  void ld(const std::uint16_t addr, ByteRegister &reg);
+  void ld(const std::uint16_t addr, WordValuedRegister &reg);
+  void inc(ByteRegister &reg);
+  void inc(WordValuedRegister &reg);
   void inc(const std::uint16_t addr);
-  void dec(ByteRegister& reg);
-  void dec(WordValuedRegister& reg);
+  void dec(ByteRegister &reg);
+  void dec(WordValuedRegister &reg);
   void dec(const std::uint16_t addr);
-  void rlc(ByteRegister& reg);
+  void rlc(ByteRegister &reg);
   void rlc(const std::uint8_t addr);
 
   ByteRegister a, b, c, d, e, h, l;
@@ -40,8 +40,9 @@ private:
   WordRegister sp;
   FlagRegister f;
 
-  Mmu& mmu_;
+  Mmu &mmu_;
 
+  /* clang-format off */
   void op_00();
   void op_01();
   void op_02();
@@ -555,6 +556,7 @@ private:
   void op_cb_fd();
   void op_cb_fe();
   void op_cb_ff();
+  /* clang-format on */
 };
 
 } // namespace gbc

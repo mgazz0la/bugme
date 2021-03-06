@@ -3,7 +3,7 @@
 
 namespace gbc {
 
-Cpu::Cpu(Mmu& mmu) : af(a, f), bc(b, c), de(d, e), hl(h, l), mmu_(mmu) {}
+Cpu::Cpu(Mmu &mmu) : af(a, f), bc(b, c), de(d, e), hl(h, l), mmu_(mmu) {}
 
 std::uint8_t Cpu::step_pc() {
   std::uint8_t byte = mmu_.read(pc.value());
@@ -19,4 +19,4 @@ std::uint16_t Cpu::step_pc_word() {
   return ((high << 8) | low);
 }
 
-} // gbc
+} // namespace gbc

@@ -9,21 +9,22 @@
 
 namespace gbc {
 
-inline void Cpu::nop() const { /* NOP */ }
+inline void Cpu::nop() const { /* NOP */
+}
 
-inline void Cpu::ld(ByteRegister& reg) {
+inline void Cpu::ld(ByteRegister &reg) {
   std::uint8_t v = step_pc();
   reg.set(v);
 }
 
-inline void Cpu::ld(ByteRegister& reg, const std::uint16_t addr) {
+inline void Cpu::ld(ByteRegister &reg, const std::uint16_t addr) {
   reg.set(mmu_.read(addr));
 }
-inline void Cpu::ld(ByteRegister& reg, const ByteRegister& other) {
+inline void Cpu::ld(ByteRegister &reg, const ByteRegister &other) {
   reg.set(other.value());
 }
 
-inline void Cpu::ld(WordValuedRegister& reg) {
+inline void Cpu::ld(WordValuedRegister &reg) {
   std::uint16_t v = step_pc_word();
   reg.set(v);
 }
@@ -33,24 +34,22 @@ inline void Cpu::ld(const std::uint16_t addr) {
   mmu_.write(addr, v);
 }
 
-inline void Cpu::ld(const std::uint16_t addr, ByteRegister& reg) {
+inline void Cpu::ld(const std::uint16_t addr, ByteRegister &reg) {
   mmu_.write(addr, reg.value());
 }
 
-inline void Cpu::ld(const std::uint16_t addr, WordValuedRegister& reg) {
+inline void Cpu::ld(const std::uint16_t addr, WordValuedRegister &reg) {
   mmu_.write(addr, reg.value());
 }
 
-inline void Cpu::inc(ByteRegister& reg) {
+inline void Cpu::inc(ByteRegister &reg) {
   reg.increment();
   f.write_zero_flag(reg.value() == 0);
   f.clear_subtract_flag();
   f.write_half_carry_flag((reg.value() & 0x0F) == 0);
 }
 
-inline void Cpu::inc(WordValuedRegister& reg) {
-  reg.increment();
-}
+inline void Cpu::inc(WordValuedRegister &reg) { reg.increment(); }
 
 inline void Cpu::inc(const std::uint16_t addr) {
   std::uint8_t result = static_cast<std::uint8_t>(mmu_.read(addr) + 1);
@@ -61,13 +60,9 @@ inline void Cpu::inc(const std::uint16_t addr) {
   f.write_half_carry_flag((result & 0x0F) == 0);
 }
 
-inline void Cpu::dec(ByteRegister& reg) {
-  reg.decrement();
-}
+inline void Cpu::dec(ByteRegister &reg) { reg.decrement(); }
 
-inline void Cpu::dec(WordValuedRegister& reg) {
-  reg.decrement();
-}
+inline void Cpu::dec(WordValuedRegister &reg) { reg.decrement(); }
 
 inline void Cpu::dec(const std::uint16_t addr) {
   std::uint8_t result = static_cast<std::uint8_t>(mmu_.read(addr) - 1);
@@ -78,7 +73,7 @@ inline void Cpu::dec(const std::uint16_t addr) {
   f.write_half_carry_flag((result & 0x0F) == 0);
 }
 
-inline void Cpu::rlc(ByteRegister& reg) {
+inline void Cpu::rlc(ByteRegister &reg) {
   std::uint16_t v = reg.value();
   bool carry_bit = (v >> 7) & 1;
   std::uint8_t result = static_cast<std::uint8_t>((v << 1) | carry_bit);
@@ -102,7 +97,7 @@ inline void Cpu::rlc(const std::uint8_t addr) {
   f.clear_subtract_flag();
 }
 
-}  // gbc
+} // namespace gbc
 
 #endif
 

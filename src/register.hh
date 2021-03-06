@@ -98,18 +98,25 @@ public:
   FlagRegister() = default;
   virtual ~FlagRegister() = default;
 
-  void set(std::uint8_t new_value) override { ByteRegister::set(new_value & 0xF0); }
+  void set(std::uint8_t new_value) override {
+    ByteRegister::set(new_value & 0xF0);
+  }
   void reset() override { ByteRegister::reset(); }
 
   void increment() override {}
   void decrement() override {}
 
-  void set_bit(std::uint8_t bit) override { if (4 <= bit && bit <= 7) ByteRegister::set_bit(bit); }
+  void set_bit(std::uint8_t bit) override {
+    if (4 <= bit && bit <= 7)
+      ByteRegister::set_bit(bit);
+  }
   void flip_bit(std::uint8_t bit) override {
-    if (4 <= bit && bit <= 7) ByteRegister::flip_bit(bit);
+    if (4 <= bit && bit <= 7)
+      ByteRegister::flip_bit(bit);
   }
   void write_bit(std::uint8_t bit, bool bit_value) override {
-    if (4 <= bit && bit <= 7) ByteRegister::write_bit(bit, bit_value);
+    if (4 <= bit && bit <= 7)
+      ByteRegister::write_bit(bit, bit_value);
   }
 
   void set_zero_flag() { set_bit(7); }

@@ -2,6 +2,7 @@
 
 namespace gbc {
 
+/* clang-format off */
 void Cpu::op_00() { nop(); }
 void Cpu::op_01() { ld(bc); }
 void Cpu::op_02() { ld(bc.value(), a); }
@@ -9,7 +10,7 @@ void Cpu::op_03() { inc(bc); }
 void Cpu::op_04() { inc(b); }
 void Cpu::op_05() { dec(b); }
 void Cpu::op_06() { ld(b); }
-void Cpu::op_07() { rlc(a); f.clear_zero_flag(); }
+void Cpu::op_07() { rlc(a); f.clear_zero_flag(); }  // RLCA
 void Cpu::op_08() { ld(step_pc(), sp); }
 void Cpu::op_09() { /* TODO */ }  // ADD
 void Cpu::op_0a() { ld(a, bc.value()); }
@@ -514,5 +515,6 @@ void Cpu::op_cb_fc() { /* TODO */ }
 void Cpu::op_cb_fd() { /* TODO */ }
 void Cpu::op_cb_fe() { /* TODO */ }
 void Cpu::op_cb_ff() { /* TODO */ }
+/* clang-format on */
 
-} // gbc
+} // namespace gbc
