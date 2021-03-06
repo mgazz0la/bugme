@@ -383,6 +383,87 @@ inline void Cpu::jr_if(bool condition) {
   }
 }
 
+inline void Cpu::a_and(const ByteRegister &other) {
+  a.set(a.value() & other.value());
+
+  f.write_zero_flag(a.value() == 0);
+  f.set_half_carry_flag();
+  f.clear_carry_flag();
+  f.clear_subtract_flag();
+}
+
+inline void Cpu::a_and(const std::uint16_t addr) {
+  a.set(a.value() & mmu_.read(addr));
+
+  f.write_zero_flag(a.value() == 0);
+  f.set_half_carry_flag();
+  f.clear_carry_flag();
+  f.clear_subtract_flag();
+}
+
+inline void Cpu::a_and() {
+  a.set(a.value() & step_pc());
+
+  f.write_zero_flag(a.value() == 0);
+  f.set_half_carry_flag();
+  f.clear_carry_flag();
+  f.clear_subtract_flag();
+}
+
+inline void Cpu::a_or(const ByteRegister &other) {
+  a.set(a.value() | other.value());
+
+  f.write_zero_flag(a.value() == 0);
+  f.clear_half_carry_flag();
+  f.clear_carry_flag();
+  f.clear_subtract_flag();
+}
+
+inline void Cpu::a_or(const std::uint16_t addr) {
+  a.set(a.value() | mmu_.read(addr));
+
+  f.write_zero_flag(a.value() == 0);
+  f.clear_half_carry_flag();
+  f.clear_carry_flag();
+  f.clear_subtract_flag();
+}
+
+inline void Cpu::a_or() {
+  a.set(a.value() | step_pc());
+
+  f.write_zero_flag(a.value() == 0);
+  f.clear_half_carry_flag();
+  f.clear_carry_flag();
+  f.clear_subtract_flag();
+}
+
+inline void Cpu::a_xor(const ByteRegister &other) {
+  a.set(a.value() ^ other.value());
+
+  f.write_zero_flag(a.value() == 0);
+  f.clear_half_carry_flag();
+  f.clear_carry_flag();
+  f.clear_subtract_flag();
+}
+
+inline void Cpu::a_xor(const std::uint16_t addr) {
+  a.set(a.value() ^ mmu_.read(addr));
+
+  f.write_zero_flag(a.value() == 0);
+  f.clear_half_carry_flag();
+  f.clear_carry_flag();
+  f.clear_subtract_flag();
+}
+
+inline void Cpu::a_xor() {
+  a.set(a.value() ^ step_pc());
+
+  f.write_zero_flag(a.value() == 0);
+  f.clear_half_carry_flag();
+  f.clear_carry_flag();
+  f.clear_subtract_flag();
+}
+
 } // namespace gbc
 
 #endif

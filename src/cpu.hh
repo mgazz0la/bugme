@@ -56,6 +56,7 @@ private:
   void adc(ByteRegister &reg, const ByteRegister &other);
   void adc(ByteRegister &reg, const std::uint16_t addr);
   void adc(ByteRegister &reg);
+
   void sub(ByteRegister &reg, const ByteRegister &other);
   void sub(ByteRegister &reg, const std::uint16_t addr);
   void sub(ByteRegister &reg);
@@ -68,6 +69,16 @@ private:
 
   void jr();
   void jr_if(bool condition);
+
+  void a_and(const ByteRegister &other);
+  void a_and(const std::uint16_t addr);
+  void a_and();
+  void a_or(const ByteRegister &other);
+  void a_or(const std::uint16_t addr);
+  void a_or();
+  void a_xor(const ByteRegister &other);
+  void a_xor(const std::uint16_t addr);
+  void a_xor();
 
   ByteRegister a, b, c, d, e, h, l;
   ByteRegisterPair af, bc, de, hl;
