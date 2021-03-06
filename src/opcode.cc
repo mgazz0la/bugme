@@ -209,7 +209,7 @@ void Cpu::op_ca() { /* TODO */ }
 void Cpu::op_cb() { /* TODO */ }
 void Cpu::op_cc() { /* TODO */ }
 void Cpu::op_cd() { /* TODO */ }
-void Cpu::op_ce() { /* TODO */ }
+void Cpu::op_ce() { adc(a); }
 void Cpu::op_cf() { /* TODO */ }
 void Cpu::op_d0() { /* TODO */ }
 void Cpu::op_d1() { /* TODO */ }
