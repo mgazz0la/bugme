@@ -42,6 +42,26 @@ inline void Cpu::ld(const std::uint16_t addr, WordValuedRegister &reg) {
   mmu_.write(addr, reg.value());
 }
 
+inline void Cpu::ldi(const std::uint16_t addr, ByteRegister &reg) {
+  ld(addr, reg);
+  hl.increment();
+}
+
+inline void Cpu::ldi(ByteRegister &reg, const std::uint16_t addr) {
+  ld(reg, addr);
+  hl.increment();
+}
+
+inline void Cpu::ldd(const std::uint16_t addr, ByteRegister &reg) {
+  ld(addr, reg);
+  hl.decrement();
+}
+
+inline void Cpu::ldd(ByteRegister &reg, const std::uint16_t addr) {
+  ld(reg, addr);
+  hl.decrement();
+}
+
 inline void Cpu::inc(ByteRegister &reg) {
   reg.increment();
   f.write_zero_flag(reg.value() == 0);

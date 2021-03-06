@@ -26,6 +26,10 @@ private:
   void ld(const std::uint16_t addr);
   void ld(const std::uint16_t addr, ByteRegister &reg);
   void ld(const std::uint16_t addr, WordValuedRegister &reg);
+  void ldi(const std::uint16_t addr, ByteRegister &reg);
+  void ldi(ByteRegister &reg, const std::uint16_t addr);
+  void ldd(const std::uint16_t addr, ByteRegister &reg);
+  void ldd(ByteRegister &reg, const std::uint16_t addr);
 
   void inc(ByteRegister &reg);
   void inc(WordValuedRegister &reg);

@@ -37,7 +37,7 @@ void Cpu::op_1e() { ld(e); }
 void Cpu::op_1f() { rr(a); f.clear_zero_flag(); }
 void Cpu::op_20() { jr_if(!f.zero_flag()); }
 void Cpu::op_21() { ld(hl); }
-void Cpu::op_22() { /* TODO */ }  // LDI
+void Cpu::op_22() { ldi(hl.value(), a); }
 void Cpu::op_23() { inc(hl); }
 void Cpu::op_24() { inc(h); }
 void Cpu::op_25() { dec(h); }
@@ -45,7 +45,7 @@ void Cpu::op_26() { ld(h); }
 void Cpu::op_27() { /* TODO */ }  // DAA
 void Cpu::op_28() { jr_if(f.zero_flag()); }
 void Cpu::op_29() { add(hl, hl); }
-void Cpu::op_2a() { /* TODO */ }  // LDI
+void Cpu::op_2a() { ldi(a, hl.value()); }
 void Cpu::op_2b() { dec(hl); }
 void Cpu::op_2c() { inc(l); }
 void Cpu::op_2d() { dec(l); }
@@ -53,7 +53,7 @@ void Cpu::op_2e() { ld(l); }
 void Cpu::op_2f() { /* TODO */ }  // CPL
 void Cpu::op_30() { jr_if(!f.carry_flag()); }
 void Cpu::op_31() { ld(sp); }
-void Cpu::op_32() { /* TODO */ }  // LDD
+void Cpu::op_32() { ldd(hl.value(), a); }
 void Cpu::op_33() { inc(sp); }
 void Cpu::op_34() { inc(hl.value()); }
 void Cpu::op_35() { dec(hl.value()); }
@@ -61,7 +61,7 @@ void Cpu::op_36() { ld(hl.value()); }
 void Cpu::op_37() { /* TODO */ }  // SCF
 void Cpu::op_38() { jr_if(f.carry_flag()); }
 void Cpu::op_39() { add(hl, sp); }
-void Cpu::op_3a() { /* TODO */ }  // LDD
+void Cpu::op_3a() { ldd(a, hl.value()); }
 void Cpu::op_3b() { dec(sp); }
 void Cpu::op_3c() { inc(a); }
 void Cpu::op_3d() { dec(a); }
