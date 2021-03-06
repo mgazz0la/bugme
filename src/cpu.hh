@@ -39,6 +39,8 @@ private:
   void add(ByteRegister &reg, const std::uint16_t addr);
   void add(ByteRegister &reg);
   void add(WordValuedRegister &reg, const WordValuedRegister &other);
+  void stop();
+  void halt();
 
   ByteRegister a, b, c, d, e, h, l;
   ByteRegisterPair af, bc, de, hl;
@@ -47,6 +49,9 @@ private:
   FlagRegister f;
 
   Mmu &mmu_;
+
+  bool stopped_ = false;
+  bool halted_ = false;
 
   /* clang-format off */
   void op_00();

@@ -174,6 +174,10 @@ inline void Cpu::add(WordValuedRegister &reg, const WordValuedRegister &other) {
   f.clear_subtract_flag();
 }
 
+inline void Cpu::stop() { stopped_ = true; }
+
+inline void Cpu::halt() { halted_ = true; }
+
 } // namespace gbc
 
 #endif

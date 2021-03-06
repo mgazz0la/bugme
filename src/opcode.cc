@@ -19,7 +19,7 @@ void Cpu::op_0c() { inc(c); }
 void Cpu::op_0d() { dec(c); }
 void Cpu::op_0e() { ld(c); }
 void Cpu::op_0f() { rrc(a); f.clear_zero_flag(); }
-void Cpu::op_10() { /* TODO */ }  // STOP
+void Cpu::op_10() { stop(); }
 void Cpu::op_11() { ld(de); }
 void Cpu::op_12() { ld(de.value(), a); }
 void Cpu::op_13() { inc(de); }
@@ -121,7 +121,7 @@ void Cpu::op_72() { ld(hl.value(), d); }
 void Cpu::op_73() { ld(hl.value(), e); }
 void Cpu::op_74() { ld(hl.value(), h); }
 void Cpu::op_75() { ld(hl.value(), l); }
-void Cpu::op_76() { /* TODO */ }  // HALT
+void Cpu::op_76() { halt(); }
 void Cpu::op_77() { ld(hl.value(), a); }
 void Cpu::op_78() { ld(a, b); }
 void Cpu::op_79() { ld(a, c); }
