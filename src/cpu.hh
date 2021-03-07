@@ -84,6 +84,11 @@ private:
   void sla(const std::uint16_t addr);
   void sra(ByteRegister& reg);
   void sra(const std::uint16_t addr);
+  void srl(ByteRegister& reg);
+  void srl(const std::uint16_t addr);
+
+  void swap(ByteRegister& reg);
+  void swap(const std::uint16_t addr);
 
   ByteRegister a, b, c, d, e, h, l;
   ByteRegisterPair af, bc, de, hl;
