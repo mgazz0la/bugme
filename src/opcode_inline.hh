@@ -464,7 +464,7 @@ inline void Cpu::a_xor() {
   f.clear_subtract_flag();
 }
 
-inline void Cpu::sla(ByteRegister& reg) {
+inline void Cpu::sla(ByteRegister &reg) {
   bool did_carry = reg.get_bit(7);
   reg.set(static_cast<std::uint8_t>(reg.value() << 1));
 
@@ -486,7 +486,7 @@ inline void Cpu::sla(const std::uint16_t addr) {
   f.clear_subtract_flag();
 }
 
-inline void Cpu::sra(ByteRegister& reg) {
+inline void Cpu::sra(ByteRegister &reg) {
   std::uint8_t value = reg.value();
   bool did_carry = value & 1;
   std::uint8_t msb = value & (1 << 7);
@@ -504,7 +504,8 @@ inline void Cpu::sra(const std::uint16_t addr) {
   bool did_carry = value & 1;
   std::uint8_t msb = value & (1 << 7);
   std::uint8_t result = static_cast<std::uint8_t>((value >> 1) | msb);
-  mmu_.write(addr, result);;
+  mmu_.write(addr, result);
+  ;
 
   f.write_zero_flag(result == 0);
   f.write_carry_flag(did_carry);
@@ -512,7 +513,7 @@ inline void Cpu::sra(const std::uint16_t addr) {
   f.clear_subtract_flag();
 }
 
-inline void Cpu::srl(ByteRegister& reg) {
+inline void Cpu::srl(ByteRegister &reg) {
   std::uint8_t value = reg.value();
   bool did_carry = value & 1;
   std::uint8_t result = static_cast<std::uint8_t>(value >> 1);
@@ -528,7 +529,8 @@ inline void Cpu::srl(const std::uint16_t addr) {
   std::uint8_t value = mmu_.read(addr);
   bool did_carry = value & 1;
   std::uint8_t result = static_cast<std::uint8_t>(value >> 1);
-  mmu_.write(addr, result);;
+  mmu_.write(addr, result);
+  ;
 
   f.write_zero_flag(result == 0);
   f.write_carry_flag(did_carry);
@@ -536,7 +538,7 @@ inline void Cpu::srl(const std::uint16_t addr) {
   f.clear_subtract_flag();
 }
 
-inline void Cpu::swap(ByteRegister& reg) {
+inline void Cpu::swap(ByteRegister &reg) {
   std::uint8_t v = reg.value();
   v = (v >> 4) | (v << 4);
   reg.set(v);
@@ -556,6 +558,18 @@ inline void Cpu::swap(const std::uint16_t addr) {
   f.clear_subtract_flag();
   f.clear_carry_flag();
   f.clear_subtract_flag();
+}
+
+inline void Cpu::bit(const std::uint8_t bit, const ByteRegister &reg) {
+  f.write_zero_flag(!reg.get_bit(bit));
+  f.clear_subtract_flag();
+  f.set_half_carry_flag();
+}
+
+inline void Cpu::bit(const std::uint8_t bit, const std::uint16_t addr) {
+  f.write_zero_flag((mmu_.read(addr) >> bit) & 1);
+  f.clear_subtract_flag();
+  f.set_half_carry_flag();
 }
 
 } // namespace gbc

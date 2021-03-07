@@ -80,15 +80,18 @@ private:
   void a_xor(const std::uint16_t addr);
   void a_xor();
 
-  void sla(ByteRegister& reg);
+  void sla(ByteRegister &reg);
   void sla(const std::uint16_t addr);
-  void sra(ByteRegister& reg);
+  void sra(ByteRegister &reg);
   void sra(const std::uint16_t addr);
-  void srl(ByteRegister& reg);
+  void srl(ByteRegister &reg);
   void srl(const std::uint16_t addr);
 
-  void swap(ByteRegister& reg);
+  void swap(ByteRegister &reg);
   void swap(const std::uint16_t addr);
+
+  void bit(const std::uint8_t bit, const ByteRegister &reg);
+  void bit(const std::uint8_t bit, const std::uint16_t addr);
 
   ByteRegister a, b, c, d, e, h, l;
   ByteRegisterPair af, bc, de, hl;
