@@ -80,6 +80,11 @@ private:
   void a_xor(const std::uint16_t addr);
   void a_xor();
 
+  void sla(ByteRegister& reg);
+  void sla(const std::uint16_t addr);
+  void sra(ByteRegister& reg);
+  void sra(const std::uint16_t addr);
+
   ByteRegister a, b, c, d, e, h, l;
   ByteRegisterPair af, bc, de, hl;
   WordRegister pc;

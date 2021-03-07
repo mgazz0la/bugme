@@ -464,6 +464,54 @@ inline void Cpu::a_xor() {
   f.clear_subtract_flag();
 }
 
+inline void Cpu::sla(ByteRegister& reg) {
+  bool did_carry = reg.get_bit(7);
+  reg.set(static_cast<std::uint8_t>(reg.value() << 1));
+
+  f.write_zero_flag(reg.value() == 0);
+  f.write_carry_flag(did_carry);
+  f.clear_half_carry_flag();
+  f.clear_subtract_flag();
+}
+
+inline void Cpu::sla(const std::uint16_t addr) {
+  std::uint8_t value = mmu_.read(addr);
+  bool did_carry = (value & (1 << 7));
+  std::uint8_t result = static_cast<std::uint8_t>(value << 1);
+  mmu_.write(addr, result);
+
+  f.write_zero_flag(result == 0);
+  f.write_carry_flag(did_carry);
+  f.clear_half_carry_flag();
+  f.clear_subtract_flag();
+}
+
+inline void Cpu::sra(ByteRegister& reg) {
+  std::uint8_t value = reg.value();
+  bool did_carry = value & 1;
+  std::uint8_t msb = value & (1 << 7);
+  std::uint8_t result = static_cast<std::uint8_t>((value >> 1) | msb);
+  reg.set(result);
+
+  f.write_zero_flag(result == 0);
+  f.write_carry_flag(did_carry);
+  f.clear_half_carry_flag();
+  f.clear_subtract_flag();
+}
+
+inline void Cpu::sra(const std::uint16_t addr) {
+  std::uint8_t value = mmu_.read(addr);
+  bool did_carry = value & 1;
+  std::uint8_t msb = value & (1 << 7);
+  std::uint8_t result = static_cast<std::uint8_t>((value >> 1) | msb);
+  mmu_.write(addr, result);;
+
+  f.write_zero_flag(result == 0);
+  f.write_carry_flag(did_carry);
+  f.clear_half_carry_flag();
+  f.clear_subtract_flag();
+}
+
 } // namespace gbc
 
 #endif

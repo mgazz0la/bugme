@@ -291,22 +291,22 @@ void Cpu::op_cb_1c() { rr(h); }
 void Cpu::op_cb_1d() { rr(l); }
 void Cpu::op_cb_1e() { rr(hl.value()); }
 void Cpu::op_cb_1f() { rr(a); }
-void Cpu::op_cb_20() { /* TODO */ }
-void Cpu::op_cb_21() { /* TODO */ }
-void Cpu::op_cb_22() { /* TODO */ }
-void Cpu::op_cb_23() { /* TODO */ }
-void Cpu::op_cb_24() { /* TODO */ }
-void Cpu::op_cb_25() { /* TODO */ }
-void Cpu::op_cb_26() { /* TODO */ }
-void Cpu::op_cb_27() { /* TODO */ }
-void Cpu::op_cb_28() { /* TODO */ }
-void Cpu::op_cb_29() { /* TODO */ }
-void Cpu::op_cb_2a() { /* TODO */ }
-void Cpu::op_cb_2b() { /* TODO */ }
-void Cpu::op_cb_2c() { /* TODO */ }
-void Cpu::op_cb_2d() { /* TODO */ }
-void Cpu::op_cb_2e() { /* TODO */ }
-void Cpu::op_cb_2f() { /* TODO */ }
+void Cpu::op_cb_20() { sla(b); }
+void Cpu::op_cb_21() { sla(c); }
+void Cpu::op_cb_22() { sla(d); }
+void Cpu::op_cb_23() { sla(e); }
+void Cpu::op_cb_24() { sla(h); }
+void Cpu::op_cb_25() { sla(l); }
+void Cpu::op_cb_26() { sla(hl.value()); }
+void Cpu::op_cb_27() { sla(a); }
+void Cpu::op_cb_28() { sra(b); }
+void Cpu::op_cb_29() { sra(c); }
+void Cpu::op_cb_2a() { sra(d); }
+void Cpu::op_cb_2b() { sra(e); }
+void Cpu::op_cb_2c() { sra(h); }
+void Cpu::op_cb_2d() { sra(l); }
+void Cpu::op_cb_2e() { sra(hl.value()); }
+void Cpu::op_cb_2f() { sra(a); }
 void Cpu::op_cb_30() { /* TODO */ }
 void Cpu::op_cb_31() { /* TODO */ }
 void Cpu::op_cb_32() { /* TODO */ }
