@@ -1,31 +1,32 @@
 #include "cpu.hh"
+#include "register.hh"
 
 namespace gbc {
 
 /* clang-format off */
 void Cpu::op_00() { nop(); }
-void Cpu::op_01() { ld(bc); }
+void Cpu::op_01() { ld<word_t>(bc, RawWord(next_word())); }
 void Cpu::op_02() { ld(bc.value(), a); }
 void Cpu::op_03() { inc(bc); }
 void Cpu::op_04() { inc(b); }
 void Cpu::op_05() { dec(b); }
-void Cpu::op_06() { ld(b); }
+void Cpu::op_06() { ld<byte_t>(b, RawByte(next_byte())); }
 void Cpu::op_07() { rlc(a); f.clear_zero_flag(); }
-void Cpu::op_08() { ld(step_pc(), sp); }
+void Cpu::op_08() { ld(next_byte(), sp); }
 void Cpu::op_09() { add(hl, bc); }
 void Cpu::op_0a() { ld(a, bc.value()); }
 void Cpu::op_0b() { dec(bc); }
 void Cpu::op_0c() { inc(c); }
 void Cpu::op_0d() { dec(c); }
-void Cpu::op_0e() { ld(c); }
+void Cpu::op_0e() { ld<byte_t>(c, RawByte(next_byte())); }
 void Cpu::op_0f() { rrc(a); f.clear_zero_flag(); }
 void Cpu::op_10() { stop(); }
-void Cpu::op_11() { ld(de); }
+void Cpu::op_11() { ld<word_t>(de, RawWord(next_word())); }
 void Cpu::op_12() { ld(de.value(), a); }
 void Cpu::op_13() { inc(de); }
 void Cpu::op_14() { inc(d); }
 void Cpu::op_15() { dec(d); }
-void Cpu::op_16() { ld(d); }
+void Cpu::op_16() { ld<byte_t>(d, RawByte(next_byte())); }
 void Cpu::op_17() { rl(a); f.clear_zero_flag(); }
 void Cpu::op_18() { jr(); }
 void Cpu::op_19() { add(hl, de); }
@@ -33,15 +34,15 @@ void Cpu::op_1a() { ld(a, de.value()); }
 void Cpu::op_1b() { dec(de); }
 void Cpu::op_1c() { inc(e); }
 void Cpu::op_1d() { dec(e); }
-void Cpu::op_1e() { ld(e); }
+void Cpu::op_1e() { ld<byte_t>(e, RawByte(next_byte())); }
 void Cpu::op_1f() { rr(a); f.clear_zero_flag(); }
 void Cpu::op_20() { jr_if(!f.zero_flag()); }
-void Cpu::op_21() { ld(hl); }
+void Cpu::op_21() { ld<word_t>(hl, RawWord(next_word())); }
 void Cpu::op_22() { ldi(hl.value(), a); }
 void Cpu::op_23() { inc(hl); }
 void Cpu::op_24() { inc(h); }
 void Cpu::op_25() { dec(h); }
-void Cpu::op_26() { ld(h); }
+void Cpu::op_26() { ld<byte_t>(h, RawByte(next_byte())); }
 void Cpu::op_27() { /* TODO */ }  // DAA
 void Cpu::op_28() { jr_if(f.zero_flag()); }
 void Cpu::op_29() { add(hl, hl); }
@@ -49,10 +50,10 @@ void Cpu::op_2a() { ldi(a, hl.value()); }
 void Cpu::op_2b() { dec(hl); }
 void Cpu::op_2c() { inc(l); }
 void Cpu::op_2d() { dec(l); }
-void Cpu::op_2e() { ld(l); }
+void Cpu::op_2e() { ld<byte_t>(l, RawByte(next_byte())); }
 void Cpu::op_2f() { /* TODO */ }  // CPL
 void Cpu::op_30() { jr_if(!f.carry_flag()); }
-void Cpu::op_31() { ld(sp); }
+void Cpu::op_31() { ld<word_t>(sp, RawWord(next_word())); }
 void Cpu::op_32() { ldd(hl.value(), a); }
 void Cpu::op_33() { inc(sp); }
 void Cpu::op_34() { inc(hl.value()); }
@@ -65,7 +66,7 @@ void Cpu::op_3a() { ldd(a, hl.value()); }
 void Cpu::op_3b() { dec(sp); }
 void Cpu::op_3c() { inc(a); }
 void Cpu::op_3d() { dec(a); }
-void Cpu::op_3e() { ld(a); }
+void Cpu::op_3e() { ld<byte_t>(a, RawByte(next_byte())); }
 void Cpu::op_3f() { /* TODO */ }  // CCF
 void Cpu::op_40() { ld(b, b); }
 void Cpu::op_41() { ld(b, c); }

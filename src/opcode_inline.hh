@@ -12,52 +12,44 @@ namespace gbc {
 inline void Cpu::nop() const { /* NOP */
 }
 
-inline void Cpu::ld(ByteRegister &reg) {
-  std::uint8_t v = step_pc();
-  reg.set(v);
+template <typename T>
+inline void Cpu::ld(WriteableValue<T> &dest, const ReadableValue<T> &src) {
+  dest.set(src.value());
 }
 
-inline void Cpu::ld(ByteRegister &reg, const std::uint16_t addr) {
+inline void Cpu::ld(ByteRegister &reg, const word_t addr) {
   reg.set(mmu_.read(addr));
 }
-inline void Cpu::ld(ByteRegister &reg, const ByteRegister &other) {
-  reg.set(other.value());
-}
 
-inline void Cpu::ld(WordValuedRegister &reg) {
-  std::uint16_t v = step_pc_word();
-  reg.set(v);
-}
-
-inline void Cpu::ld(const std::uint16_t addr) {
-  std::uint8_t v = step_pc();
+inline void Cpu::ld(const word_t addr) {
+  byte_t v = next_byte();
   mmu_.write(addr, v);
 }
 
-inline void Cpu::ld(const std::uint16_t addr, ByteRegister &reg) {
+inline void Cpu::ld(const word_t addr, ByteRegister &reg) {
   mmu_.write(addr, reg.value());
 }
 
-inline void Cpu::ld(const std::uint16_t addr, WordValuedRegister &reg) {
+inline void Cpu::ld(const word_t addr, WordRegister &reg) {
   mmu_.write(addr, reg.value());
 }
 
-inline void Cpu::ldi(const std::uint16_t addr, ByteRegister &reg) {
+inline void Cpu::ldi(const word_t addr, ByteRegister &reg) {
   ld(addr, reg);
   hl.increment();
 }
 
-inline void Cpu::ldi(ByteRegister &reg, const std::uint16_t addr) {
+inline void Cpu::ldi(ByteRegister &reg, const word_t addr) {
   ld(reg, addr);
   hl.increment();
 }
 
-inline void Cpu::ldd(const std::uint16_t addr, ByteRegister &reg) {
+inline void Cpu::ldd(const word_t addr, ByteRegister &reg) {
   ld(addr, reg);
   hl.decrement();
 }
 
-inline void Cpu::ldd(ByteRegister &reg, const std::uint16_t addr) {
+inline void Cpu::ldd(ByteRegister &reg, const word_t addr) {
   ld(reg, addr);
   hl.decrement();
 }
@@ -69,10 +61,10 @@ inline void Cpu::inc(ByteRegister &reg) {
   f.write_half_carry_flag((reg.value() & 0x0F) == 0);
 }
 
-inline void Cpu::inc(WordValuedRegister &reg) { reg.increment(); }
+inline void Cpu::inc(WordRegister &reg) { reg.increment(); }
 
-inline void Cpu::inc(const std::uint16_t addr) {
-  std::uint8_t result = static_cast<std::uint8_t>(mmu_.read(addr) + 1);
+inline void Cpu::inc(const word_t addr) {
+  byte_t result = static_cast<byte_t>(mmu_.read(addr) + 1);
   mmu_.write(addr, result);
 
   f.write_zero_flag(result == 0);
@@ -82,10 +74,10 @@ inline void Cpu::inc(const std::uint16_t addr) {
 
 inline void Cpu::dec(ByteRegister &reg) { reg.decrement(); }
 
-inline void Cpu::dec(WordValuedRegister &reg) { reg.decrement(); }
+inline void Cpu::dec(WordRegister &reg) { reg.decrement(); }
 
-inline void Cpu::dec(const std::uint16_t addr) {
-  std::uint8_t result = static_cast<std::uint8_t>(mmu_.read(addr) - 1);
+inline void Cpu::dec(const word_t addr) {
+  byte_t result = static_cast<byte_t>(mmu_.read(addr) - 1);
   mmu_.write(addr, result);
 
   f.write_zero_flag(result == 0);
@@ -94,9 +86,9 @@ inline void Cpu::dec(const std::uint16_t addr) {
 }
 
 inline void Cpu::rlc(ByteRegister &reg) {
-  std::uint16_t v = reg.value();
+  word_t v = reg.value();
   bool carry_bit = (v >> 7) & 1;
-  std::uint8_t result = static_cast<std::uint8_t>((v << 1) | carry_bit);
+  byte_t result = static_cast<byte_t>((v << 1) | carry_bit);
   reg.set(result);
 
   f.write_carry_flag(carry_bit);
@@ -105,10 +97,10 @@ inline void Cpu::rlc(ByteRegister &reg) {
   f.clear_subtract_flag();
 }
 
-inline void Cpu::rlc(const std::uint8_t addr) {
-  std::uint16_t v = mmu_.read(addr);
+inline void Cpu::rlc(const byte_t addr) {
+  word_t v = mmu_.read(addr);
   bool carry_bit = (v >> 7) & 1;
-  std::uint8_t result = static_cast<std::uint8_t>(v << 1 | carry_bit);
+  byte_t result = static_cast<byte_t>(v << 1 | carry_bit);
   mmu_.write(addr, result);
 
   f.write_carry_flag(carry_bit);
@@ -118,29 +110,29 @@ inline void Cpu::rlc(const std::uint8_t addr) {
 }
 
 inline void Cpu::rl(ByteRegister &reg) {
-  std::uint16_t result = (reg.value() << 1) | (f.carry_flag() ? 1 : 0);
-  reg.set(static_cast<std::uint8_t>(result));
+  word_t result = (reg.value() << 1) | (f.carry_flag() ? 1 : 0);
+  reg.set(static_cast<byte_t>(result));
 
   f.clear_subtract_flag();
   f.clear_half_carry_flag();
-  f.write_zero_flag(static_cast<std::uint8_t>(result) == 0);
+  f.write_zero_flag(static_cast<byte_t>(result) == 0);
   f.write_carry_flag(result > 0xFF);
 }
 
-inline void Cpu::rl(const std::uint8_t addr) {
-  std::uint16_t result = (mmu_.read(addr) << 1) | (f.carry_flag() ? 1 : 0);
-  mmu_.write(addr, static_cast<std::uint8_t>(result));
+inline void Cpu::rl(const byte_t addr) {
+  word_t result = (mmu_.read(addr) << 1) | (f.carry_flag() ? 1 : 0);
+  mmu_.write(addr, static_cast<byte_t>(result));
 
   f.clear_subtract_flag();
   f.clear_half_carry_flag();
-  f.write_zero_flag(static_cast<std::uint8_t>(result) == 0);
+  f.write_zero_flag(static_cast<byte_t>(result) == 0);
   f.write_carry_flag(result > 0xFF);
 }
 
 inline void Cpu::rrc(ByteRegister &reg) {
-  std::uint16_t v = reg.value();
+  word_t v = reg.value();
   bool carry_bit = v & 1;
-  std::uint8_t result = static_cast<std::uint8_t>((v >> 1) | (carry_bit << 7));
+  byte_t result = static_cast<byte_t>((v >> 1) | (carry_bit << 7));
   reg.set(result);
 
   f.write_carry_flag(carry_bit);
@@ -149,10 +141,10 @@ inline void Cpu::rrc(ByteRegister &reg) {
   f.clear_subtract_flag();
 }
 
-inline void Cpu::rrc(const std::uint8_t addr) {
-  std::uint16_t v = mmu_.read(addr);
+inline void Cpu::rrc(const byte_t addr) {
+  word_t v = mmu_.read(addr);
   bool carry_bit = v & 1;
-  std::uint8_t result = static_cast<std::uint8_t>((v >> 1) | (carry_bit << 7));
+  byte_t result = static_cast<byte_t>((v >> 1) | (carry_bit << 7));
   mmu_.write(addr, result);
 
   f.write_carry_flag(carry_bit);
@@ -162,33 +154,33 @@ inline void Cpu::rrc(const std::uint8_t addr) {
 }
 
 inline void Cpu::rr(ByteRegister &reg) {
-  const std::uint8_t value = reg.value();
-  std::uint16_t result =
+  const byte_t value = reg.value();
+  word_t result =
       (value >> 1) | ((f.carry_flag() ? 1 : 0) << 7) | ((value & 1) << 8);
-  reg.set(static_cast<std::uint8_t>(result));
+  reg.set(static_cast<byte_t>(result));
 
   f.clear_subtract_flag();
   f.clear_half_carry_flag();
-  f.write_zero_flag(static_cast<std::uint8_t>(result) == 0);
+  f.write_zero_flag(static_cast<byte_t>(result) == 0);
   f.write_carry_flag(result > 0xFF);
 }
 
-inline void Cpu::rr(const std::uint8_t addr) {
-  const std::uint8_t value = mmu_.read(addr);
-  std::uint16_t result =
+inline void Cpu::rr(const byte_t addr) {
+  const byte_t value = mmu_.read(addr);
+  word_t result =
       (value >> 1) | ((f.carry_flag() ? 1 : 0) << 7) | ((value & 1) << 8);
-  mmu_.write(addr, static_cast<std::uint8_t>(result));
+  mmu_.write(addr, static_cast<byte_t>(result));
 
   f.clear_subtract_flag();
   f.clear_half_carry_flag();
-  f.write_zero_flag(static_cast<std::uint8_t>(result) == 0);
+  f.write_zero_flag(static_cast<byte_t>(result) == 0);
   f.write_carry_flag(result > 0xFF);
 }
 
 inline void Cpu::add(ByteRegister &reg, const ByteRegister &other) {
-  std::uint8_t old_register_value = reg.value();
-  std::uint16_t result = reg.value() + other.value();
-  reg.set(static_cast<std::uint8_t>(result));
+  byte_t old_register_value = reg.value();
+  word_t result = reg.value() + other.value();
+  reg.set(static_cast<byte_t>(result));
 
   f.write_zero_flag(reg.value() == 0);
   f.clear_subtract_flag();
@@ -197,12 +189,12 @@ inline void Cpu::add(ByteRegister &reg, const ByteRegister &other) {
   f.write_carry_flag((result & 0x100) != 0);
 }
 
-inline void Cpu::add(ByteRegister &reg, const std::uint16_t addr) {
-  std::uint8_t old_register_value = reg.value();
-  std::uint8_t other_value = mmu_.read(addr);
+inline void Cpu::add(ByteRegister &reg, const word_t addr) {
+  byte_t old_register_value = reg.value();
+  byte_t other_value = mmu_.read(addr);
 
-  std::uint16_t result = reg.value() + other_value;
-  reg.set(static_cast<std::uint8_t>(result));
+  word_t result = reg.value() + other_value;
+  reg.set(static_cast<byte_t>(result));
 
   f.write_zero_flag(reg.value() == 0);
   f.clear_subtract_flag();
@@ -212,11 +204,11 @@ inline void Cpu::add(ByteRegister &reg, const std::uint16_t addr) {
 }
 
 inline void Cpu::add(ByteRegister &reg) {
-  std::uint8_t old_register_value = reg.value();
-  std::uint8_t other_value = step_pc();
+  byte_t old_register_value = reg.value();
+  byte_t other_value = next_byte();
 
-  std::uint16_t result = reg.value() + other_value;
-  reg.set(static_cast<std::uint8_t>(result));
+  word_t result = reg.value() + other_value;
+  reg.set(static_cast<byte_t>(result));
 
   f.write_zero_flag(reg.value() == 0);
   f.clear_subtract_flag();
@@ -225,12 +217,12 @@ inline void Cpu::add(ByteRegister &reg) {
   f.write_carry_flag((result & 0x100) != 0);
 }
 
-inline void Cpu::add(WordValuedRegister &reg, const WordValuedRegister &other) {
-  std::uint16_t old_register_value = reg.value();
-  std::uint16_t other_value = other.value();
+inline void Cpu::add(WordRegister &reg, const WordRegister &other) {
+  word_t old_register_value = reg.value();
+  word_t other_value = other.value();
 
   std::uint32_t result = reg.value() + other_value;
-  reg.set(static_cast<std::uint16_t>(result));
+  reg.set(static_cast<word_t>(result));
 
   f.write_half_carry_flag(
       ((old_register_value & 0xFFF) + (other_value & 0xFFF)) > 0xFFF);
@@ -239,10 +231,10 @@ inline void Cpu::add(WordValuedRegister &reg, const WordValuedRegister &other) {
 }
 
 inline void Cpu::adc(ByteRegister &reg, const ByteRegister &other) {
-  std::uint8_t old_register_value = reg.value();
-  std::uint8_t carry = f.carry_flag() ? 1 : 0;
-  std::uint16_t result = reg.value() + other.value() + carry;
-  reg.set(static_cast<std::uint8_t>(result));
+  byte_t old_register_value = reg.value();
+  byte_t carry = f.carry_flag() ? 1 : 0;
+  word_t result = reg.value() + other.value() + carry;
+  reg.set(static_cast<byte_t>(result));
 
   f.write_zero_flag(reg.value() == 0);
   f.clear_subtract_flag();
@@ -251,13 +243,13 @@ inline void Cpu::adc(ByteRegister &reg, const ByteRegister &other) {
   f.write_carry_flag((result & 0x100) != 0);
 }
 
-inline void Cpu::adc(ByteRegister &reg, const std::uint16_t addr) {
-  std::uint8_t old_register_value = reg.value();
-  std::uint8_t other_value = mmu_.read(addr);
-  std::uint8_t carry = f.carry_flag() ? 1 : 0;
+inline void Cpu::adc(ByteRegister &reg, const word_t addr) {
+  byte_t old_register_value = reg.value();
+  byte_t other_value = mmu_.read(addr);
+  byte_t carry = f.carry_flag() ? 1 : 0;
 
-  std::uint16_t result = reg.value() + other_value + carry;
-  reg.set(static_cast<std::uint8_t>(result));
+  word_t result = reg.value() + other_value + carry;
+  reg.set(static_cast<byte_t>(result));
 
   f.write_zero_flag(a.value() == 0);
   f.clear_subtract_flag();
@@ -267,12 +259,12 @@ inline void Cpu::adc(ByteRegister &reg, const std::uint16_t addr) {
 }
 
 inline void Cpu::adc(ByteRegister &reg) {
-  std::uint8_t old_register_value = reg.value();
-  std::uint8_t other_value = step_pc();
-  std::uint8_t carry = f.carry_flag() ? 1 : 0;
+  byte_t old_register_value = reg.value();
+  byte_t other_value = next_byte();
+  byte_t carry = f.carry_flag() ? 1 : 0;
 
-  std::uint16_t result = reg.value() + other_value + carry;
-  reg.set(static_cast<std::uint8_t>(result));
+  word_t result = reg.value() + other_value + carry;
+  reg.set(static_cast<byte_t>(result));
 
   f.write_zero_flag(reg.value() == 0);
   f.clear_subtract_flag();
@@ -282,10 +274,10 @@ inline void Cpu::adc(ByteRegister &reg) {
 }
 
 inline void Cpu::sub(ByteRegister &reg, const ByteRegister &other) {
-  std::uint8_t old_register_value = reg.value();
-  std::uint8_t other_value = other.value();
-  std::uint16_t result = reg.value() - other_value;
-  reg.set(static_cast<std::uint8_t>(result));
+  byte_t old_register_value = reg.value();
+  byte_t other_value = other.value();
+  word_t result = reg.value() - other_value;
+  reg.set(static_cast<byte_t>(result));
 
   f.write_zero_flag(reg.value() == 0);
   f.set_subtract_flag();
@@ -294,11 +286,11 @@ inline void Cpu::sub(ByteRegister &reg, const ByteRegister &other) {
   f.write_carry_flag(old_register_value < other_value);
 }
 
-inline void Cpu::sub(ByteRegister &reg, const std::uint16_t addr) {
-  std::uint8_t old_register_value = reg.value();
-  std::uint8_t other_value = mmu_.read(addr);
-  std::uint16_t result = reg.value() - other_value;
-  reg.set(static_cast<std::uint8_t>(result));
+inline void Cpu::sub(ByteRegister &reg, const word_t addr) {
+  byte_t old_register_value = reg.value();
+  byte_t other_value = mmu_.read(addr);
+  word_t result = reg.value() - other_value;
+  reg.set(static_cast<byte_t>(result));
 
   f.write_zero_flag(reg.value() == 0);
   f.set_subtract_flag();
@@ -308,10 +300,10 @@ inline void Cpu::sub(ByteRegister &reg, const std::uint16_t addr) {
 }
 
 inline void Cpu::sub(ByteRegister &reg) {
-  std::uint8_t old_register_value = reg.value();
-  std::uint8_t other_value = step_pc();
-  std::uint16_t result = reg.value() - other_value;
-  reg.set(static_cast<std::uint8_t>(result));
+  byte_t old_register_value = reg.value();
+  byte_t other_value = next_byte();
+  word_t result = reg.value() - other_value;
+  reg.set(static_cast<byte_t>(result));
 
   f.write_zero_flag(reg.value() == 0);
   f.set_subtract_flag();
@@ -321,12 +313,12 @@ inline void Cpu::sub(ByteRegister &reg) {
 }
 
 inline void Cpu::sbc(ByteRegister &reg, const ByteRegister &other) {
-  std::uint8_t old_register_value = reg.value();
-  std::uint8_t other_value = other.value();
-  std::uint8_t carry = f.carry_flag() ? 1 : 0;
+  byte_t old_register_value = reg.value();
+  byte_t other_value = other.value();
+  byte_t carry = f.carry_flag() ? 1 : 0;
 
-  std::uint16_t result = reg.value() - other_value - carry;
-  reg.set(static_cast<std::uint8_t>(result));
+  word_t result = reg.value() - other_value - carry;
+  reg.set(static_cast<byte_t>(result));
 
   f.write_zero_flag(reg.value() == 0);
   f.set_subtract_flag();
@@ -335,13 +327,13 @@ inline void Cpu::sbc(ByteRegister &reg, const ByteRegister &other) {
   f.write_carry_flag(old_register_value < other_value);
 }
 
-inline void Cpu::sbc(ByteRegister &reg, const std::uint16_t addr) {
-  std::uint8_t old_register_value = reg.value();
-  std::uint8_t other_value = mmu_.read(addr);
-  std::uint8_t carry = f.carry_flag() ? 1 : 0;
+inline void Cpu::sbc(ByteRegister &reg, const word_t addr) {
+  byte_t old_register_value = reg.value();
+  byte_t other_value = mmu_.read(addr);
+  byte_t carry = f.carry_flag() ? 1 : 0;
 
-  std::uint16_t result = reg.value() - other_value - carry;
-  reg.set(static_cast<std::uint8_t>(result));
+  word_t result = reg.value() - other_value - carry;
+  reg.set(static_cast<byte_t>(result));
 
   f.write_zero_flag(reg.value() == 0);
   f.set_subtract_flag();
@@ -351,12 +343,12 @@ inline void Cpu::sbc(ByteRegister &reg, const std::uint16_t addr) {
 }
 
 inline void Cpu::sbc(ByteRegister &reg) {
-  std::uint8_t old_register_value = reg.value();
-  std::uint8_t other_value = step_pc();
-  std::uint8_t carry = f.carry_flag() ? 1 : 0;
+  byte_t old_register_value = reg.value();
+  byte_t other_value = next_byte();
+  byte_t carry = f.carry_flag() ? 1 : 0;
 
-  std::uint16_t result = reg.value() - other_value - carry;
-  reg.set(static_cast<std::uint8_t>(result));
+  word_t result = reg.value() - other_value - carry;
+  reg.set(static_cast<byte_t>(result));
 
   f.write_zero_flag(reg.value() == 0);
   f.set_subtract_flag();
@@ -370,7 +362,7 @@ inline void Cpu::stop() { stopped_ = true; }
 inline void Cpu::halt() { halted_ = true; }
 
 inline void Cpu::jr() {
-  std::int8_t offset = static_cast<std::int8_t>(step_pc());
+  std::int8_t offset = static_cast<std::int8_t>(next_byte());
   pc.set(static_cast<uint16_t>(pc.value() + offset));
 }
 
@@ -379,7 +371,7 @@ inline void Cpu::jr_if(bool condition) {
     did_branch_ = true;
     jr();
   } else {
-    step_pc(); // waste the unused argument
+    next_byte(); // waste the unused argument
   }
 }
 
@@ -392,7 +384,7 @@ inline void Cpu::a_and(const ByteRegister &other) {
   f.clear_subtract_flag();
 }
 
-inline void Cpu::a_and(const std::uint16_t addr) {
+inline void Cpu::a_and(const word_t addr) {
   a.set(a.value() & mmu_.read(addr));
 
   f.write_zero_flag(a.value() == 0);
@@ -402,7 +394,7 @@ inline void Cpu::a_and(const std::uint16_t addr) {
 }
 
 inline void Cpu::a_and() {
-  a.set(a.value() & step_pc());
+  a.set(a.value() & next_byte());
 
   f.write_zero_flag(a.value() == 0);
   f.set_half_carry_flag();
@@ -419,7 +411,7 @@ inline void Cpu::a_or(const ByteRegister &other) {
   f.clear_subtract_flag();
 }
 
-inline void Cpu::a_or(const std::uint16_t addr) {
+inline void Cpu::a_or(const word_t addr) {
   a.set(a.value() | mmu_.read(addr));
 
   f.write_zero_flag(a.value() == 0);
@@ -429,7 +421,7 @@ inline void Cpu::a_or(const std::uint16_t addr) {
 }
 
 inline void Cpu::a_or() {
-  a.set(a.value() | step_pc());
+  a.set(a.value() | next_byte());
 
   f.write_zero_flag(a.value() == 0);
   f.clear_half_carry_flag();
@@ -446,7 +438,7 @@ inline void Cpu::a_xor(const ByteRegister &other) {
   f.clear_subtract_flag();
 }
 
-inline void Cpu::a_xor(const std::uint16_t addr) {
+inline void Cpu::a_xor(const word_t addr) {
   a.set(a.value() ^ mmu_.read(addr));
 
   f.write_zero_flag(a.value() == 0);
@@ -456,7 +448,7 @@ inline void Cpu::a_xor(const std::uint16_t addr) {
 }
 
 inline void Cpu::a_xor() {
-  a.set(a.value() ^ step_pc());
+  a.set(a.value() ^ next_byte());
 
   f.write_zero_flag(a.value() == 0);
   f.clear_half_carry_flag();
@@ -466,7 +458,7 @@ inline void Cpu::a_xor() {
 
 inline void Cpu::sla(ByteRegister &reg) {
   bool did_carry = reg.get_bit(7);
-  reg.set(static_cast<std::uint8_t>(reg.value() << 1));
+  reg.set(static_cast<byte_t>(reg.value() << 1));
 
   f.write_zero_flag(reg.value() == 0);
   f.write_carry_flag(did_carry);
@@ -474,10 +466,10 @@ inline void Cpu::sla(ByteRegister &reg) {
   f.clear_subtract_flag();
 }
 
-inline void Cpu::sla(const std::uint16_t addr) {
-  std::uint8_t value = mmu_.read(addr);
+inline void Cpu::sla(const word_t addr) {
+  byte_t value = mmu_.read(addr);
   bool did_carry = (value & (1 << 7));
-  std::uint8_t result = static_cast<std::uint8_t>(value << 1);
+  byte_t result = static_cast<byte_t>(value << 1);
   mmu_.write(addr, result);
 
   f.write_zero_flag(result == 0);
@@ -487,10 +479,10 @@ inline void Cpu::sla(const std::uint16_t addr) {
 }
 
 inline void Cpu::sra(ByteRegister &reg) {
-  std::uint8_t value = reg.value();
+  byte_t value = reg.value();
   bool did_carry = value & 1;
-  std::uint8_t msb = value & (1 << 7);
-  std::uint8_t result = static_cast<std::uint8_t>((value >> 1) | msb);
+  byte_t msb = value & (1 << 7);
+  byte_t result = static_cast<byte_t>((value >> 1) | msb);
   reg.set(result);
 
   f.write_zero_flag(result == 0);
@@ -499,11 +491,11 @@ inline void Cpu::sra(ByteRegister &reg) {
   f.clear_subtract_flag();
 }
 
-inline void Cpu::sra(const std::uint16_t addr) {
-  std::uint8_t value = mmu_.read(addr);
+inline void Cpu::sra(const word_t addr) {
+  byte_t value = mmu_.read(addr);
   bool did_carry = value & 1;
-  std::uint8_t msb = value & (1 << 7);
-  std::uint8_t result = static_cast<std::uint8_t>((value >> 1) | msb);
+  byte_t msb = value & (1 << 7);
+  byte_t result = static_cast<byte_t>((value >> 1) | msb);
   mmu_.write(addr, result);
   ;
 
@@ -514,9 +506,9 @@ inline void Cpu::sra(const std::uint16_t addr) {
 }
 
 inline void Cpu::srl(ByteRegister &reg) {
-  std::uint8_t value = reg.value();
+  byte_t value = reg.value();
   bool did_carry = value & 1;
-  std::uint8_t result = static_cast<std::uint8_t>(value >> 1);
+  byte_t result = static_cast<byte_t>(value >> 1);
   reg.set(result);
 
   f.write_zero_flag(result == 0);
@@ -525,10 +517,10 @@ inline void Cpu::srl(ByteRegister &reg) {
   f.clear_subtract_flag();
 }
 
-inline void Cpu::srl(const std::uint16_t addr) {
-  std::uint8_t value = mmu_.read(addr);
+inline void Cpu::srl(const word_t addr) {
+  byte_t value = mmu_.read(addr);
   bool did_carry = value & 1;
-  std::uint8_t result = static_cast<std::uint8_t>(value >> 1);
+  byte_t result = static_cast<byte_t>(value >> 1);
   mmu_.write(addr, result);
   ;
 
@@ -539,7 +531,7 @@ inline void Cpu::srl(const std::uint16_t addr) {
 }
 
 inline void Cpu::swap(ByteRegister &reg) {
-  std::uint8_t v = reg.value();
+  byte_t v = reg.value();
   v = (v >> 4) | (v << 4);
   reg.set(v);
 
@@ -549,8 +541,8 @@ inline void Cpu::swap(ByteRegister &reg) {
   f.clear_subtract_flag();
 }
 
-inline void Cpu::swap(const std::uint16_t addr) {
-  std::uint8_t v = mmu_.read(addr);
+inline void Cpu::swap(const word_t addr) {
+  byte_t v = mmu_.read(addr);
   v = (v >> 4) | (v << 4);
   mmu_.write(addr, v);
 
@@ -560,13 +552,13 @@ inline void Cpu::swap(const std::uint16_t addr) {
   f.clear_subtract_flag();
 }
 
-inline void Cpu::bit(const std::uint8_t bit, const ByteRegister &reg) {
+inline void Cpu::bit(const bit_t bit, const ByteRegister &reg) {
   f.write_zero_flag(!reg.get_bit(bit));
   f.clear_subtract_flag();
   f.set_half_carry_flag();
 }
 
-inline void Cpu::bit(const std::uint8_t bit, const std::uint16_t addr) {
+inline void Cpu::bit(const bit_t bit, const word_t addr) {
   f.write_zero_flag((mmu_.read(addr) >> bit) & 1);
   f.clear_subtract_flag();
   f.set_half_carry_flag();

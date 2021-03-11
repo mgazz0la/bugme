@@ -13,55 +13,57 @@ public:
   Cpu(Mmu &mmu);
 
 private:
-  std::uint8_t step_pc();
-  std::uint16_t step_pc_word();
+  byte_t next_byte();
+  word_t next_word();
 
   // inlined "microcode" functions
   void nop() const;
 
-  void ld(ByteRegister &reg);
-  void ld(ByteRegister &reg, const std::uint16_t addr);
-  void ld(ByteRegister &reg, const ByteRegister &other);
-  void ld(WordValuedRegister &reg);
-  void ld(const std::uint16_t addr);
-  void ld(const std::uint16_t addr, ByteRegister &reg);
-  void ld(const std::uint16_t addr, WordValuedRegister &reg);
-  void ldi(const std::uint16_t addr, ByteRegister &reg);
-  void ldi(ByteRegister &reg, const std::uint16_t addr);
-  void ldd(const std::uint16_t addr, ByteRegister &reg);
-  void ldd(ByteRegister &reg, const std::uint16_t addr);
+  template <typename T>
+  void ld(WriteableValue<T> &dest, const ReadableValue<T> &src);
+
+  void ld(ByteRegister &reg, const word_t addr);
+
+  void ld(const word_t addr);
+  void ld(const word_t addr, ByteRegister &reg);
+  void ld(const word_t addr, WordRegister &reg);
+
+  void ldi(const word_t addr, ByteRegister &reg);
+  void ldi(ByteRegister &reg, const word_t addr);
+  void ldd(const word_t addr, ByteRegister &reg);
+  void ldd(ByteRegister &reg, const word_t addr);
 
   void inc(ByteRegister &reg);
-  void inc(WordValuedRegister &reg);
-  void inc(const std::uint16_t addr);
+  void inc(WordRegister &reg);
+  void inc(const word_t addr);
 
   void dec(ByteRegister &reg);
-  void dec(WordValuedRegister &reg);
-  void dec(const std::uint16_t addr);
+  void dec(WordRegister &reg);
+  void dec(const word_t addr);
 
   void rlc(ByteRegister &reg);
-  void rlc(const std::uint8_t addr);
+  void rlc(const byte_t addr);
   void rl(ByteRegister &reg);
-  void rl(const std::uint8_t addr);
+  void rl(const byte_t addr);
 
   void rrc(ByteRegister &reg);
-  void rrc(const std::uint8_t addr);
+  void rrc(const byte_t addr);
   void rr(ByteRegister &reg);
-  void rr(const std::uint8_t addr);
+  void rr(const byte_t addr);
 
   void add(ByteRegister &reg, const ByteRegister &other);
-  void add(ByteRegister &reg, const std::uint16_t addr);
+  void add(ByteRegister &reg, const word_t addr);
   void add(ByteRegister &reg);
-  void add(WordValuedRegister &reg, const WordValuedRegister &other);
+  void add(WordRegister &reg, const WordRegister &other);
   void adc(ByteRegister &reg, const ByteRegister &other);
-  void adc(ByteRegister &reg, const std::uint16_t addr);
+  void adc(ByteRegister &reg, const word_t addr);
   void adc(ByteRegister &reg);
 
   void sub(ByteRegister &reg, const ByteRegister &other);
-  void sub(ByteRegister &reg, const std::uint16_t addr);
+  void sub(ByteRegister &reg, const word_t addr);
   void sub(ByteRegister &reg);
   void sbc(ByteRegister &reg, const ByteRegister &other);
-  void sbc(ByteRegister &reg, const std::uint16_t addr);
+  void sbc(ByteRegister &reg, const word_t addr);
   void sbc(ByteRegister &reg);
 
   void stop();
@@ -71,32 +73,32 @@ private:
   void jr_if(bool condition);
 
   void a_and(const ByteRegister &other);
-  void a_and(const std::uint16_t addr);
+  void a_and(const word_t addr);
   void a_and();
   void a_or(const ByteRegister &other);
-  void a_or(const std::uint16_t addr);
+  void a_or(const word_t addr);
   void a_or();
   void a_xor(const ByteRegister &other);
-  void a_xor(const std::uint16_t addr);
+  void a_xor(const word_t addr);
   void a_xor();
 
   void sla(ByteRegister &reg);
-  void sla(const std::uint16_t addr);
+  void sla(const word_t addr);
   void sra(ByteRegister &reg);
-  void sra(const std::uint16_t addr);
+  void sra(const word_t addr);
   void srl(ByteRegister &reg);
-  void srl(const std::uint16_t addr);
+  void srl(const word_t addr);
 
   void swap(ByteRegister &reg);
-  void swap(const std::uint16_t addr);
+  void swap(const word_t addr);
 
-  void bit(const std::uint8_t bit, const ByteRegister &reg);
-  void bit(const std::uint8_t bit, const std::uint16_t addr);
+  void bit(const byte_t bit, const ByteRegister &reg);
+  void bit(const byte_t bit, const word_t addr);
 
   ByteRegister a, b, c, d, e, h, l;
   ByteRegisterPair af, bc, de, hl;
-  WordRegister pc;
-  WordRegister sp;
+  WordValuedRegister pc;
+  WordValuedRegister sp;
   FlagRegister f;
 
   Mmu &mmu_;
