@@ -2,6 +2,7 @@
 #define GBC_CPU_H
 
 #include "register.hh"
+#include <memory>
 
 namespace gbc {
 
@@ -9,7 +10,7 @@ class Mmu;
 
 class Cpu {
 public:
-  explicit Cpu(Mmu &mmu);
+  explicit Cpu(std::shared_ptr<Mmu> mmu);
 
   void reset();
 private:
@@ -118,7 +119,7 @@ private:
   WordValuedRegister sp;
   FlagRegister f;
 
-  Mmu &mmu_;
+  std::shared_ptr<Mmu> mmu_;
 
   bool stopped_ = false;
   bool halted_ = false;

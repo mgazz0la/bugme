@@ -1,12 +1,14 @@
 #ifndef GBC_GBC_H
 #define GBC_GBC_H
 
-#include "cpu.hh"
-#include "mmu.hh"
-
+#include <memory>
 #include <string>
 
 namespace gbc {
+
+class Cpu;
+class Mmu;
+
 class Gbc {
 public:
   Gbc();
@@ -14,8 +16,8 @@ public:
   std::string status() const;
 
 private:
-  Cpu cpu;
-  Mmu mmu;
+  std::shared_ptr<Mmu> mmu;
+  std::shared_ptr<Cpu> cpu;
 };
 } // namespace gbc
 #endif

@@ -16,28 +16,28 @@ class MockMmu : public Mmu {
 
 class CpuTest : public ::testing::Test {
 protected:
-  MockMmu mmu;
-  Cpu cpu;
+  std::shared_ptr<MockMmu> mmu;
+  std::shared_ptr<Cpu> cpu;
 
-  CpuTest() : mmu(), cpu(mmu) {}
+  CpuTest() : mmu(new MockMmu()), cpu(new Cpu(mmu)) {}
 
   void SetUp() override {
-    cpu.reset();
+    cpu->reset();
   }
 };
 
 TEST_F(CpuTest, op_00) {
-  cpu.nop();
+  cpu->nop();
 
-  EXPECT_EQ(cpu.af, 0);
-  EXPECT_EQ(cpu.bc, 0);
-  EXPECT_EQ(cpu.de, 0);
-  EXPECT_EQ(cpu.hl, 0);
-  EXPECT_EQ(cpu.sp, 0);
-  EXPECT_EQ(cpu.pc, 0);
-  EXPECT_CALL(mmu, read(_)).Times(0);
-  EXPECT_CALL(mmu, write(_, _)).Times(0);
-  EXPECT_FALSE(cpu.halted_ || cpu.stopped_ || cpu.did_branch_);
+  EXPECT_EQ(cpu->af, 0);
+  EXPECT_EQ(cpu->bc, 0);
+  EXPECT_EQ(cpu->de, 0);
+  EXPECT_EQ(cpu->hl, 0);
+  EXPECT_EQ(cpu->sp, 0);
+  EXPECT_EQ(cpu->pc, 0);
+  EXPECT_CALL(*mmu, read(_)).Times(0);
+  EXPECT_CALL(*mmu, write(_, _)).Times(0);
+  EXPECT_FALSE(cpu->halted_ || cpu->stopped_ || cpu->did_branch_);
 }
 
 /*
