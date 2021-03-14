@@ -1,4 +1,5 @@
 #include "cpu.hh"
+#include "register.hh"
 
 namespace gbc {
 
@@ -11,7 +12,7 @@ void Cpu::op_04() { inc(b); }
 void Cpu::op_05() { dec(b); }
 void Cpu::op_06() { ld(b); }
 void Cpu::op_07() { rlc(a); f.clear_zero_flag(); }
-void Cpu::op_08() { ld(step_pc(), sp); }
+void Cpu::op_08() { ld(next_byte(), sp); }
 void Cpu::op_09() { add(hl, bc); }
 void Cpu::op_0a() { ld(a, bc.value()); }
 void Cpu::op_0b() { dec(bc); }

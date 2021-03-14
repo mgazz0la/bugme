@@ -30,7 +30,8 @@ TEST(ByteRegisterTest, GetBit) {
       EXPECT_EQ((i >> j) & 1, a.get_bit(j));
     }
 
-    a.increment();;
+    a.increment();
+    ;
   }
 
   EXPECT_EQ(UINT8_MAX, a.value());
@@ -94,24 +95,24 @@ TEST(ByteRegisterTest, DoesNotEqual) {
   EXPECT_FALSE(a == b);
 }
 
-TEST(WordRegisterTest, Overflows) {
-  gbc::WordRegister a;
+TEST(WordValuedRegisterTest, Overflows) {
+  gbc::WordValuedRegister a;
   a.set(UINT16_MAX);
   EXPECT_EQ(UINT16_MAX, a.value());
   a.increment();
   EXPECT_EQ(0, a.value());
 }
 
-TEST(WordRegisterTest, Underflows) {
-  gbc::WordRegister a;
+TEST(WordValuedRegisterTest, Underflows) {
+  gbc::WordValuedRegister a;
   a.set(0);
   EXPECT_EQ(0, a.value());
   a.decrement();
   EXPECT_EQ(UINT16_MAX, a.value());
 }
 
-TEST(WordRegisterTest, HighLow) {
-  gbc::WordRegister a;
+TEST(WordValuedRegisterTest, HighLow) {
+  gbc::WordValuedRegister a;
   a.set(0);
 
   for (std::uint16_t i = 0; i < UINT16_MAX; ++i) {
@@ -134,7 +135,8 @@ TEST(ByteRegisterPairTest, Sets) {
   for (std::uint16_t i = 0; i < UINT16_MAX; ++i) {
     EXPECT_EQ(i, ab.value());
     EXPECT_EQ((i >> 8) & 0xFF, ab.high());
-    EXPECT_EQ(i & 0xFF, ab.low());;
+    EXPECT_EQ(i & 0xFF, ab.low());
+    ;
     ab.increment();
   }
 
@@ -299,19 +301,28 @@ TEST(FlagRegisterTest, DoesNotWriteToLowerNibble) {
   EXPECT_EQ(0, f.get_bit(2));
   EXPECT_EQ(0, f.get_bit(3));
 
-  f.set_bit(0); f.set_bit(1); f.set_bit(2); f.set_bit(3);
+  f.set_bit(0);
+  f.set_bit(1);
+  f.set_bit(2);
+  f.set_bit(3);
   EXPECT_EQ(0, f.get_bit(0));
   EXPECT_EQ(0, f.get_bit(1));
   EXPECT_EQ(0, f.get_bit(2));
   EXPECT_EQ(0, f.get_bit(3));
 
-  f.flip_bit(0); f.flip_bit(1); f.flip_bit(2); f.flip_bit(3);
+  f.flip_bit(0);
+  f.flip_bit(1);
+  f.flip_bit(2);
+  f.flip_bit(3);
   EXPECT_EQ(0, f.get_bit(0));
   EXPECT_EQ(0, f.get_bit(1));
   EXPECT_EQ(0, f.get_bit(2));
   EXPECT_EQ(0, f.get_bit(3));
 
-  f.write_bit(0, 1); f.write_bit(1, 1); f.write_bit(2, 1); f.write_bit(3, 1);
+  f.write_bit(0, 1);
+  f.write_bit(1, 1);
+  f.write_bit(2, 1);
+  f.write_bit(3, 1);
   EXPECT_EQ(0, f.get_bit(0));
   EXPECT_EQ(0, f.get_bit(1));
   EXPECT_EQ(0, f.get_bit(2));

@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <vector>
 
+#include "types.hh"
+
 namespace gbc {
 
 class Cpu;
@@ -12,12 +14,12 @@ class Mmu {
 public:
   Mmu(Cpu &cpu);
 
-  uint8_t read(std::uint16_t addr) const;
-  void write(std::uint16_t addr, std::uint8_t byte);
+  byte_t read(word_t addr) const;
+  void write(word_t addr, byte_t byte);
 
 private:
   Cpu &cpu_;
-  std::vector<std::uint8_t> memory_;
+  std::vector<byte_t> memory_;
 };
 
 } // namespace gbc
