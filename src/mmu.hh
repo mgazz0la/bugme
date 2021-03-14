@@ -12,13 +12,13 @@ class Cpu;
 
 class Mmu {
 public:
-  Mmu(Cpu &cpu);
+  Mmu();
 
   byte_t read(word_t addr) const;
   void write(word_t addr, byte_t byte);
 
+  bool operator==(const Mmu &other) const;
 private:
-  Cpu &cpu_;
   std::vector<byte_t> memory_;
 };
 

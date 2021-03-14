@@ -2,7 +2,7 @@
 
 namespace gbc {
 
-Gbc::Gbc() : cpu(mmu), mmu(cpu) {}
+Gbc::Gbc() : cpu(mmu), mmu() {}
 
 std::string Gbc::status() const { return "cpu, mmu instantiate correctly"; }
 

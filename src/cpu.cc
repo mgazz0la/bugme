@@ -22,9 +22,22 @@ word_t Cpu::next_word() {
   return ((high << 8) | low);
 }
 
-word_t Cpu::a16() { return next_word(); }
-word_t Cpu::d16() { return next_word(); }
-byte_t Cpu::d8() { return next_byte(); }
+bool Cpu::operator==(const Cpu &o) const {
+  return mmu_ == o.mmu_ &&
+    a == o.a &&
+    b == o.b &&
+    c == o.c &&
+    d == o.d &&
+    e == o.e &&
+    f == o.f &&
+    h == o.h &&
+    l == o.l &&
+    sp == o.sp &&
+    pc == o.pc &&
+    stopped_ == o.stopped_ &&
+    halted_ == o.halted_ &&
+    did_branch_ == o.did_branch_;
+}
 
 void Cpu::nop() const { /* NOP */
 }

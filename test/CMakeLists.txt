@@ -31,3 +31,12 @@ gtest_discover_tests(register_test
     240
   )
 
+add_executable(cpu_test cpu_test.cc)
+target_link_libraries(cpu_test PRIVATE cpu gtest_main)
+gtest_discover_tests(cpu_test
+  PROPERTIES
+    LABELS "unit"
+  DISCOVERY_TIMEOUT  # how long to wait (in seconds) before crashing
+    240
+  )
+
