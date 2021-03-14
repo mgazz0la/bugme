@@ -28,17 +28,11 @@ void Cpu::reset() {
 }
 
 byte_t Cpu::next_byte() {
-  byte_t byte = mmu_->read(pc.value());
-  pc.increment();
-
-  return byte;
+  return mmu_->read(pc.value() + 1);
 }
 
 word_t Cpu::next_word() {
-  byte_t low = next_byte();
-  byte_t high = next_byte();
-
-  return ((high << 8) | low);
+  return ((mmu_->read(pc.value() + 2) << 8) | mmu_->read(pc.value() + 1));
 }
 
 void Cpu::nop() const { /* NOP */
@@ -50,6 +44,7 @@ void Cpu::ld(ByteRegister &reg) {
 }
 
 void Cpu::ld(ByteRegister &reg, const word_t addr) { reg.set(mmu_->read(addr)); }
+
 void Cpu::ld(ByteRegister &reg, const ByteRegister &other) {
   reg.set(other.value());
 }

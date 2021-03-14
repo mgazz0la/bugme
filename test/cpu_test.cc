@@ -7,6 +7,7 @@
 namespace gbc {
 
 using ::testing::_;
+using ::testing::Return;
 
 class MockMmu : public Mmu {
   public:
@@ -16,6 +17,9 @@ class MockMmu : public Mmu {
 
 class CpuTest : public ::testing::Test {
 protected:
+  const word_t WORD = 0x420;
+  const byte_t BYTE = 0x69;
+
   std::shared_ptr<MockMmu> mmu;
   std::shared_ptr<Cpu> cpu;
 
@@ -27,7 +31,7 @@ protected:
 };
 
 TEST_F(CpuTest, op_00) {
-  cpu->nop();
+  cpu->op_00();
 
   EXPECT_EQ(cpu->af, 0);
   EXPECT_EQ(cpu->bc, 0);
@@ -35,32 +39,74 @@ TEST_F(CpuTest, op_00) {
   EXPECT_EQ(cpu->hl, 0);
   EXPECT_EQ(cpu->sp, 0);
   EXPECT_EQ(cpu->pc, 0);
-  EXPECT_CALL(*mmu, read(_)).Times(0);
-  EXPECT_CALL(*mmu, write(_, _)).Times(0);
+  EXPECT_FALSE(cpu->halted_ || cpu->stopped_ || cpu->did_branch_);
+}
+
+
+TEST_F(CpuTest, op_01) {
+  EXPECT_CALL(*mmu, read(1))
+    .Times(1)
+    .WillOnce(Return(0xFF & WORD));
+
+  EXPECT_CALL(*mmu, read(2))
+    .Times(1)
+    .WillOnce(Return((WORD >> 8) & 0xFF));
+
+  cpu->op_01();
+
+  EXPECT_EQ(cpu->af, 0);
+  EXPECT_EQ(cpu->bc, WORD);
+  EXPECT_EQ(cpu->de, 0);
+  EXPECT_EQ(cpu->hl, 0);
+  EXPECT_EQ(cpu->sp, 0);
+  EXPECT_EQ(cpu->pc, 0);
+  EXPECT_FALSE(cpu->halted_ || cpu->stopped_ || cpu->did_branch_);
+}
+
+TEST_F(CpuTest, op_02) {
+  cpu->a.set(BYTE);
+  cpu->bc.set(WORD);
+
+  EXPECT_CALL(*mmu, write(WORD, BYTE))
+    .Times(1);
+
+  cpu->op_02();
+
+  EXPECT_EQ(cpu->a, BYTE); EXPECT_EQ(cpu->f, 0);
+  EXPECT_EQ(cpu->bc, WORD);
+  EXPECT_EQ(cpu->de, 0);
+  EXPECT_EQ(cpu->hl, 0);
+  EXPECT_EQ(cpu->sp, 0);
+  EXPECT_EQ(cpu->pc, 0);
+  EXPECT_FALSE(cpu->halted_ || cpu->stopped_ || cpu->did_branch_);
+
+}
+
+TEST_F(CpuTest, op_03) {
+  cpu->op_03();
+
+  EXPECT_EQ(cpu->af, 0);
+  EXPECT_EQ(cpu->bc, 1);
+  EXPECT_EQ(cpu->de, 0);
+  EXPECT_EQ(cpu->hl, 0);
+  EXPECT_EQ(cpu->sp, 0);
+  EXPECT_EQ(cpu->pc, 0);
+  EXPECT_FALSE(cpu->halted_ || cpu->stopped_ || cpu->did_branch_);
+}
+
+TEST_F(CpuTest, op_04) {
+  cpu->op_04();
+
+  EXPECT_EQ(cpu->af, 0);
+  EXPECT_EQ(cpu->b, 1); EXPECT_EQ(cpu->c, 0);
+  EXPECT_EQ(cpu->de, 0);
+  EXPECT_EQ(cpu->hl, 0);
+  EXPECT_EQ(cpu->sp, 0);
+  EXPECT_EQ(cpu->pc, 0);
   EXPECT_FALSE(cpu->halted_ || cpu->stopped_ || cpu->did_branch_);
 }
 
 /*
-TEST_F(CpuTest, op_01) {
-  // TODO
-  EXPECT_TRUE(false);
-}
-
-TEST_F(CpuTest, op_02) {
-  // TODO
-  EXPECT_TRUE(false);
-}
-
-TEST_F(CpuTest, op_03) {
-  // TODO
-  EXPECT_TRUE(false);
-}
-
-TEST_F(CpuTest, op_04) {
-  // TODO
-  EXPECT_TRUE(false);
-}
-
 TEST_F(CpuTest, op_05) {
   // TODO
   EXPECT_TRUE(false);
