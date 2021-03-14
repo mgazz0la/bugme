@@ -75,6 +75,7 @@ protected:
   };
 
   const word_t WORD = 0x420;
+  const word_t ADDR = 0x420;
   const byte_t BYTE = 0x69;
 
   std::shared_ptr<MockMmu> mmu;
@@ -108,13 +109,12 @@ TEST_F(CpuTest, op_01) { // LD BC,d16
 
 TEST_F(CpuTest, op_02) { // LD (BC),A
   cpu->a.set(BYTE);
-  cpu->bc.set(WORD);
-
-  EXPECT_CALL(*mmu, write(WORD, BYTE)).Times(1);
+  cpu->bc.set(ADDR);
+  EXPECT_CALL(*mmu, write(ADDR, BYTE)).Times(1);
 
   cpu->op_02();
 
-  CpuState expected_state = {.a = BYTE, .bc = WORD};
+  CpuState expected_state = {.a = BYTE, .bc = ADDR};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -124,10 +124,8 @@ TEST_F(CpuTest, op_03) { // INC BC
   CpuState expected_state = {.bc = 1};
   EXPECT_EQ(expected_state, cpu);
 
+  // overflow
   cpu->bc.set(0xFFFF);
-  expected_state = {.bc = 0xFFFF};
-  EXPECT_EQ(expected_state, cpu);
-
   cpu->op_03();
 
   expected_state = {.bc = 0};
@@ -140,12 +138,14 @@ TEST_F(CpuTest, op_04) { // INC B
   CpuState expected_state = {.b = 1};
   EXPECT_EQ(expected_state, cpu);
 
+  // half carry flag
   cpu->b.set(0x0F);
   cpu->op_04();
 
   expected_state = {.f = FLAG_H, .b = 0x10};
   EXPECT_EQ(expected_state, cpu);
 
+  // zero flag
   cpu->b.set(0xFF);
   cpu->op_04();
 
@@ -155,10 +155,13 @@ TEST_F(CpuTest, op_04) { // INC B
 
 TEST_F(CpuTest, op_05) { // DEC B
   cpu->op_05();
+  // subtract flag always set
 
+  // half carry flag
   CpuState expected_state = {.f = FLAG_S | FLAG_H, .b = 0xFF};
   EXPECT_EQ(expected_state, cpu);
 
+  // zero flag
   cpu->b.set(0x01);
   cpu->op_05();
 
