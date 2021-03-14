@@ -1,7 +1,6 @@
 #ifndef GBC_CPU_H
 #define GBC_CPU_H
 
-#include "opcode.hh"
 #include "register.hh"
 
 namespace gbc {
@@ -13,19 +12,25 @@ public:
   Cpu(Mmu &mmu);
 
 private:
+  // Alias for reg.value()
+  static inline word_t _(WordRegister &reg) { return reg.value(); }
+
   byte_t next_byte();
   word_t next_word();
+  word_t a16();
+  word_t d16();
+  byte_t d8();
 
-  // inlined "microcode" functions
+  // "microcode" functions
   void nop() const;
 
   void ld(ByteRegister &reg);
   void ld(ByteRegister &reg, const word_t addr);
   void ld(ByteRegister &reg, const ByteRegister &other);
-  void ld(WordRegister &reg);
+  void ld(WordRegister &reg, const word_t value);
   void ld(const word_t addr);
   void ld(const word_t addr, ByteRegister &reg);
-  void ld(const word_t addr, WordValuedRegister &reg);
+  void ld(const word_t addr, WordRegister &reg);
   void ldi(const word_t addr, ByteRegister &reg);
   void ldi(ByteRegister &reg, const word_t addr);
   void ldd(const word_t addr, ByteRegister &reg);
