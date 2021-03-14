@@ -102,7 +102,14 @@ void Cpu::inc(const word_t addr) {
   f.write_half_carry_flag((result & 0x0F) == 0);
 }
 
-void Cpu::dec(ByteRegister &reg) { reg.decrement(); }
+void Cpu::dec(ByteRegister &reg) {
+  reg.decrement();
+  byte_t result = reg.value();
+
+  f.write_zero_flag(result == 0);
+  f.set_subtract_flag();
+  f.write_half_carry_flag((result & 0x0F) == 0x0F);
+}
 
 void Cpu::dec(WordRegister &reg) { reg.decrement(); }
 
@@ -112,7 +119,7 @@ void Cpu::dec(const word_t addr) {
 
   f.write_zero_flag(result == 0);
   f.set_subtract_flag();
-  f.write_half_carry_flag((result & 0x0F) == 0);
+  f.write_half_carry_flag((result & 0x0F) == 0x0F);
 }
 
 void Cpu::rlc(ByteRegister &reg) {

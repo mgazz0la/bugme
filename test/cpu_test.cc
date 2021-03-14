@@ -3,11 +3,12 @@
 #include "types.hh"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <optional>
 
-#define Z (0b10000000)
-#define S (0b01000000)
-#define H (0b00100000)
-#define C (0b00010000)
+#define FLAG_Z (0b10000000)
+#define FLAG_S (0b01000000)
+#define FLAG_H (0b00100000)
+#define FLAG_C (0b00010000)
 
 namespace gbc {
 
@@ -23,36 +24,53 @@ public:
 class CpuTest : public ::testing::Test {
 protected:
   struct CpuState {
-    byte_t a = 0x0;
-    byte_t f = 0x0;
-    word_t af = 0x0;
+    std::optional<byte_t> a = std::nullopt;
+    std::optional<byte_t> f = std::nullopt;
+    std::optional<word_t> af = std::nullopt;
 
-    byte_t b = 0x0;
-    byte_t c = 0x0;
-    word_t bc = 0x0;
+    std::optional<byte_t> b = std::nullopt;
+    std::optional<byte_t> c = std::nullopt;
+    std::optional<word_t> bc = std::nullopt;
 
-    byte_t d = 0x0;
-    byte_t e = 0x0;
-    word_t de = 0x0;
+    std::optional<byte_t> d = std::nullopt;
+    std::optional<byte_t> e = std::nullopt;
+    std::optional<word_t> de = std::nullopt;
 
-    byte_t h = 0x0;
-    byte_t l = 0x0;
-    word_t hl = 0x0;
+    std::optional<byte_t> h = std::nullopt;
+    std::optional<byte_t> l = std::nullopt;
+    std::optional<word_t> hl = std::nullopt;
 
-    word_t sp = 0x0;
-    word_t pc = 0x0;
+    std::optional<word_t> sp = std::nullopt;
+    std::optional<word_t> pc = std::nullopt;
 
-    bool stopped_ = false;
-    bool halted_ = false;
-    bool did_branch_ = false;
+    std::optional<bool> stopped_ = std::nullopt;
+    std::optional<bool> halted_ = std::nullopt;
+    std::optional<bool> did_branch_ = std::nullopt;
 
     bool operator==(std::shared_ptr<Cpu> o) const {
-      return ((a == o->a && f == o->f) || (af == o->af)) &&
-             ((b == o->b && c == o->c) || (bc == o->bc)) &&
-             ((d == o->d && e == o->e) || (de == o->de)) &&
-             ((h == o->h && l == o->l) || (hl == o->hl)) && sp == o->sp &&
-             pc == o->pc && stopped_ == o->stopped_ && halted_ == o->halted_ &&
-             did_branch_ == o->did_branch_;
+      if (((a || f) && af) || ((b || c) && bc) || ((d || e) && de) ||
+          ((h || l) && hl)) {
+        throw "Bad CpuState";
+      }
+
+      return (af ? af == o->af
+                 : ((a ? a == o->a : o->a == 0) &&
+                    (f ? f == o->f : o->f == 0))) &&
+             (bc ? bc == o->bc
+                 : ((b ? b == o->b : o->b == 0) &&
+                    (c ? c == o->c : o->c == 0))) &&
+             (de ? de == o->de
+                 : ((d ? d == o->d : o->d == 0) &&
+                    (e ? e == o->e : o->e == 0))) &&
+             (hl ? hl == o->hl
+                 : ((h ? h == o->h : o->h == 0) &&
+                    (l ? l == o->l : o->l == 0))) &&
+             (sp ? sp == o->sp : o->sp == 0) &&
+             (pc ? pc == o->pc : o->pc == 0) &&
+             (stopped_ ? stopped_ == o->stopped_ : o->stopped_ == false) &&
+             (halted_ ? halted_ == o->halted_ : o->halted_ == false) &&
+             (did_branch_ ? did_branch_ == o->did_branch_
+                          : o->did_branch_ == false);
     }
   };
 
@@ -118,25 +136,33 @@ TEST_F(CpuTest, op_04) {
   CpuState expected_state = {.b = 1};
   EXPECT_EQ(expected_state, cpu);
 
-  cpu->b.set(0xF);
+  cpu->b.set(0x0F);
   cpu->op_04();
 
-  expected_state = {.f = H, .b = 0x10};
+  expected_state = {.f = FLAG_H, .b = 0x10};
   EXPECT_EQ(expected_state, cpu);
 
   cpu->b.set(0xFF);
   cpu->op_04();
 
-  expected_state = {.f = Z | H, .b = 0};
+  expected_state = {.f = FLAG_Z | FLAG_H, .b = 0};
+  EXPECT_EQ(expected_state, cpu);
+}
+
+TEST_F(CpuTest, op_05) {
+  cpu->op_05();
+
+  CpuState expected_state = {.f = FLAG_S | FLAG_H, .b = 0xFF};
+  EXPECT_EQ(expected_state, cpu);
+
+  cpu->b.set(0x01);
+  cpu->op_05();
+
+  expected_state = {.f = FLAG_Z | FLAG_S, .b = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
 /*
-TEST_F(CpuTest, op_05) {
-  // TODO
-  EXPECT_TRUE(false);
-}
-
 TEST_F(CpuTest, op_06) {
   // TODO
   EXPECT_TRUE(false);
