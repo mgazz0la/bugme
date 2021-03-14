@@ -160,6 +160,7 @@ private:
   void op_cb_e0(); void op_cb_e1(); void op_cb_e2(); void op_cb_e3(); void op_cb_e4(); void op_cb_e5(); void op_cb_e6(); void op_cb_e7(); void op_cb_e8(); void op_cb_e9(); void op_cb_ea(); void op_cb_eb(); void op_cb_ec(); void op_cb_ed(); void op_cb_ee(); void op_cb_ef();
   void op_cb_f0(); void op_cb_f1(); void op_cb_f2(); void op_cb_f3(); void op_cb_f4(); void op_cb_f5(); void op_cb_f6(); void op_cb_f7(); void op_cb_f8(); void op_cb_f9(); void op_cb_fa(); void op_cb_fb(); void op_cb_fc(); void op_cb_fd(); void op_cb_fe(); void op_cb_ff();
 
+  friend class CpuTest;
   friend class CpuTest_op_00_Test;
   friend class CpuTest_op_01_Test;
   friend class CpuTest_op_02_Test;

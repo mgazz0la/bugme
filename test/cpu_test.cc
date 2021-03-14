@@ -1,8 +1,13 @@
 #include "cpu.hh"
 #include "mmu.hh"
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
 #include "types.hh"
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
+#define Z (0b10000000)
+#define S (0b01000000)
+#define H (0b00100000)
+#define C (0b00010000)
 
 namespace gbc {
 
@@ -10,13 +15,47 @@ using ::testing::_;
 using ::testing::Return;
 
 class MockMmu : public Mmu {
-  public:
-    MOCK_METHOD(byte_t, read, (word_t addr), (const override));
-    MOCK_METHOD(void, write, (word_t addr, byte_t byte), (override));
+public:
+  MOCK_METHOD(byte_t, read, (word_t addr), (const override));
+  MOCK_METHOD(void, write, (word_t addr, byte_t byte), (override));
 };
 
 class CpuTest : public ::testing::Test {
 protected:
+  struct CpuState {
+    byte_t a = 0x0;
+    byte_t f = 0x0;
+    word_t af = 0x0;
+
+    byte_t b = 0x0;
+    byte_t c = 0x0;
+    word_t bc = 0x0;
+
+    byte_t d = 0x0;
+    byte_t e = 0x0;
+    word_t de = 0x0;
+
+    byte_t h = 0x0;
+    byte_t l = 0x0;
+    word_t hl = 0x0;
+
+    word_t sp = 0x0;
+    word_t pc = 0x0;
+
+    bool stopped_ = false;
+    bool halted_ = false;
+    bool did_branch_ = false;
+
+    bool operator==(std::shared_ptr<Cpu> o) const {
+      return ((a == o->a && f == o->f) || (af == o->af)) &&
+             ((b == o->b && c == o->c) || (bc == o->bc)) &&
+             ((d == o->d && e == o->e) || (de == o->de)) &&
+             ((h == o->h && l == o->l) || (hl == o->hl)) && sp == o->sp &&
+             pc == o->pc && stopped_ == o->stopped_ && halted_ == o->halted_ &&
+             did_branch_ == o->did_branch_;
+    }
+  };
+
   const word_t WORD = 0x420;
   const byte_t BYTE = 0x69;
 
@@ -25,85 +64,71 @@ protected:
 
   CpuTest() : mmu(new MockMmu()), cpu(new Cpu(mmu)) {}
 
-  void SetUp() override {
-    cpu->reset();
-  }
+  void SetUp() override { cpu->reset(); }
 };
 
 TEST_F(CpuTest, op_00) {
   cpu->op_00();
 
-  EXPECT_EQ(cpu->af, 0);
-  EXPECT_EQ(cpu->bc, 0);
-  EXPECT_EQ(cpu->de, 0);
-  EXPECT_EQ(cpu->hl, 0);
-  EXPECT_EQ(cpu->sp, 0);
-  EXPECT_EQ(cpu->pc, 0);
-  EXPECT_FALSE(cpu->halted_ || cpu->stopped_ || cpu->did_branch_);
+  CpuState expected_state = {/* no changes */};
+  EXPECT_EQ(expected_state, cpu);
 }
 
-
 TEST_F(CpuTest, op_01) {
-  EXPECT_CALL(*mmu, read(1))
-    .Times(1)
-    .WillOnce(Return(0xFF & WORD));
-
-  EXPECT_CALL(*mmu, read(2))
-    .Times(1)
-    .WillOnce(Return((WORD >> 8) & 0xFF));
+  EXPECT_CALL(*mmu, read(1)).Times(1).WillOnce(Return(0xFF & WORD));
+  EXPECT_CALL(*mmu, read(2)).Times(1).WillOnce(Return((WORD >> 8) & 0xFF));
 
   cpu->op_01();
 
-  EXPECT_EQ(cpu->af, 0);
-  EXPECT_EQ(cpu->bc, WORD);
-  EXPECT_EQ(cpu->de, 0);
-  EXPECT_EQ(cpu->hl, 0);
-  EXPECT_EQ(cpu->sp, 0);
-  EXPECT_EQ(cpu->pc, 0);
-  EXPECT_FALSE(cpu->halted_ || cpu->stopped_ || cpu->did_branch_);
+  CpuState expected_state = {.bc = WORD};
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_02) {
   cpu->a.set(BYTE);
   cpu->bc.set(WORD);
 
-  EXPECT_CALL(*mmu, write(WORD, BYTE))
-    .Times(1);
+  EXPECT_CALL(*mmu, write(WORD, BYTE)).Times(1);
 
   cpu->op_02();
 
-  EXPECT_EQ(cpu->a, BYTE); EXPECT_EQ(cpu->f, 0);
-  EXPECT_EQ(cpu->bc, WORD);
-  EXPECT_EQ(cpu->de, 0);
-  EXPECT_EQ(cpu->hl, 0);
-  EXPECT_EQ(cpu->sp, 0);
-  EXPECT_EQ(cpu->pc, 0);
-  EXPECT_FALSE(cpu->halted_ || cpu->stopped_ || cpu->did_branch_);
-
+  CpuState expected_state = {.a = BYTE, .bc = WORD};
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_03) {
   cpu->op_03();
 
-  EXPECT_EQ(cpu->af, 0);
-  EXPECT_EQ(cpu->bc, 1);
-  EXPECT_EQ(cpu->de, 0);
-  EXPECT_EQ(cpu->hl, 0);
-  EXPECT_EQ(cpu->sp, 0);
-  EXPECT_EQ(cpu->pc, 0);
-  EXPECT_FALSE(cpu->halted_ || cpu->stopped_ || cpu->did_branch_);
+  CpuState expected_state = {.bc = 1};
+  EXPECT_EQ(expected_state, cpu);
+
+  cpu->bc.set(0xFFFF);
+  expected_state = {.bc = 0xFFFF};
+  EXPECT_EQ(expected_state, cpu);
+
+  cpu->op_03();
+
+  expected_state = {.bc = 0};
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_04) {
   cpu->op_04();
 
-  EXPECT_EQ(cpu->af, 0);
-  EXPECT_EQ(cpu->b, 1); EXPECT_EQ(cpu->c, 0);
-  EXPECT_EQ(cpu->de, 0);
-  EXPECT_EQ(cpu->hl, 0);
-  EXPECT_EQ(cpu->sp, 0);
-  EXPECT_EQ(cpu->pc, 0);
-  EXPECT_FALSE(cpu->halted_ || cpu->stopped_ || cpu->did_branch_);
+  CpuState expected_state = {.b = 1};
+  EXPECT_EQ(expected_state, cpu);
+
+  cpu->b.set(0xF);
+  cpu->op_04();
+
+  expected_state = {.f = H, .b = 0x10};
+  EXPECT_EQ(expected_state, cpu);
+
+  cpu->b.set(0xFF);
+  cpu->op_04();
+
+  expected_state = {.f = Z | H, .b = 0};
+  EXPECT_EQ(expected_state, cpu);
 }
 
 /*
