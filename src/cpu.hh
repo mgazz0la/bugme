@@ -11,11 +11,11 @@ class Cpu {
 public:
   explicit Cpu(Mmu &mmu);
 
-  bool operator==(const Cpu &o) const;
-
+  void reset();
 private:
   // Alias for reg.value()
   static inline word_t _(WordRegister &reg) { return reg.value(); }
+
 
   byte_t next_byte();
   word_t next_word();

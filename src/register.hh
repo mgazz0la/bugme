@@ -9,6 +9,14 @@ namespace gbc {
 template <typename T> class ReadableValue {
 public:
   virtual T value() const = 0;
+
+  bool operator==(const T other) const {
+    return value() == other;
+  }
+
+  bool operator==(const ReadableValue<T> &other) const {
+    return value() == other.value();
+  }
 };
 
 template <typename T> class WriteableValue : public ReadableValue<T> {
@@ -61,10 +69,6 @@ public:
     bit_value ? set_bit(bit) : clear_bit(bit);
   }
 
-  bool operator==(const ByteRegister &other) const {
-    return value_ == other.value();
-  }
-
 private:
   byte_t value_ = 0x0;
 };
@@ -87,6 +91,7 @@ public:
 
   word_t value() const override { return value_; }
   void set(word_t new_value) override { value_ = new_value; }
+  void reset() { value_ = 0x0; }
 
   byte_t low() const override { return static_cast<byte_t>(value_); }
   byte_t high() const override {
@@ -95,10 +100,6 @@ public:
 
   void increment() override { value_ += 1; }
   void decrement() override { value_ -= 1; }
-
-  bool operator==(const WordValuedRegister &other) const {
-    return value_ == other.value();
-  }
 
 private:
   word_t value_ = 0x0;

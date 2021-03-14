@@ -8,6 +8,25 @@ namespace gbc {
 
 Cpu::Cpu(Mmu &mmu) : af(a, f), bc(b, c), de(d, e), hl(h, l), mmu_(mmu) {}
 
+void Cpu::reset() {
+  mmu_.reset();
+
+  a.reset();
+  b.reset();
+  c.reset();
+  d.reset();
+  e.reset();
+  f.reset();
+  h.reset();
+  l.reset();
+  sp.reset();
+  pc.reset();
+
+  stopped_ = false;
+  halted_ = false;
+  did_branch_ = false;
+}
+
 byte_t Cpu::next_byte() {
   byte_t byte = mmu_.read(pc.value());
   pc.increment();
@@ -20,23 +39,6 @@ word_t Cpu::next_word() {
   byte_t high = next_byte();
 
   return ((high << 8) | low);
-}
-
-bool Cpu::operator==(const Cpu &o) const {
-  return mmu_ == o.mmu_ &&
-    a == o.a &&
-    b == o.b &&
-    c == o.c &&
-    d == o.d &&
-    e == o.e &&
-    f == o.f &&
-    h == o.h &&
-    l == o.l &&
-    sp == o.sp &&
-    pc == o.pc &&
-    stopped_ == o.stopped_ &&
-    halted_ == o.halted_ &&
-    did_branch_ == o.did_branch_;
 }
 
 void Cpu::nop() const { /* NOP */

@@ -14,10 +14,10 @@ class Mmu {
 public:
   Mmu();
 
-  byte_t read(word_t addr) const;
-  void write(word_t addr, byte_t byte);
+  virtual byte_t read(word_t addr) const;
+  virtual void write(word_t addr, byte_t byte);
 
-  bool operator==(const Mmu &other) const;
+  void reset();
 private:
   std::vector<byte_t> memory_;
 };

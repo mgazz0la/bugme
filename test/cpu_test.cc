@@ -1,25 +1,43 @@
 #include "cpu.hh"
 #include "mmu.hh"
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
+#include "types.hh"
 
 namespace gbc {
 
+using ::testing::_;
+
+class MockMmu : public Mmu {
+  public:
+    MOCK_METHOD(byte_t, read, (word_t addr), (const override));
+    MOCK_METHOD(void, write, (word_t addr, byte_t byte), (override));
+};
+
 class CpuTest : public ::testing::Test {
 protected:
-  Mmu mmu;
+  MockMmu mmu;
   Cpu cpu;
 
-  Mmu mmu_;
-  Cpu cpu_;
+  CpuTest() : mmu(), cpu(mmu) {}
 
-  CpuTest() : mmu(), cpu(mmu), mmu_(), cpu_(mmu_) {}
-  void SetUp() override {}
+  void SetUp() override {
+    cpu.reset();
+  }
 };
 
 TEST_F(CpuTest, op_00) {
   cpu.nop();
 
-  EXPECT_EQ(cpu, cpu_);
+  EXPECT_EQ(cpu.af, 0);
+  EXPECT_EQ(cpu.bc, 0);
+  EXPECT_EQ(cpu.de, 0);
+  EXPECT_EQ(cpu.hl, 0);
+  EXPECT_EQ(cpu.sp, 0);
+  EXPECT_EQ(cpu.pc, 0);
+  EXPECT_CALL(mmu, read(_)).Times(0);
+  EXPECT_CALL(mmu, write(_, _)).Times(0);
+  EXPECT_FALSE(cpu.halted_ || cpu.stopped_ || cpu.did_branch_);
 }
 
 /*
