@@ -85,16 +85,20 @@ protected:
   void SetUp() override { cpu->reset(); }
 };
 
-TEST_F(CpuTest, op_00) {
+TEST_F(CpuTest, op_00) { // NOP
   cpu->op_00();
 
   CpuState expected_state = {/* no changes */};
   EXPECT_EQ(expected_state, cpu);
 }
 
-TEST_F(CpuTest, op_01) {
-  EXPECT_CALL(*mmu, read(1)).Times(1).WillOnce(Return(0xFF & WORD));
-  EXPECT_CALL(*mmu, read(2)).Times(1).WillOnce(Return((WORD >> 8) & 0xFF));
+TEST_F(CpuTest, op_01) { // LD BC,d16
+  EXPECT_CALL(*mmu, read(cpu->pc.value() + 1))
+      .Times(1)
+      .WillOnce(Return(0xFF & WORD));
+  EXPECT_CALL(*mmu, read(cpu->pc.value() + 2))
+      .Times(1)
+      .WillOnce(Return((WORD >> 8) & 0xFF));
 
   cpu->op_01();
 
@@ -102,7 +106,7 @@ TEST_F(CpuTest, op_01) {
   EXPECT_EQ(expected_state, cpu);
 }
 
-TEST_F(CpuTest, op_02) {
+TEST_F(CpuTest, op_02) { // LD (BC),A
   cpu->a.set(BYTE);
   cpu->bc.set(WORD);
 
@@ -114,7 +118,7 @@ TEST_F(CpuTest, op_02) {
   EXPECT_EQ(expected_state, cpu);
 }
 
-TEST_F(CpuTest, op_03) {
+TEST_F(CpuTest, op_03) { // INC BC
   cpu->op_03();
 
   CpuState expected_state = {.bc = 1};
@@ -130,7 +134,7 @@ TEST_F(CpuTest, op_03) {
   EXPECT_EQ(expected_state, cpu);
 }
 
-TEST_F(CpuTest, op_04) {
+TEST_F(CpuTest, op_04) { // INC B
   cpu->op_04();
 
   CpuState expected_state = {.b = 1};
@@ -149,7 +153,7 @@ TEST_F(CpuTest, op_04) {
   EXPECT_EQ(expected_state, cpu);
 }
 
-TEST_F(CpuTest, op_05) {
+TEST_F(CpuTest, op_05) { // DEC B
   cpu->op_05();
 
   CpuState expected_state = {.f = FLAG_S | FLAG_H, .b = 0xFF};
@@ -162,12 +166,15 @@ TEST_F(CpuTest, op_05) {
   EXPECT_EQ(expected_state, cpu);
 }
 
-/*
-TEST_F(CpuTest, op_06) {
-  // TODO
-  EXPECT_TRUE(false);
-}
+TEST_F(CpuTest, op_06) { // LD B,d8
+  EXPECT_CALL(*mmu, read(cpu->pc.value() + 1)).Times(1).WillOnce(Return(BYTE));
 
+  cpu->op_06();
+
+  CpuState expected_state = {.b = BYTE};
+  EXPECT_EQ(expected_state, cpu);
+}
+/*
 TEST_F(CpuTest, op_07) {
   // TODO
   EXPECT_TRUE(false);
