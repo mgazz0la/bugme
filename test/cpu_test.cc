@@ -133,6 +133,7 @@ TEST_F(CpuTest, op_03) { // INC BC
 }
 
 TEST_F(CpuTest, op_04) { // INC B
+  cpu->f.set(FLAG_S);  // unsets
   cpu->op_04();
 
   CpuState expected_state = {.b = 1};
@@ -177,17 +178,46 @@ TEST_F(CpuTest, op_06) { // LD B,d8
   CpuState expected_state = {.b = BYTE};
   EXPECT_EQ(expected_state, cpu);
 }
+
+TEST_F(CpuTest, op_07) { // RLCA
+  cpu->f.set(FLAG_Z | FLAG_S | FLAG_H); // unsets
+  cpu->a.set(0b01000000);
+  cpu->op_07();
+
+  CpuState expected_state = {.a = 0b10000000};
+  EXPECT_EQ(expected_state, cpu);
+
+  // set carry flag when shifting msb
+  cpu->op_07();
+
+  expected_state = {.a = 0b00000001, .f=FLAG_C};
+  EXPECT_EQ(expected_state, cpu);
+
+  // doesn't set zero flag (op 0xcb 0x07 RLC A *does*, however)
+  cpu->a.set(0);
+  cpu->op_07();
+  expected_state = {/* all zeroes */};
+  EXPECT_EQ(expected_state, cpu);
+}
+
+TEST_F(CpuTest, op_08) { // LD (a16),SP
+  cpu->sp.set(0xBEEF);
+  EXPECT_CALL(*mmu, read(cpu->pc.value() + 1))
+      .Times(1)
+      .WillOnce(Return(0xFF & WORD));
+  EXPECT_CALL(*mmu, read(cpu->pc.value() + 2))
+      .Times(1)
+      .WillOnce(Return((WORD >> 8) & 0xFF));
+  EXPECT_CALL(*mmu, write(WORD, 0xEF /* lower byte of 0xBEEF */))
+      .Times(1);
+  EXPECT_CALL(*mmu, write(WORD + 1, 0xBE /* upper byte of 0xBEEF */))
+      .Times(1);
+
+  cpu->op_08();
+  CpuState expected_state = { .sp = 0xBEEF };
+  EXPECT_EQ(expected_state, cpu);
+}
 /*
-TEST_F(CpuTest, op_07) {
-  // TODO
-  EXPECT_TRUE(false);
-}
-
-TEST_F(CpuTest, op_08) {
-  // TODO
-  EXPECT_TRUE(false);
-}
-
 TEST_F(CpuTest, op_09) {
   // TODO
   EXPECT_TRUE(false);

@@ -61,7 +61,8 @@ void Cpu::ld(const word_t addr, ByteRegister &reg) {
 }
 
 void Cpu::ld(const word_t addr, WordRegister &reg) {
-  mmu_->write(addr, reg.value());
+  mmu_->write(addr, reg.low());
+  mmu_->write(addr + 1, reg.high());
 }
 
 void Cpu::ldi(const word_t addr, ByteRegister &reg) {
