@@ -133,7 +133,7 @@ TEST_F(CpuTest, op_03) { // INC BC
 }
 
 TEST_F(CpuTest, op_04) { // INC B
-  cpu->f.set(FLAG_S);  // unsets
+  cpu->f.set(FLAG_S);    // unsets
   cpu->op_04();
 
   CpuState expected_state = {.b = 1};
@@ -179,7 +179,7 @@ TEST_F(CpuTest, op_06) { // LD B,d8
   EXPECT_EQ(expected_state, cpu);
 }
 
-TEST_F(CpuTest, op_07) { // RLCA
+TEST_F(CpuTest, op_07) {                // RLCA
   cpu->f.set(FLAG_Z | FLAG_S | FLAG_H); // unsets
   cpu->a.set(0b01000000);
   cpu->op_07();
@@ -190,7 +190,7 @@ TEST_F(CpuTest, op_07) { // RLCA
   // set carry flag when shifting msb
   cpu->op_07();
 
-  expected_state = {.a = 0b00000001, .f=FLAG_C};
+  expected_state = {.a = 0b00000001, .f = FLAG_C};
   EXPECT_EQ(expected_state, cpu);
 
   // doesn't set zero flag (op 0xcb 0x07 RLC A *does*, however)
@@ -208,65 +208,125 @@ TEST_F(CpuTest, op_08) { // LD (a16),SP
   EXPECT_CALL(*mmu, read(cpu->pc.value() + 2))
       .Times(1)
       .WillOnce(Return((WORD >> 8) & 0xFF));
-  EXPECT_CALL(*mmu, write(WORD, 0xEF /* lower byte of 0xBEEF */))
-      .Times(1);
-  EXPECT_CALL(*mmu, write(WORD + 1, 0xBE /* upper byte of 0xBEEF */))
-      .Times(1);
+  EXPECT_CALL(*mmu, write(WORD, 0xEF /* lower byte of 0xBEEF */)).Times(1);
+  EXPECT_CALL(*mmu, write(WORD + 1, 0xBE /* upper byte of 0xBEEF */)).Times(1);
 
   cpu->op_08();
-  CpuState expected_state = { .sp = 0xBEEF };
+  CpuState expected_state = {.sp = 0xBEEF};
   EXPECT_EQ(expected_state, cpu);
 }
 
 // note: half carry flag on 16-bit arithmetic operators always refers
 // to the higher byte
 TEST_F(CpuTest, op_09) { // ADD HL,BC
-  cpu->f.set(FLAG_S); // unsets
+  cpu->f.set(FLAG_S);    // unsets
 
   // sets half carry flag
   cpu->hl.set(0x0800);
   cpu->bc.set(0x0801);
   cpu->op_09();
-  CpuState expected_state = { .f = FLAG_H, .bc = 0x0801, .hl = 0x1001 };
+  CpuState expected_state = {.f = FLAG_H, .bc = 0x0801, .hl = 0x1001};
   EXPECT_EQ(expected_state, cpu);
 
   // sets carry flag
   cpu->bc.set(0xFFFF);
   cpu->op_09();
-  expected_state = { .f = FLAG_C | FLAG_H, .bc = 0xFFFF, .hl = 0x1000 };
+  expected_state = {.f = FLAG_C | FLAG_H, .bc = 0xFFFF, .hl = 0x1000};
+  EXPECT_EQ(expected_state, cpu);
+}
+
+TEST_F(CpuTest, op_0a) { // LD A,(BC)
+  cpu->bc.set(ADDR);
+  EXPECT_CALL(*mmu, read(ADDR)).Times(1).WillOnce(Return(BYTE));
+
+  cpu->op_0a();
+  CpuState expected_state = {.a = BYTE, .bc = ADDR};
+  EXPECT_EQ(expected_state, cpu);
+}
+
+TEST_F(CpuTest, op_0b) { // DEC BC
+  cpu->op_0b();
+
+  // overflow
+  CpuState expected_state = {.bc = 0xFFFF};
+  EXPECT_EQ(expected_state, cpu);
+
+  // normal case
+  cpu->op_0b();
+
+  expected_state = {.bc = 0xFFFE};
+  EXPECT_EQ(expected_state, cpu);
+}
+
+TEST_F(CpuTest, op_0c) { // INC C
+  cpu->f.set(FLAG_S);    // unsets
+  cpu->op_0c();
+
+  CpuState expected_state = {.c = 1};
+  EXPECT_EQ(expected_state, cpu);
+
+  // half carry flag
+  cpu->c.set(0x0F);
+  cpu->op_0c();
+
+  expected_state = {.f = FLAG_H, .c = 0x10};
+  EXPECT_EQ(expected_state, cpu);
+
+  // zero flag
+  cpu->c.set(0xFF);
+  cpu->op_0c();
+
+  expected_state = {.f = FLAG_Z | FLAG_H, .c = 0};
+  EXPECT_EQ(expected_state, cpu);
+}
+
+TEST_F(CpuTest, op_0d) { // DEC C
+  cpu->op_0d();
+  // subtract flag always set
+
+  // half carry flag
+  CpuState expected_state = {.f = FLAG_S | FLAG_H, .c = 0xFF};
+  EXPECT_EQ(expected_state, cpu);
+
+  // zero flag
+  cpu->c.set(0x01);
+  cpu->op_0d();
+
+  expected_state = {.f = FLAG_Z | FLAG_S, .c = 0};
+  EXPECT_EQ(expected_state, cpu);
+}
+
+TEST_F(CpuTest, op_0e) { // LD C,d8
+  EXPECT_CALL(*mmu, read(cpu->pc.value() + 1))
+      .Times(1)
+      .WillOnce(Return(BYTE));
+
+  cpu->op_0e();
+  CpuState expected_state = {.c = BYTE};
+  EXPECT_EQ(expected_state, cpu);
+}
+
+TEST_F(CpuTest, op_0f) { // RRC A
+  cpu->f.set(FLAG_Z | FLAG_S | FLAG_H); // unsets
+  cpu->a.set(0b00000010);
+  cpu->op_0f();
+
+  CpuState expected_state = {.a = 0b00000001};
+  EXPECT_EQ(expected_state, cpu);
+
+  // set carry flag when shifting msb
+  cpu->op_0f();
+
+  expected_state = {.a = 0b10000000, .f = FLAG_C};
+  EXPECT_EQ(expected_state, cpu);
+
+  // doesn't set zero flag (op 0xcb 0x0f RRC A *does*, however)
+  cpu->a.set(0);
+  cpu->op_0f();
+  expected_state = {/* all zeroes */};
   EXPECT_EQ(expected_state, cpu);
 }
 /*
-TEST_F(CpuTest, op_0a) {
-  // TODO
-  EXPECT_TRUE(false);
-}
-
-TEST_F(CpuTest, op_0b) {
-  // TODO
-  EXPECT_TRUE(false);
-}
-
-TEST_F(CpuTest, op_0c) {
-  // TODO
-  EXPECT_TRUE(false);
-}
-
-TEST_F(CpuTest, op_0d) {
-  // TODO
-  EXPECT_TRUE(false);
-}
-
-TEST_F(CpuTest, op_0e) {
-  // TODO
-  EXPECT_TRUE(false);
-}
-
-TEST_F(CpuTest, op_0f) {
-  // TODO
-  EXPECT_TRUE(false);
-}
-
 TEST_F(CpuTest, op_10) {
   // TODO
   EXPECT_TRUE(false);
