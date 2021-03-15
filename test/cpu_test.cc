@@ -95,10 +95,10 @@ TEST_F(CpuTest, op_00) { // NOP
 
 TEST_F(CpuTest, op_01) { // LD BC,d16
   EXPECT_CALL(*mmu, read(cpu->pc.value() + 1))
-      .Times(1)
+
       .WillOnce(Return(0xFF & WORD));
   EXPECT_CALL(*mmu, read(cpu->pc.value() + 2))
-      .Times(1)
+
       .WillOnce(Return((WORD >> 8) & 0xFF));
 
   cpu->op_01();
@@ -179,7 +179,7 @@ TEST_F(CpuTest, op_06) { // LD B,d8
   EXPECT_EQ(expected_state, cpu);
 }
 
-TEST_F(CpuTest, op_07) { // RLCA
+TEST_F(CpuTest, op_07) {                // RLCA
   cpu->f.set(FLAG_Z | FLAG_S | FLAG_H); // unsets
   cpu->a.set(0b01000000);
   cpu->op_07();
@@ -203,10 +203,10 @@ TEST_F(CpuTest, op_07) { // RLCA
 TEST_F(CpuTest, op_08) { // LD (a16),SP
   cpu->sp.set(0xBEEF);
   EXPECT_CALL(*mmu, read(cpu->pc.value() + 1))
-      .Times(1)
+
       .WillOnce(Return(0xFF & WORD));
   EXPECT_CALL(*mmu, read(cpu->pc.value() + 2))
-      .Times(1)
+
       .WillOnce(Return((WORD >> 8) & 0xFF));
   EXPECT_CALL(*mmu, write(WORD, 0xEF /* lower byte of 0xBEEF */)).Times(1);
   EXPECT_CALL(*mmu, write(WORD + 1, 0xBE /* upper byte of 0xBEEF */)).Times(1);
@@ -304,7 +304,7 @@ TEST_F(CpuTest, op_0e) { // LD C,d8
   EXPECT_EQ(expected_state, cpu);
 }
 
-TEST_F(CpuTest, op_0f) { // RRC A
+TEST_F(CpuTest, op_0f) {                // RRC A
   cpu->f.set(FLAG_Z | FLAG_S | FLAG_H); // unsets
   cpu->a.set(0b00000010);
   cpu->op_0f();
@@ -327,16 +327,16 @@ TEST_F(CpuTest, op_0f) { // RRC A
 
 TEST_F(CpuTest, op_10) {
   cpu->op_10();
-  CpuState expected_state = { .stopped_ = true };
+  CpuState expected_state = {.stopped_ = true};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_11) { // LD DE,d16
   EXPECT_CALL(*mmu, read(cpu->pc.value() + 1))
-      .Times(1)
+
       .WillOnce(Return(0xFF & WORD));
   EXPECT_CALL(*mmu, read(cpu->pc.value() + 2))
-      .Times(1)
+
       .WillOnce(Return((WORD >> 8) & 0xFF));
 
   cpu->op_11();
@@ -417,52 +417,149 @@ TEST_F(CpuTest, op_16) { // LD D,d8
   EXPECT_EQ(expected_state, cpu);
 }
 
-/*
-TEST_F(CpuTest, op_17) {
-  // TODO
-  EXPECT_TRUE(false);
+TEST_F(CpuTest, op_17) {                // RLA
+  cpu->f.set(FLAG_Z | FLAG_S | FLAG_H); // unsets
+  cpu->a.set(0b01000000);
+  cpu->op_17();
+
+  CpuState expected_state = {.a = 0b10000000};
+  EXPECT_EQ(expected_state, cpu);
+
+  // set carry flag when shifting msb
+  cpu->op_17();
+
+  // zero flag isn't set, carry flag gets set
+  expected_state = {.a = 0b00000000, .f = FLAG_C};
+  EXPECT_EQ(expected_state, cpu);
+
+  // carry flag carries over
+  cpu->op_17();
+  expected_state = {.a = 0b00000001};
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_18) {
-  // TODO
-  EXPECT_TRUE(false);
+  EXPECT_CALL(*mmu, read(cpu->pc.value() + 1)).WillOnce(Return(BYTE));
+  cpu->op_18();
+  CpuState expected_state = {.pc = static_cast<word_t>(BYTE)};
+  EXPECT_EQ(expected_state, cpu);
+
+  // treats the byte as a signed value
+  EXPECT_CALL(*mmu, read(cpu->pc.value() + 1)).WillOnce(Return(~BYTE + 1));
+  cpu->op_18();
+  expected_state = {/* all zeroes again */};
+  EXPECT_EQ(expected_state, cpu);
 }
 
-TEST_F(CpuTest, op_19) {
-  // TODO
-  EXPECT_TRUE(false);
+// note: half carry flag on 16-bit arithmetic operators always refers
+// to the higher byte
+TEST_F(CpuTest, op_19) { // ADD HL,DE
+  cpu->f.set(FLAG_S);    // unsets
+
+  // sets half carry flag
+  cpu->hl.set(0x0800);
+  cpu->de.set(0x0801);
+  cpu->op_19();
+  CpuState expected_state = {.f = FLAG_H, .de = 0x0801, .hl = 0x1001};
+  EXPECT_EQ(expected_state, cpu);
+
+  // sets carry flag
+  cpu->de.set(0xFFFF);
+  cpu->op_19();
+  expected_state = {.f = FLAG_C | FLAG_H, .de = 0xFFFF, .hl = 0x1000};
+  EXPECT_EQ(expected_state, cpu);
 }
 
-TEST_F(CpuTest, op_1a) {
-  // TODO
-  EXPECT_TRUE(false);
+TEST_F(CpuTest, op_1a) { // LD A,(DE)
+  cpu->de.set(ADDR);
+  EXPECT_CALL(*mmu, read(ADDR)).Times(1).WillOnce(Return(BYTE));
+
+  cpu->op_1a();
+  CpuState expected_state = {.a = BYTE, .de = ADDR};
+  EXPECT_EQ(expected_state, cpu);
 }
 
-TEST_F(CpuTest, op_1b) {
-  // TODO
-  EXPECT_TRUE(false);
+TEST_F(CpuTest, op_1b) { // DEC DE
+  cpu->op_1b();
+
+  // overflow
+  CpuState expected_state = {.de = 0xFFFF};
+  EXPECT_EQ(expected_state, cpu);
+
+  // normal case
+  cpu->op_1b();
+
+  expected_state = {.de = 0xFFFE};
+  EXPECT_EQ(expected_state, cpu);
 }
 
-TEST_F(CpuTest, op_1c) {
-  // TODO
-  EXPECT_TRUE(false);
+TEST_F(CpuTest, op_1c) { // INC E
+  cpu->f.set(FLAG_S);    // unsets
+  cpu->op_1c();
+
+  CpuState expected_state = {.e = 1};
+  EXPECT_EQ(expected_state, cpu);
+
+  // half carry flag
+  cpu->e.set(0x0F);
+  cpu->op_1c();
+
+  expected_state = {.f = FLAG_H, .e = 0x10};
+  EXPECT_EQ(expected_state, cpu);
+
+  // zero flag
+  cpu->e.set(0xFF);
+  cpu->op_1c();
+
+  expected_state = {.f = FLAG_Z | FLAG_H, .e = 0};
+  EXPECT_EQ(expected_state, cpu);
 }
 
-TEST_F(CpuTest, op_1d) {
-  // TODO
-  EXPECT_TRUE(false);
+TEST_F(CpuTest, op_1d) { // DEC C
+  cpu->op_1d();
+  // subtract flag always set
+
+  // half carry flag
+  CpuState expected_state = {.f = FLAG_S | FLAG_H, .e = 0xFF};
+  EXPECT_EQ(expected_state, cpu);
+
+  // zero flag
+  cpu->e.set(0x01);
+  cpu->op_1d();
+
+  expected_state = {.f = FLAG_Z | FLAG_S, .e = 0};
+  EXPECT_EQ(expected_state, cpu);
 }
 
-TEST_F(CpuTest, op_1e) {
-  // TODO
-  EXPECT_TRUE(false);
+TEST_F(CpuTest, op_1e) { // LD C,d8
+  EXPECT_CALL(*mmu, read(cpu->pc.value() + 1)).Times(1).WillOnce(Return(BYTE));
+
+  cpu->op_1e();
+  CpuState expected_state = {.e = BYTE};
+  EXPECT_EQ(expected_state, cpu);
 }
 
-TEST_F(CpuTest, op_1f) {
-  // TODO
-  EXPECT_TRUE(false);
-}
+TEST_F(CpuTest, op_1f) { // RRA
+  cpu->f.set(FLAG_Z | FLAG_S | FLAG_H); // unsets
+  cpu->a.set(0b00000010);
+  cpu->op_1f();
 
+  CpuState expected_state = {.a = 0b00000001};
+  EXPECT_EQ(expected_state, cpu);
+
+  // set carry flag when shifting lsb
+  cpu->op_1f();
+
+  // zero flag isn't set, carry flag gets set
+  expected_state = {.a = 0b00000000, .f = FLAG_C};
+  EXPECT_EQ(expected_state, cpu);
+
+  // carry flag carries over
+  cpu->op_1f();
+  expected_state = {.a = 0b10000000};
+  EXPECT_EQ(expected_state, cpu);
+}
+/*
 TEST_F(CpuTest, op_20) {
   // TODO
   EXPECT_TRUE(false);
