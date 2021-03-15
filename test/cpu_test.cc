@@ -217,12 +217,26 @@ TEST_F(CpuTest, op_08) { // LD (a16),SP
   CpuState expected_state = { .sp = 0xBEEF };
   EXPECT_EQ(expected_state, cpu);
 }
-/*
-TEST_F(CpuTest, op_09) {
-  // TODO
-  EXPECT_TRUE(false);
-}
 
+// note: half carry flag on 16-bit arithmetic operators always refers
+// to the higher byte
+TEST_F(CpuTest, op_09) { // ADD HL,BC
+  cpu->f.set(FLAG_S); // unsets
+
+  // sets half carry flag
+  cpu->hl.set(0x0800);
+  cpu->bc.set(0x0801);
+  cpu->op_09();
+  CpuState expected_state = { .f = FLAG_H, .bc = 0x0801, .hl = 0x1001 };
+  EXPECT_EQ(expected_state, cpu);
+
+  // sets carry flag
+  cpu->bc.set(0xFFFF);
+  cpu->op_09();
+  expected_state = { .f = FLAG_C | FLAG_H, .bc = 0xFFFF, .hl = 0x1000 };
+  EXPECT_EQ(expected_state, cpu);
+}
+/*
 TEST_F(CpuTest, op_0a) {
   // TODO
   EXPECT_TRUE(false);
