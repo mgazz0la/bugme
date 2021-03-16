@@ -2603,646 +2603,1005 @@ TEST_F(CpuTest, op_cb_7f) {
   // TODO
   EXPECT_TRUE(false);
 }
-
+*/
 TEST_F(CpuTest, op_cb_80) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->b.set_bit(0);
+  cpu->op_cb_80();
+
+  CpuState expected_state = { .b = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_81) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->c.set_bit(0);
+  cpu->op_cb_81();
+
+  CpuState expected_state = { .c = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_82) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->d.set_bit(0);
+  cpu->op_cb_82();
+
+  CpuState expected_state = { .d = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_83) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->e.set_bit(0);
+  cpu->op_cb_83();
+
+  CpuState expected_state = { .e = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_84) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->h.set_bit(0);
+  cpu->op_cb_84();
+
+  CpuState expected_state = { .h = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_85) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->l.set_bit(0);
+  cpu->op_cb_85();
+
+  CpuState expected_state = { .l = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_86) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->hl.set(ADDR);
+  EXPECT_CALL(*mmu, read(ADDR)).WillOnce(Return(1 << 0));
+  EXPECT_CALL(*mmu, write(ADDR, 0)).Times(1);
+
+  cpu->op_cb_86();
+  CpuState expected_state = { .hl = ADDR };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_87) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->a.set_bit(0);
+  cpu->op_cb_87();
+
+  CpuState expected_state = { .a = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_88) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->b.set_bit(1);
+  cpu->op_cb_88();
+
+  CpuState expected_state = { .b = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_89) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->c.set_bit(1);
+  cpu->op_cb_89();
+
+  CpuState expected_state = { .c = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_8a) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->d.set_bit(1);
+  cpu->op_cb_8a();
+
+  CpuState expected_state = { .d = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_8b) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->e.set_bit(1);
+  cpu->op_cb_8b();
+
+  CpuState expected_state = { .e = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_8c) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->h.set_bit(1);
+  cpu->op_cb_8c();
+
+  CpuState expected_state = { .h = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_8d) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->l.set_bit(1);
+  cpu->op_cb_8d();
+
+  CpuState expected_state = { .l = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_8e) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->hl.set(ADDR);
+  EXPECT_CALL(*mmu, read(ADDR)).WillOnce(Return(1 << 1));
+  EXPECT_CALL(*mmu, write(ADDR, 0)).Times(1);
+
+  cpu->op_cb_8e();
+  CpuState expected_state = { .hl = ADDR };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_8f) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->a.set_bit(1);
+  cpu->op_cb_8f();
+
+  CpuState expected_state = { .a = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_90) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->b.set_bit(2);
+  cpu->op_cb_90();
+
+  CpuState expected_state = { .b = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_91) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->c.set_bit(2);
+  cpu->op_cb_91();
+
+  CpuState expected_state = { .c = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_92) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->d.set_bit(2);
+  cpu->op_cb_92();
+
+  CpuState expected_state = { .d = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_93) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->e.set_bit(2);
+  cpu->op_cb_93();
+
+  CpuState expected_state = { .e = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_94) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->h.set_bit(2);
+  cpu->op_cb_94();
+
+  CpuState expected_state = { .h = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_95) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->l.set_bit(2);
+  cpu->op_cb_95();
+
+  CpuState expected_state = { .l = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_96) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->hl.set(ADDR);
+  EXPECT_CALL(*mmu, read(ADDR)).WillOnce(Return(1 << 2));
+  EXPECT_CALL(*mmu, write(ADDR, 0)).Times(1);
+
+  cpu->op_cb_96();
+  CpuState expected_state = { .hl = ADDR };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_97) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->a.set_bit(2);
+  cpu->op_cb_97();
+
+  CpuState expected_state = { .a = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_98) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->b.set_bit(3);
+  cpu->op_cb_98();
+
+  CpuState expected_state = { .b = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_99) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->c.set_bit(3);
+  cpu->op_cb_99();
+
+  CpuState expected_state = { .c = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_9a) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->d.set_bit(3);
+  cpu->op_cb_9a();
+
+  CpuState expected_state = { .d = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_9b) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->e.set_bit(3);
+  cpu->op_cb_9b();
+
+  CpuState expected_state = { .e = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_9c) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->h.set_bit(3);
+  cpu->op_cb_9c();
+
+  CpuState expected_state = { .h = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_9d) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->l.set_bit(3);
+  cpu->op_cb_9d();
+
+  CpuState expected_state = { .l = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_9e) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->hl.set(ADDR);
+  EXPECT_CALL(*mmu, read(ADDR)).WillOnce(Return(1 << 3));
+  EXPECT_CALL(*mmu, write(ADDR, 0)).Times(1);
+
+  cpu->op_cb_9e();
+  CpuState expected_state = { .hl = ADDR };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_9f) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->a.set_bit(3);
+  cpu->op_cb_9f();
+
+  CpuState expected_state = { .a = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_a0) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->b.set_bit(4);
+  cpu->op_cb_a0();
+
+  CpuState expected_state = { .b = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_a1) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->c.set_bit(4);
+  cpu->op_cb_a1();
+
+  CpuState expected_state = { .c = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_a2) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->d.set_bit(4);
+  cpu->op_cb_a2();
+
+  CpuState expected_state = { .d = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_a3) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->e.set_bit(4);
+  cpu->op_cb_a3();
+
+  CpuState expected_state = { .e = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_a4) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->h.set_bit(4);
+  cpu->op_cb_a4();
+
+  CpuState expected_state = { .h = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_a5) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->l.set_bit(4);
+  cpu->op_cb_a5();
+
+  CpuState expected_state = { .l = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_a6) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->hl.set(ADDR);
+  EXPECT_CALL(*mmu, read(ADDR)).WillOnce(Return(1 << 4));
+  EXPECT_CALL(*mmu, write(ADDR, 0)).Times(1);
+
+  cpu->op_cb_a6();
+  CpuState expected_state = { .hl = ADDR };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_a7) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->a.set_bit(4);
+  cpu->op_cb_a7();
+
+  CpuState expected_state = { .a = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_a8) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->b.set_bit(5);
+  cpu->op_cb_a8();
+
+  CpuState expected_state = { .b = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_a9) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->c.set_bit(5);
+  cpu->op_cb_a9();
+
+  CpuState expected_state = { .c = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_aa) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->d.set_bit(5);
+  cpu->op_cb_aa();
+
+  CpuState expected_state = { .d = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_ab) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->e.set_bit(5);
+  cpu->op_cb_ab();
+
+  CpuState expected_state = { .e = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_ac) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->h.set_bit(5);
+  cpu->op_cb_ac();
+
+  CpuState expected_state = { .h = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_ad) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->l.set_bit(5);
+  cpu->op_cb_ad();
+
+  CpuState expected_state = { .l = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_ae) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->hl.set(ADDR);
+  EXPECT_CALL(*mmu, read(ADDR)).WillOnce(Return(1 << 5));
+  EXPECT_CALL(*mmu, write(ADDR, 0)).Times(1);
+
+  cpu->op_cb_ae();
+  CpuState expected_state = { .hl = ADDR };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_af) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->a.set_bit(5);
+  cpu->op_cb_af();
+
+  CpuState expected_state = { .a = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_b0) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->b.set_bit(6);
+  cpu->op_cb_b0();
+
+  CpuState expected_state = { .b = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_b1) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->c.set_bit(6);
+  cpu->op_cb_b1();
+
+  CpuState expected_state = { .c = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_b2) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->d.set_bit(6);
+  cpu->op_cb_b2();
+
+  CpuState expected_state = { .d = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_b3) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->e.set_bit(6);
+  cpu->op_cb_b3();
+
+  CpuState expected_state = { .e = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_b4) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->h.set_bit(6);
+  cpu->op_cb_b4();
+
+  CpuState expected_state = { .h = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_b5) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->l.set_bit(6);
+  cpu->op_cb_b5();
+
+  CpuState expected_state = { .l = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_b6) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->hl.set(ADDR);
+  EXPECT_CALL(*mmu, read(ADDR)).WillOnce(Return(1 << 6));
+  EXPECT_CALL(*mmu, write(ADDR, 0)).Times(1);
+
+  cpu->op_cb_b6();
+  CpuState expected_state = { .hl = ADDR };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_b7) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->a.set_bit(6);
+  cpu->op_cb_b7();
+
+  CpuState expected_state = { .a = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_b8) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->b.set_bit(7);
+  cpu->op_cb_b8();
+
+  CpuState expected_state = { .b = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_b9) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->c.set_bit(7);
+  cpu->op_cb_b9();
+
+  CpuState expected_state = { .c = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_ba) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->d.set_bit(7);
+  cpu->op_cb_ba();
+
+  CpuState expected_state = { .d = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_bb) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->e.set_bit(7);
+  cpu->op_cb_bb();
+
+  CpuState expected_state = { .e = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_bc) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->h.set_bit(7);
+  cpu->op_cb_bc();
+
+  CpuState expected_state = { .h = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_bd) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->l.set_bit(7);
+  cpu->op_cb_bd();
+
+  CpuState expected_state = { .l = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_be) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->hl.set(ADDR);
+  EXPECT_CALL(*mmu, read(ADDR)).WillOnce(Return(1 << 7));
+  EXPECT_CALL(*mmu, write(ADDR, 0)).Times(1);
+
+  cpu->op_cb_be();
+  CpuState expected_state = { .hl = ADDR };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_bf) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->a.set_bit(7);
+  cpu->op_cb_bf();
+
+  CpuState expected_state = { .a = 0 };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_c0) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_c0();
+
+  CpuState expected_state = { .b = (1 << 0) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_c1) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_c1();
+
+  CpuState expected_state = { .c = (1 << 0) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_c2) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_c2();
+
+  CpuState expected_state = { .d = (1 << 0) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_c3) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_c3();
+
+  CpuState expected_state = { .e = (1 << 0) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_c4) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_c4();
+
+  CpuState expected_state = { .h = (1 << 0) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_c5) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_c5();
+
+  CpuState expected_state = { .l = (1 << 0) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_c6) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->hl.set(ADDR);
+  EXPECT_CALL(*mmu, read(ADDR)).WillOnce(Return(0));
+  EXPECT_CALL(*mmu, write(ADDR, (1 << 0))).Times(1);
+
+  cpu->op_cb_c6();
+  CpuState expected_state = { .hl = ADDR };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_c7) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_c7();
+
+  CpuState expected_state = { .a = (1 << 0) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_c8) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_c8();
+
+  CpuState expected_state = { .b = (1 << 1) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_c9) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_c9();
+
+  CpuState expected_state = { .c = (1 << 1) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_ca) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_ca();
+
+  CpuState expected_state = { .d = (1 << 1) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_cb) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_cb();
+
+  CpuState expected_state = { .e = (1 << 1) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_cc) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_cc();
+
+  CpuState expected_state = { .h = (1 << 1) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_cd) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_cd();
+
+  CpuState expected_state = { .l = (1 << 1) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_ce) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->hl.set(ADDR);
+  EXPECT_CALL(*mmu, read(ADDR)).WillOnce(Return(0));
+  EXPECT_CALL(*mmu, write(ADDR, (1 << 1))).Times(1);
+
+  cpu->op_cb_ce();
+  CpuState expected_state = { .hl = ADDR };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_cf) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_cf();
+
+  CpuState expected_state = { .a = (1 << 1) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_d0) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_d0();
+
+  CpuState expected_state = { .b = (1 << 2) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_d1) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_d1();
+
+  CpuState expected_state = { .c = (1 << 2) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_d2) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_d2();
+
+  CpuState expected_state = { .d = (1 << 2) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_d3) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_d3();
+
+  CpuState expected_state = { .e = (1 << 2) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_d4) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_d4();
+
+  CpuState expected_state = { .h = (1 << 2) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_d5) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_d5();
+
+  CpuState expected_state = { .l = (1 << 2) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_d6) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->hl.set(ADDR);
+  EXPECT_CALL(*mmu, read(ADDR)).WillOnce(Return(0));
+  EXPECT_CALL(*mmu, write(ADDR, (1 << 2))).Times(1);
+
+  cpu->op_cb_d6();
+  CpuState expected_state = { .hl = ADDR };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_d7) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_d7();
+
+  CpuState expected_state = { .a = (1 << 2) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_d8) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_d8();
+
+  CpuState expected_state = { .b = (1 << 3) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_d9) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_d9();
+
+  CpuState expected_state = { .c = (1 << 3) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_da) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_da();
+
+  CpuState expected_state = { .d = (1 << 3) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_db) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_db();
+
+  CpuState expected_state = { .e = (1 << 3) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_dc) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_dc();
+
+  CpuState expected_state = { .h = (1 << 3) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_dd) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_dd();
+
+  CpuState expected_state = { .l = (1 << 3) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_de) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->hl.set(ADDR);
+  EXPECT_CALL(*mmu, read(ADDR)).WillOnce(Return(0));
+  EXPECT_CALL(*mmu, write(ADDR, (1 << 3))).Times(1);
+
+  cpu->op_cb_de();
+  CpuState expected_state = { .hl = ADDR };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_df) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_df();
+
+  CpuState expected_state = { .a = (1 << 3) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_e0) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_e0();
+
+  CpuState expected_state = { .b = (1 << 4) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_e1) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_e1();
+
+  CpuState expected_state = { .c = (1 << 4) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_e2) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_e2();
+
+  CpuState expected_state = { .d = (1 << 4) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_e3) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_e3();
+
+  CpuState expected_state = { .e = (1 << 4) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_e4) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_e4();
+
+  CpuState expected_state = { .h = (1 << 4) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_e5) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_e5();
+
+  CpuState expected_state = { .l = (1 << 4) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_e6) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->hl.set(ADDR);
+  EXPECT_CALL(*mmu, read(ADDR)).WillOnce(Return(0));
+  EXPECT_CALL(*mmu, write(ADDR, (1 << 4))).Times(1);
+
+  cpu->op_cb_e6();
+  CpuState expected_state = { .hl = ADDR };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_e7) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_e7();
+
+  CpuState expected_state = { .a = (1 << 4) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_e8) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_e8();
+
+  CpuState expected_state = { .b = (1 << 5) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_e9) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_e9();
+
+  CpuState expected_state = { .c = (1 << 5) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_ea) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_ea();
+
+  CpuState expected_state = { .d = (1 << 5) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_eb) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_eb();
+
+  CpuState expected_state = { .e = (1 << 5) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_ec) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_ec();
+
+  CpuState expected_state = { .h = (1 << 5) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_ed) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_ed();
+
+  CpuState expected_state = { .l = (1 << 5) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_ee) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->hl.set(ADDR);
+  EXPECT_CALL(*mmu, read(ADDR)).WillOnce(Return(0));
+  EXPECT_CALL(*mmu, write(ADDR, (1 << 5))).Times(1);
+
+  cpu->op_cb_ee();
+  CpuState expected_state = { .hl = ADDR };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_ef) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_ef();
+
+  CpuState expected_state = { .a = (1 << 5) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_f0) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_f0();
+
+  CpuState expected_state = { .b = (1 << 6) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_f1) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_f1();
+
+  CpuState expected_state = { .c = (1 << 6) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_f2) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_f2();
+
+  CpuState expected_state = { .d = (1 << 6) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_f3) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_f3();
+
+  CpuState expected_state = { .e = (1 << 6) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_f4) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_f4();
+
+  CpuState expected_state = { .h = (1 << 6) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_f5) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_f5();
+
+  CpuState expected_state = { .l = (1 << 6) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_f6) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->hl.set(ADDR);
+  EXPECT_CALL(*mmu, read(ADDR)).WillOnce(Return(0));
+  EXPECT_CALL(*mmu, write(ADDR, (1 << 6))).Times(1);
+
+  cpu->op_cb_f6();
+  CpuState expected_state = { .hl = ADDR };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_f7) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_f7();
+
+  CpuState expected_state = { .a = (1 << 6) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_f8) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_f8();
+
+  CpuState expected_state = { .b = (1 << 7) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_f9) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_f9();
+
+  CpuState expected_state = { .c = (1 << 7) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_fa) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_fa();
+
+  CpuState expected_state = { .d = (1 << 7) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_fb) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_fb();
+
+  CpuState expected_state = { .e = (1 << 7) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_fc) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_fc();
+
+  CpuState expected_state = { .h = (1 << 7) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_fd) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_fd();
+
+  CpuState expected_state = { .l = (1 << 7) };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_fe) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->hl.set(ADDR);
+  EXPECT_CALL(*mmu, read(ADDR)).WillOnce(Return(0));
+  EXPECT_CALL(*mmu, write(ADDR, (1 << 7))).Times(1);
+
+  cpu->op_cb_fe();
+  CpuState expected_state = { .hl = ADDR };
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_ff) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->op_cb_ff();
+
+  CpuState expected_state = { .a = (1 << 7) };
+  EXPECT_EQ(expected_state, cpu);
 }
-*/
 
 } // namespace gbc

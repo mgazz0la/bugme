@@ -110,12 +110,18 @@ private:
   void swap(ByteRegister &reg);
   void swap(const word_t addr);
 
-  void bit(const byte_t bit, const ByteRegister &reg);
-  void bit(const byte_t bit, const word_t addr);
+  void bit(const bit_t bit, const ByteRegister &reg);
+  void bit(const bit_t bit, const word_t addr);
 
   void cp(ByteRegister &reg);
   void cp(const word_t addr);
   void cp();
+
+  void res(const bit_t bit, ByteRegister &reg);
+  void res(const bit_t bit, const word_t addr);
+
+  void set(const bit_t bit, ByteRegister &reg);
+  void set(const bit_t bit, const word_t addr);
 
   ByteRegister a, b, c, d, e, h, l;
   ByteRegisterPair af, bc, de, hl;

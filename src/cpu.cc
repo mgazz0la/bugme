@@ -631,4 +631,20 @@ void Cpu::cp() {
   f.write_carry_flag(value < other_value);
 }
 
+void Cpu::res(const bit_t bit, ByteRegister &reg) {
+  reg.clear_bit(bit);
+}
+
+void Cpu::res(const bit_t bit, const word_t addr) {
+  mmu_->write(addr, mmu_->read(addr) & ~(1 << bit));
+}
+
+void Cpu::set(const bit_t bit, ByteRegister &reg) {
+  reg.set_bit(bit);
+}
+
+void Cpu::set(const bit_t bit, const word_t addr) {
+  mmu_->write(addr, mmu_->read(addr) | (1 << bit));
+}
+
 } // namespace gbc
