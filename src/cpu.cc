@@ -408,8 +408,6 @@ void Cpu::jr_if(bool condition) {
   if (condition) {
     did_branch_ = true;
     jr();
-  } else {
-    next_byte(); // waste the unused argument
   }
 }
 
