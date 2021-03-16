@@ -1722,12 +1722,11 @@ TEST_F(CpuTest, op_d2) {
   // TODO
   EXPECT_TRUE(false);
 }
-
+*/
 TEST_F(CpuTest, op_d3) {
-  // TODO
-  EXPECT_TRUE(false);
+  EXPECT_ANY_THROW(cpu->op_d3());
 }
-
+/*
 TEST_F(CpuTest, op_d4) {
   // TODO
   EXPECT_TRUE(false);
@@ -1762,22 +1761,20 @@ TEST_F(CpuTest, op_da) {
   // TODO
   EXPECT_TRUE(false);
 }
-
+*/
 TEST_F(CpuTest, op_db) {
-  // TODO
-  EXPECT_TRUE(false);
+  EXPECT_ANY_THROW(cpu->op_db());
 }
-
+/*
 TEST_F(CpuTest, op_dc) {
   // TODO
   EXPECT_TRUE(false);
 }
-
+*/
 TEST_F(CpuTest, op_dd) {
-  // TODO
-  EXPECT_TRUE(false);
+  EXPECT_ANY_THROW(cpu->op_dd());
 }
-
+/*
 TEST_F(CpuTest, op_de) {
   // TODO
   EXPECT_TRUE(false);
@@ -1802,17 +1799,15 @@ TEST_F(CpuTest, op_e2) {
   // TODO
   EXPECT_TRUE(false);
 }
-
+*/
 TEST_F(CpuTest, op_e3) {
-  // TODO
-  EXPECT_TRUE(false);
+  EXPECT_ANY_THROW(cpu->op_e3());
 }
 
 TEST_F(CpuTest, op_e4) {
-  // TODO
-  EXPECT_TRUE(false);
+  EXPECT_ANY_THROW(cpu->op_e4());
 }
-
+/*
 TEST_F(CpuTest, op_e5) {
   // TODO
   EXPECT_TRUE(false);
@@ -1842,22 +1837,19 @@ TEST_F(CpuTest, op_ea) {
   // TODO
   EXPECT_TRUE(false);
 }
-
+*/
 TEST_F(CpuTest, op_eb) {
-  // TODO
-  EXPECT_TRUE(false);
+  EXPECT_ANY_THROW(cpu->op_eb());
 }
 
 TEST_F(CpuTest, op_ec) {
-  // TODO
-  EXPECT_TRUE(false);
+  EXPECT_ANY_THROW(cpu->op_ec());
 }
 
 TEST_F(CpuTest, op_ed) {
-  // TODO
-  EXPECT_TRUE(false);
+  EXPECT_ANY_THROW(cpu->op_ed());
 }
-
+/*
 TEST_F(CpuTest, op_ee) {
   // TODO
   EXPECT_TRUE(false);
@@ -1887,12 +1879,11 @@ TEST_F(CpuTest, op_f3) {
   // TODO
   EXPECT_TRUE(false);
 }
-
+*/
 TEST_F(CpuTest, op_f4) {
-  // TODO
-  EXPECT_TRUE(false);
+  EXPECT_ANY_THROW(cpu->op_f4());
 }
-
+/*
 TEST_F(CpuTest, op_f5) {
   // TODO
   EXPECT_TRUE(false);
@@ -1927,17 +1918,15 @@ TEST_F(CpuTest, op_fb) {
   // TODO
   EXPECT_TRUE(false);
 }
-
+*/
 TEST_F(CpuTest, op_fc) {
-  // TODO
-  EXPECT_TRUE(false);
+  EXPECT_ANY_THROW(cpu->op_fc());
 }
 
 TEST_F(CpuTest, op_fd) {
-  // TODO
-  EXPECT_TRUE(false);
+  EXPECT_ANY_THROW(cpu->op_fd());
 }
-*/
+
 TEST_F(CpuTest, op_fe) {
   cpu->a.set(0x3C);
   EXPECT_CALL(*mmu, read(cpu->pc.value() + 1)).WillOnce(Return(0x2F));
