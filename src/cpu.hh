@@ -113,6 +113,10 @@ private:
   void bit(const byte_t bit, const ByteRegister &reg);
   void bit(const byte_t bit, const word_t addr);
 
+  void cp(ByteRegister &reg);
+  void cp(const word_t addr);
+  void cp();
+
   ByteRegister a, b, c, d, e, h, l;
   ByteRegisterPair af, bc, de, hl;
   WordValuedRegister pc;
