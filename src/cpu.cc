@@ -602,9 +602,7 @@ void Cpu::cp(ByteRegister &reg) {
   const byte_t value = a.value();
   const byte_t other_value = reg.value();
 
-  word_t result = value - other_value;
-
-  f.write_zero_flag(result == 0);
+  f.write_zero_flag(value == other_value);
   f.set_subtract_flag();
   f.write_half_carry_flag(((value & 0xF) - (other_value & 0xF)) <
                           0);
@@ -615,9 +613,7 @@ void Cpu::cp(const word_t addr) {
   const byte_t value = a.value();
   const byte_t other_value = mmu_->read(addr);
 
-  word_t result = value - other_value;
-
-  f.write_zero_flag(result == 0);
+  f.write_zero_flag(value == other_value);
   f.set_subtract_flag();
   f.write_half_carry_flag(((value & 0xF) - (other_value & 0xF)) <
                           0);
@@ -628,9 +624,7 @@ void Cpu::cp() {
   const byte_t value = a.value();
   const byte_t other_value = next_byte();
 
-  word_t result = value - other_value;
-
-  f.write_zero_flag(result == 0);
+  f.write_zero_flag(value == other_value);
   f.set_subtract_flag();
   f.write_half_carry_flag(((value & 0xF) - (other_value & 0xF)) <
                           0);
