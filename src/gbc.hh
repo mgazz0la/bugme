@@ -13,6 +13,7 @@ class Gbc {
 public:
   Gbc();
 
+  void start();
   std::string status() const;
 
 private:

@@ -1,3 +1,4 @@
+#include "bootrom.hh"
 #include "mmu.hh"
 #include "cpu.hh"
 #include "util.hh"
@@ -45,7 +46,7 @@ byte_t Mmu::read(word_t addr) const {
   // cartridge rom
   if (util::in_range(addr, CARTRIDGE_ROM_START, CARTRIDGE_ROM_END)) {
     if (util::in_range(addr, BOOT_ROM_START, BOOT_ROM_END) && is_boot_rom_active()) {
-      // TODO: return boot rom
+      return boot::ROM[addr];
     }
 
     return _read(addr);

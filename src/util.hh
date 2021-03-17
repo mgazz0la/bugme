@@ -22,6 +22,7 @@ inline byte_t high(word_t word) {
 }
 
 inline bool in_range(word_t n, word_t low, word_t high) {
+  if (high < low) throw "what are you doing?";
   return ((low <= n) && (n <= high));
 }
 

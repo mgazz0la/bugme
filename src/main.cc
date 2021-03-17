@@ -6,6 +6,6 @@ int main(int argc, char **argv) {
   (void)argc;
   (void)argv;
   gbc::Gbc gbc;
-  std::cout << gbc.status();
+  gbc.start();
   return 0;
 }

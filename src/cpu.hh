@@ -2,6 +2,8 @@
 #define GBC_CPU_H
 
 #include "register.hh"
+#include <functional>
+#include <map>
 #include <memory>
 
 namespace gbc {
@@ -12,11 +14,11 @@ class Cpu {
 public:
   explicit Cpu(std::shared_ptr<Mmu> mmu);
 
+  void run();
   void reset();
 private:
   // Alias for reg.value()
   static inline word_t _(WordRegister &reg) { return reg.value(); }
-
 
   byte_t next_byte();
   word_t next_word();
@@ -142,6 +144,9 @@ private:
   bool stopped_ = false;
   bool halted_ = false;
   bool did_branch_ = false;
+
+  void op(word_t word);
+  void cb_op(word_t word);
 
   /* clang-format off */
   void op_00(); void op_01(); void op_02(); void op_03(); void op_04(); void op_05(); void op_06(); void op_07(); void op_08(); void op_09(); void op_0a(); void op_0b(); void op_0c(); void op_0d(); void op_0e(); void op_0f();
