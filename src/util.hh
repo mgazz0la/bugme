@@ -21,6 +21,10 @@ inline byte_t high(word_t word) {
   return static_cast<byte_t>(word >> 8);
 }
 
+inline bool in_range(word_t n, word_t low, word_t high) {
+  return ((low <= n) && (n <= high));
+}
+
 } // namespace util
 } // namespace gbc
 #endif
