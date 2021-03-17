@@ -1,6 +1,7 @@
 #include "cpu.hh"
 #include "mmu.hh"
 #include "register.hh"
+#include "util.hh"
 
 #include <cstdint>
 
@@ -32,7 +33,7 @@ byte_t Cpu::next_byte() {
 }
 
 word_t Cpu::next_word() {
-  return ((mmu_->read(pc.value() + 2) << 8) | mmu_->read(pc.value() + 1));
+  return util::fuse(mmu_->read(pc.value() + 2), mmu_->read(pc.value() + 1));
 }
 
 void Cpu::nop() const { /* NOP */
@@ -646,5 +647,34 @@ void Cpu::set(const bit_t bit, ByteRegister &reg) {
 void Cpu::set(const bit_t bit, const word_t addr) {
   mmu_->write(addr, mmu_->read(addr) | (1 << bit));
 }
+
+void Cpu::pop(WordRegister &reg) {
+  byte_t low = mmu_->read(sp.value());
+  sp.increment();
+  byte_t high = mmu_->read(sp.value());
+  sp.increment();
+
+  reg.set(util::fuse(high, low));
+}
+
+void Cpu::push(const WordRegister &reg) {
+  sp.decrement();
+  mmu_->write(sp.value(), reg.high());
+  sp.decrement();
+  mmu_->write(sp.value(), reg.low());
+}
+
+void Cpu::ret() {
+  pop(pc);
+}
+
+void Cpu::ret_if(bool condition) {
+  if (condition) {
+    ret();
+    did_branch_ = true;
+  }
+}
+
+//void Cpu::reti() {}
 
 } // namespace gbc

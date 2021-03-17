@@ -1,6 +1,7 @@
 #include "cpu.hh"
 #include "mmu.hh"
 #include "types.hh"
+#include "util.hh"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <optional>
@@ -94,8 +95,7 @@ TEST_F(CpuTest, op_00) { // NOP
 }
 
 TEST_F(CpuTest, op_01) { // LD BC,d16
-  EXPECT_CALL(*mmu, read(cpu->pc.value() + 1))
-      .WillOnce(Return(0xFF & WORD));
+  EXPECT_CALL(*mmu, read(cpu->pc.value() + 1)).WillOnce(Return(0xFF & WORD));
   EXPECT_CALL(*mmu, read(cpu->pc.value() + 2))
       .WillOnce(Return((WORD >> 8) & 0xFF));
 
@@ -131,7 +131,8 @@ TEST_F(CpuTest, op_03) { // INC BC
 }
 
 TEST_F(CpuTest, op_04) { // INC B
-  cpu->f.set(FLAG_S);    // unsets
+  // unsets
+  cpu->f.set(FLAG_S);
   cpu->op_04();
 
   CpuState expected_state = {.b = 1};
@@ -177,8 +178,9 @@ TEST_F(CpuTest, op_06) { // LD B,d8
   EXPECT_EQ(expected_state, cpu);
 }
 
-TEST_F(CpuTest, op_07) {                // RLCA
-  cpu->f.set(FLAG_Z | FLAG_S | FLAG_H); // unsets
+TEST_F(CpuTest, op_07) { // RLCA
+  // unsets
+  cpu->f.set(FLAG_Z | FLAG_S | FLAG_H);
   cpu->a.set(0b01000000);
   cpu->op_07();
 
@@ -217,7 +219,8 @@ TEST_F(CpuTest, op_08) { // LD (a16),SP
 // note: half carry flag on 16-bit arithmetic operators always refers
 // to the higher byte
 TEST_F(CpuTest, op_09) { // ADD HL,BC
-  cpu->f.set(FLAG_S);    // unsets
+  // unsets
+  cpu->f.set(FLAG_S);
 
   // sets half carry flag
   cpu->hl.set(0x0800);
@@ -1477,19 +1480,19 @@ TEST_F(CpuTest, op_b8) {
   cpu->b.set(0x2F);
   cpu->op_b8();
   // sets carry flag
-  CpuState expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_H, .b = 0x2F };
+  CpuState expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_H, .b = 0x2F};
   EXPECT_EQ(expected_state, cpu);
 
   // sets half carry
   cpu->b.set(0x40);
   cpu->op_b8();
-  expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_C, .b = 0x40 };
+  expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_C, .b = 0x40};
   EXPECT_EQ(expected_state, cpu);
 
   // sets zero carry
   cpu->b.set(0x3C);
   cpu->op_b8();
-  expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_Z, .b = 0x3C };
+  expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_Z, .b = 0x3C};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -1498,19 +1501,19 @@ TEST_F(CpuTest, op_b9) {
   cpu->c.set(0x2F);
   cpu->op_b9();
   // sets carry flag
-  CpuState expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_H, .c = 0x2F };
+  CpuState expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_H, .c = 0x2F};
   EXPECT_EQ(expected_state, cpu);
 
   // sets half carry
   cpu->c.set(0x40);
   cpu->op_b9();
-  expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_C, .c = 0x40 };
+  expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_C, .c = 0x40};
   EXPECT_EQ(expected_state, cpu);
 
   // sets zero carry
   cpu->c.set(0x3C);
   cpu->op_b9();
-  expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_Z, .c = 0x3C };
+  expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_Z, .c = 0x3C};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -1519,19 +1522,19 @@ TEST_F(CpuTest, op_ba) {
   cpu->d.set(0x2F);
   cpu->op_ba();
   // sets carry flag
-  CpuState expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_H, .d = 0x2F };
+  CpuState expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_H, .d = 0x2F};
   EXPECT_EQ(expected_state, cpu);
 
   // sets half carry
   cpu->d.set(0x40);
   cpu->op_ba();
-  expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_C, .d = 0x40 };
+  expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_C, .d = 0x40};
   EXPECT_EQ(expected_state, cpu);
 
   // sets zero carry
   cpu->d.set(0x3C);
   cpu->op_ba();
-  expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_Z, .d = 0x3C };
+  expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_Z, .d = 0x3C};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -1540,19 +1543,19 @@ TEST_F(CpuTest, op_bb) {
   cpu->e.set(0x2F);
   cpu->op_bb();
   // sets carry flag
-  CpuState expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_H, .e = 0x2F };
+  CpuState expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_H, .e = 0x2F};
   EXPECT_EQ(expected_state, cpu);
 
   // sets half carry
   cpu->e.set(0x40);
   cpu->op_bb();
-  expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_C, .e = 0x40 };
+  expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_C, .e = 0x40};
   EXPECT_EQ(expected_state, cpu);
 
   // sets zero carry
   cpu->e.set(0x3C);
   cpu->op_bb();
-  expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_Z, .e = 0x3C };
+  expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_Z, .e = 0x3C};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -1561,19 +1564,19 @@ TEST_F(CpuTest, op_bc) {
   cpu->h.set(0x2F);
   cpu->op_bc();
   // sets carry flag
-  CpuState expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_H, .h = 0x2F };
+  CpuState expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_H, .h = 0x2F};
   EXPECT_EQ(expected_state, cpu);
 
   // sets half carry
   cpu->h.set(0x40);
   cpu->op_bc();
-  expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_C, .h = 0x40 };
+  expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_C, .h = 0x40};
   EXPECT_EQ(expected_state, cpu);
 
   // sets zero carry
   cpu->h.set(0x3C);
   cpu->op_bc();
-  expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_Z, .h = 0x3C };
+  expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_Z, .h = 0x3C};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -1582,19 +1585,19 @@ TEST_F(CpuTest, op_bd) {
   cpu->l.set(0x2F);
   cpu->op_bd();
   // sets carry flag
-  CpuState expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_H, .l = 0x2F };
+  CpuState expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_H, .l = 0x2F};
   EXPECT_EQ(expected_state, cpu);
 
   // sets half carry
   cpu->l.set(0x40);
   cpu->op_bd();
-  expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_C, .l = 0x40 };
+  expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_C, .l = 0x40};
   EXPECT_EQ(expected_state, cpu);
 
   // sets zero carry
   cpu->l.set(0x3C);
   cpu->op_bd();
-  expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_Z, .l = 0x3C };
+  expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_Z, .l = 0x3C};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -1604,19 +1607,19 @@ TEST_F(CpuTest, op_be) {
   EXPECT_CALL(*mmu, read(ADDR)).WillOnce(Return(0x2F));
   cpu->op_be();
   // sets carry flag
-  CpuState expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_H, .hl = ADDR };
+  CpuState expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_H, .hl = ADDR};
   EXPECT_EQ(expected_state, cpu);
 
   // sets half carry
   EXPECT_CALL(*mmu, read(ADDR)).WillOnce(Return(0x40));
   cpu->op_be();
-  expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_C, .hl = ADDR };
+  expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_C, .hl = ADDR};
   EXPECT_EQ(expected_state, cpu);
 
   // sets zero carry
   EXPECT_CALL(*mmu, read(ADDR)).WillOnce(Return(0x3C));
   cpu->op_be();
-  expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_Z, .hl = ADDR };
+  expected_state = {.a = 0x3C, .f = FLAG_S | FLAG_Z, .hl = ADDR};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -1627,17 +1630,36 @@ TEST_F(CpuTest, op_bf) {
   CpuState expected_state = {.a = 0xFF, .f = FLAG_S | FLAG_Z};
   EXPECT_EQ(expected_state, cpu);
 }
-/*
+
 TEST_F(CpuTest, op_c0) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->f.set_zero_flag();
+  cpu->sp.set(WORD);
+  cpu->op_c0();
+  // doesn't branch
+  CpuState expected_state = {.f = FLAG_Z, .sp = WORD, .did_branch_ = false};
+  EXPECT_EQ(expected_state, cpu);
+
+  // should branch now
+  cpu->f.clear_zero_flag();
+  EXPECT_CALL(*mmu, read(WORD)).WillOnce(Return(util::low(0xBEEF)));
+  EXPECT_CALL(*mmu, read(WORD + 1)).WillOnce(Return(util::high(0xBEEF)));
+  cpu->sp.set(WORD);
+
+  cpu->op_c0();
+  expected_state = {.sp = WORD + 2, .pc = 0xBEEF, .did_branch_ = true};
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_c1) {
-  // TODO
-  EXPECT_TRUE(false);
-}
+  EXPECT_CALL(*mmu, read(WORD)).WillOnce(Return(util::low(0xBEEF)));
+  EXPECT_CALL(*mmu, read(WORD + 1)).WillOnce(Return(util::high(0xBEEF)));
+  cpu->sp.set(WORD);
 
+  cpu->op_c1();
+  CpuState expected_state = {.bc = 0xBEEF, .sp = WORD + 2};
+  EXPECT_EQ(expected_state, cpu);
+}
+/*
 TEST_F(CpuTest, op_c2) {
   // TODO
   EXPECT_TRUE(false);
@@ -1652,12 +1674,18 @@ TEST_F(CpuTest, op_c4) {
   // TODO
   EXPECT_TRUE(false);
 }
-
+*/
 TEST_F(CpuTest, op_c5) {
-  // TODO
-  EXPECT_TRUE(false);
-}
+  EXPECT_CALL(*mmu, write(WORD - 1, util::high(0xBEEF))).Times(1);
+  EXPECT_CALL(*mmu, write(WORD - 2, util::low(0xBEEF))).Times(1);
+  cpu->sp.set(WORD);
+  cpu->bc.set(0xBEEF);
 
+  cpu->op_c5();
+  CpuState expected_state = {.bc = 0xBEEF, .sp = WORD - 2};
+  EXPECT_EQ(expected_state, cpu);
+}
+/*
 TEST_F(CpuTest, op_c6) {
   // TODO
   EXPECT_TRUE(false);
@@ -1667,17 +1695,37 @@ TEST_F(CpuTest, op_c7) {
   // TODO
   EXPECT_TRUE(false);
 }
-
+*/
 TEST_F(CpuTest, op_c8) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->f.clear_zero_flag();
+  cpu->sp.set(WORD);
+  cpu->op_c8();
+  // doesn't branch
+  CpuState expected_state = {.f = 0, .sp = WORD, .did_branch_ = false};
+  EXPECT_EQ(expected_state, cpu);
+
+  // should branch now
+  cpu->f.set_zero_flag();
+  EXPECT_CALL(*mmu, read(WORD)).WillOnce(Return(util::low(0xBEEF)));
+  EXPECT_CALL(*mmu, read(WORD + 1)).WillOnce(Return(util::high(0xBEEF)));
+  cpu->sp.set(WORD);
+
+  cpu->op_c8();
+  expected_state = {
+      .f = FLAG_Z, .sp = WORD + 2, .pc = 0xBEEF, .did_branch_ = true};
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_c9) {
-  // TODO
-  EXPECT_TRUE(false);
-}
+  EXPECT_CALL(*mmu, read(WORD)).WillOnce(Return(util::low(0xBEEF)));
+  EXPECT_CALL(*mmu, read(WORD + 1)).WillOnce(Return(util::high(0xBEEF)));
+  cpu->sp.set(WORD);
 
+  cpu->op_c9();
+  CpuState expected_state = {.sp = WORD + 2, .pc = 0xBEEF};
+  EXPECT_EQ(expected_state, cpu);
+}
+/*
 TEST_F(CpuTest, op_ca) {
   // TODO
   EXPECT_TRUE(false);
@@ -1707,36 +1755,59 @@ TEST_F(CpuTest, op_cf) {
   // TODO
   EXPECT_TRUE(false);
 }
-
+*/
 TEST_F(CpuTest, op_d0) {
-  // TODO
-  EXPECT_TRUE(false);
+  cpu->f.set_carry_flag();
+  cpu->sp.set(WORD);
+  cpu->op_d0();
+  // doesn't branch
+  CpuState expected_state = {.f = FLAG_C, .sp = WORD, .did_branch_ = false};
+  EXPECT_EQ(expected_state, cpu);
+
+  // should branch now
+  cpu->f.clear_carry_flag();
+  EXPECT_CALL(*mmu, read(WORD)).WillOnce(Return(util::low(0xBEEF)));
+  EXPECT_CALL(*mmu, read(WORD + 1)).WillOnce(Return(util::high(0xBEEF)));
+  cpu->sp.set(WORD);
+
+  cpu->op_d0();
+  expected_state = {.sp = WORD + 2, .pc = 0xBEEF, .did_branch_ = true};
+  EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_d1) {
-  // TODO
-  EXPECT_TRUE(false);
-}
+  EXPECT_CALL(*mmu, read(WORD)).WillOnce(Return(util::low(0xBEEF)));
+  EXPECT_CALL(*mmu, read(WORD + 1)).WillOnce(Return(util::high(0xBEEF)));
+  cpu->sp.set(WORD);
 
+  cpu->op_d1();
+  CpuState expected_state = {.de = 0xBEEF, .sp = WORD + 2};
+  EXPECT_EQ(expected_state, cpu);
+}
+/*
 TEST_F(CpuTest, op_d2) {
   // TODO
   EXPECT_TRUE(false);
 }
 */
-TEST_F(CpuTest, op_d3) {
-  EXPECT_ANY_THROW(cpu->op_d3());
-}
+TEST_F(CpuTest, op_d3) { EXPECT_ANY_THROW(cpu->op_d3()); }
 /*
 TEST_F(CpuTest, op_d4) {
   // TODO
   EXPECT_TRUE(false);
 }
-
+*/
 TEST_F(CpuTest, op_d5) {
-  // TODO
-  EXPECT_TRUE(false);
-}
+  EXPECT_CALL(*mmu, write(WORD - 1, util::high(0xBEEF))).Times(1);
+  EXPECT_CALL(*mmu, write(WORD - 2, util::low(0xBEEF))).Times(1);
+  cpu->sp.set(WORD);
+  cpu->de.set(0xBEEF);
 
+  cpu->op_d5();
+  CpuState expected_state = {.de = 0xBEEF, .sp = WORD - 2};
+  EXPECT_EQ(expected_state, cpu);
+}
+/*
 TEST_F(CpuTest, op_d6) {
   // TODO
   EXPECT_TRUE(false);
@@ -1746,12 +1817,27 @@ TEST_F(CpuTest, op_d7) {
   // TODO
   EXPECT_TRUE(false);
 }
-
+*/
 TEST_F(CpuTest, op_d8) {
-  // TODO
-  EXPECT_TRUE(false);
-}
+  cpu->f.clear_carry_flag();
+  cpu->sp.set(WORD);
+  cpu->op_d8();
+  // doesn't branch
+  CpuState expected_state = {.f = 0, .sp = WORD, .did_branch_ = false};
+  EXPECT_EQ(expected_state, cpu);
 
+  // should branch now
+  cpu->f.set_carry_flag();
+  EXPECT_CALL(*mmu, read(WORD)).WillOnce(Return(util::low(0xBEEF)));
+  EXPECT_CALL(*mmu, read(WORD + 1)).WillOnce(Return(util::high(0xBEEF)));
+  cpu->sp.set(WORD);
+
+  cpu->op_d8();
+  expected_state = {
+      .f = FLAG_C, .sp = WORD + 2, .pc = 0xBEEF, .did_branch_ = true};
+  EXPECT_EQ(expected_state, cpu);
+}
+/*
 TEST_F(CpuTest, op_d9) {
   // TODO
   EXPECT_TRUE(false);
@@ -1762,18 +1848,14 @@ TEST_F(CpuTest, op_da) {
   EXPECT_TRUE(false);
 }
 */
-TEST_F(CpuTest, op_db) {
-  EXPECT_ANY_THROW(cpu->op_db());
-}
+TEST_F(CpuTest, op_db) { EXPECT_ANY_THROW(cpu->op_db()); }
 /*
 TEST_F(CpuTest, op_dc) {
   // TODO
   EXPECT_TRUE(false);
 }
 */
-TEST_F(CpuTest, op_dd) {
-  EXPECT_ANY_THROW(cpu->op_dd());
-}
+TEST_F(CpuTest, op_dd) { EXPECT_ANY_THROW(cpu->op_dd()); }
 /*
 TEST_F(CpuTest, op_de) {
   // TODO
@@ -1789,30 +1871,37 @@ TEST_F(CpuTest, op_e0) {
   // TODO
   EXPECT_TRUE(false);
 }
-
+*/
 TEST_F(CpuTest, op_e1) {
-  // TODO
-  EXPECT_TRUE(false);
-}
+  EXPECT_CALL(*mmu, read(WORD)).WillOnce(Return(util::low(0xBEEF)));
+  EXPECT_CALL(*mmu, read(WORD + 1)).WillOnce(Return(util::high(0xBEEF)));
+  cpu->sp.set(WORD);
 
+  cpu->op_e1();
+  CpuState expected_state = {.hl = 0xBEEF, .sp = WORD + 2};
+  EXPECT_EQ(expected_state, cpu);
+}
+/*
 TEST_F(CpuTest, op_e2) {
   // TODO
   EXPECT_TRUE(false);
 }
 */
-TEST_F(CpuTest, op_e3) {
-  EXPECT_ANY_THROW(cpu->op_e3());
-}
+TEST_F(CpuTest, op_e3) { EXPECT_ANY_THROW(cpu->op_e3()); }
 
-TEST_F(CpuTest, op_e4) {
-  EXPECT_ANY_THROW(cpu->op_e4());
+TEST_F(CpuTest, op_e4) { EXPECT_ANY_THROW(cpu->op_e4()); }
+
+TEST_F(CpuTest, op_e5) {
+  EXPECT_CALL(*mmu, write(WORD - 1, util::high(0xBEEF))).Times(1);
+  EXPECT_CALL(*mmu, write(WORD - 2, util::low(0xBEEF))).Times(1);
+  cpu->sp.set(WORD);
+  cpu->hl.set(0xBEEF);
+
+  cpu->op_e5();
+  CpuState expected_state = {.hl = 0xBEEF, .sp = WORD - 2};
+  EXPECT_EQ(expected_state, cpu);
 }
 /*
-TEST_F(CpuTest, op_e5) {
-  // TODO
-  EXPECT_TRUE(false);
-}
-
 TEST_F(CpuTest, op_e6) {
   // TODO
   EXPECT_TRUE(false);
@@ -1838,17 +1927,11 @@ TEST_F(CpuTest, op_ea) {
   EXPECT_TRUE(false);
 }
 */
-TEST_F(CpuTest, op_eb) {
-  EXPECT_ANY_THROW(cpu->op_eb());
-}
+TEST_F(CpuTest, op_eb) { EXPECT_ANY_THROW(cpu->op_eb()); }
 
-TEST_F(CpuTest, op_ec) {
-  EXPECT_ANY_THROW(cpu->op_ec());
-}
+TEST_F(CpuTest, op_ec) { EXPECT_ANY_THROW(cpu->op_ec()); }
 
-TEST_F(CpuTest, op_ed) {
-  EXPECT_ANY_THROW(cpu->op_ed());
-}
+TEST_F(CpuTest, op_ed) { EXPECT_ANY_THROW(cpu->op_ed()); }
 /*
 TEST_F(CpuTest, op_ee) {
   // TODO
@@ -1864,12 +1947,18 @@ TEST_F(CpuTest, op_f0) {
   // TODO
   EXPECT_TRUE(false);
 }
-
+*/
 TEST_F(CpuTest, op_f1) {
-  // TODO
-  EXPECT_TRUE(false);
-}
+  EXPECT_CALL(*mmu, read(WORD)).WillOnce(Return(util::low(0xBEEF)));
+  EXPECT_CALL(*mmu, read(WORD + 1)).WillOnce(Return(util::high(0xBEEF)));
+  cpu->sp.set(WORD);
 
+  cpu->op_f1();
+  // flag register clear lower byte
+  CpuState expected_state = {.af = 0xBEE0, .sp = WORD + 2};
+  EXPECT_EQ(expected_state, cpu);
+}
+/*
 TEST_F(CpuTest, op_f2) {
   // TODO
   EXPECT_TRUE(false);
@@ -1880,15 +1969,19 @@ TEST_F(CpuTest, op_f3) {
   EXPECT_TRUE(false);
 }
 */
-TEST_F(CpuTest, op_f4) {
-  EXPECT_ANY_THROW(cpu->op_f4());
+TEST_F(CpuTest, op_f4) { EXPECT_ANY_THROW(cpu->op_f4()); }
+
+TEST_F(CpuTest, op_f5) {
+  EXPECT_CALL(*mmu, write(WORD - 1, util::high(0xBEE0))).Times(1);
+  EXPECT_CALL(*mmu, write(WORD - 2, util::low(0xBEE0))).Times(1);
+  cpu->sp.set(WORD);
+  cpu->af.set(0xBEEF);
+
+  cpu->op_f5();
+  CpuState expected_state = {.af = 0xBEE0, .sp = WORD - 2};
+  EXPECT_EQ(expected_state, cpu);
 }
 /*
-TEST_F(CpuTest, op_f5) {
-  // TODO
-  EXPECT_TRUE(false);
-}
-
 TEST_F(CpuTest, op_f6) {
   // TODO
   EXPECT_TRUE(false);
@@ -1919,13 +2012,9 @@ TEST_F(CpuTest, op_fb) {
   EXPECT_TRUE(false);
 }
 */
-TEST_F(CpuTest, op_fc) {
-  EXPECT_ANY_THROW(cpu->op_fc());
-}
+TEST_F(CpuTest, op_fc) { EXPECT_ANY_THROW(cpu->op_fc()); }
 
-TEST_F(CpuTest, op_fd) {
-  EXPECT_ANY_THROW(cpu->op_fd());
-}
+TEST_F(CpuTest, op_fd) { EXPECT_ANY_THROW(cpu->op_fd()); }
 
 TEST_F(CpuTest, op_fe) {
   cpu->a.set(0x3C);
@@ -2597,7 +2686,7 @@ TEST_F(CpuTest, op_cb_80) {
   cpu->b.set_bit(0);
   cpu->op_cb_80();
 
-  CpuState expected_state = { .b = 0 };
+  CpuState expected_state = {.b = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2605,7 +2694,7 @@ TEST_F(CpuTest, op_cb_81) {
   cpu->c.set_bit(0);
   cpu->op_cb_81();
 
-  CpuState expected_state = { .c = 0 };
+  CpuState expected_state = {.c = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2613,7 +2702,7 @@ TEST_F(CpuTest, op_cb_82) {
   cpu->d.set_bit(0);
   cpu->op_cb_82();
 
-  CpuState expected_state = { .d = 0 };
+  CpuState expected_state = {.d = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2621,7 +2710,7 @@ TEST_F(CpuTest, op_cb_83) {
   cpu->e.set_bit(0);
   cpu->op_cb_83();
 
-  CpuState expected_state = { .e = 0 };
+  CpuState expected_state = {.e = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2629,7 +2718,7 @@ TEST_F(CpuTest, op_cb_84) {
   cpu->h.set_bit(0);
   cpu->op_cb_84();
 
-  CpuState expected_state = { .h = 0 };
+  CpuState expected_state = {.h = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2637,7 +2726,7 @@ TEST_F(CpuTest, op_cb_85) {
   cpu->l.set_bit(0);
   cpu->op_cb_85();
 
-  CpuState expected_state = { .l = 0 };
+  CpuState expected_state = {.l = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2647,7 +2736,7 @@ TEST_F(CpuTest, op_cb_86) {
   EXPECT_CALL(*mmu, write(ADDR, 0)).Times(1);
 
   cpu->op_cb_86();
-  CpuState expected_state = { .hl = ADDR };
+  CpuState expected_state = {.hl = ADDR};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2655,7 +2744,7 @@ TEST_F(CpuTest, op_cb_87) {
   cpu->a.set_bit(0);
   cpu->op_cb_87();
 
-  CpuState expected_state = { .a = 0 };
+  CpuState expected_state = {.a = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2663,7 +2752,7 @@ TEST_F(CpuTest, op_cb_88) {
   cpu->b.set_bit(1);
   cpu->op_cb_88();
 
-  CpuState expected_state = { .b = 0 };
+  CpuState expected_state = {.b = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2671,7 +2760,7 @@ TEST_F(CpuTest, op_cb_89) {
   cpu->c.set_bit(1);
   cpu->op_cb_89();
 
-  CpuState expected_state = { .c = 0 };
+  CpuState expected_state = {.c = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2679,7 +2768,7 @@ TEST_F(CpuTest, op_cb_8a) {
   cpu->d.set_bit(1);
   cpu->op_cb_8a();
 
-  CpuState expected_state = { .d = 0 };
+  CpuState expected_state = {.d = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2687,7 +2776,7 @@ TEST_F(CpuTest, op_cb_8b) {
   cpu->e.set_bit(1);
   cpu->op_cb_8b();
 
-  CpuState expected_state = { .e = 0 };
+  CpuState expected_state = {.e = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2695,7 +2784,7 @@ TEST_F(CpuTest, op_cb_8c) {
   cpu->h.set_bit(1);
   cpu->op_cb_8c();
 
-  CpuState expected_state = { .h = 0 };
+  CpuState expected_state = {.h = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2703,7 +2792,7 @@ TEST_F(CpuTest, op_cb_8d) {
   cpu->l.set_bit(1);
   cpu->op_cb_8d();
 
-  CpuState expected_state = { .l = 0 };
+  CpuState expected_state = {.l = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2713,7 +2802,7 @@ TEST_F(CpuTest, op_cb_8e) {
   EXPECT_CALL(*mmu, write(ADDR, 0)).Times(1);
 
   cpu->op_cb_8e();
-  CpuState expected_state = { .hl = ADDR };
+  CpuState expected_state = {.hl = ADDR};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2721,7 +2810,7 @@ TEST_F(CpuTest, op_cb_8f) {
   cpu->a.set_bit(1);
   cpu->op_cb_8f();
 
-  CpuState expected_state = { .a = 0 };
+  CpuState expected_state = {.a = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2729,7 +2818,7 @@ TEST_F(CpuTest, op_cb_90) {
   cpu->b.set_bit(2);
   cpu->op_cb_90();
 
-  CpuState expected_state = { .b = 0 };
+  CpuState expected_state = {.b = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2737,7 +2826,7 @@ TEST_F(CpuTest, op_cb_91) {
   cpu->c.set_bit(2);
   cpu->op_cb_91();
 
-  CpuState expected_state = { .c = 0 };
+  CpuState expected_state = {.c = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2745,7 +2834,7 @@ TEST_F(CpuTest, op_cb_92) {
   cpu->d.set_bit(2);
   cpu->op_cb_92();
 
-  CpuState expected_state = { .d = 0 };
+  CpuState expected_state = {.d = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2753,7 +2842,7 @@ TEST_F(CpuTest, op_cb_93) {
   cpu->e.set_bit(2);
   cpu->op_cb_93();
 
-  CpuState expected_state = { .e = 0 };
+  CpuState expected_state = {.e = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2761,7 +2850,7 @@ TEST_F(CpuTest, op_cb_94) {
   cpu->h.set_bit(2);
   cpu->op_cb_94();
 
-  CpuState expected_state = { .h = 0 };
+  CpuState expected_state = {.h = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2769,7 +2858,7 @@ TEST_F(CpuTest, op_cb_95) {
   cpu->l.set_bit(2);
   cpu->op_cb_95();
 
-  CpuState expected_state = { .l = 0 };
+  CpuState expected_state = {.l = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2779,7 +2868,7 @@ TEST_F(CpuTest, op_cb_96) {
   EXPECT_CALL(*mmu, write(ADDR, 0)).Times(1);
 
   cpu->op_cb_96();
-  CpuState expected_state = { .hl = ADDR };
+  CpuState expected_state = {.hl = ADDR};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2787,7 +2876,7 @@ TEST_F(CpuTest, op_cb_97) {
   cpu->a.set_bit(2);
   cpu->op_cb_97();
 
-  CpuState expected_state = { .a = 0 };
+  CpuState expected_state = {.a = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2795,7 +2884,7 @@ TEST_F(CpuTest, op_cb_98) {
   cpu->b.set_bit(3);
   cpu->op_cb_98();
 
-  CpuState expected_state = { .b = 0 };
+  CpuState expected_state = {.b = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2803,7 +2892,7 @@ TEST_F(CpuTest, op_cb_99) {
   cpu->c.set_bit(3);
   cpu->op_cb_99();
 
-  CpuState expected_state = { .c = 0 };
+  CpuState expected_state = {.c = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2811,7 +2900,7 @@ TEST_F(CpuTest, op_cb_9a) {
   cpu->d.set_bit(3);
   cpu->op_cb_9a();
 
-  CpuState expected_state = { .d = 0 };
+  CpuState expected_state = {.d = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2819,7 +2908,7 @@ TEST_F(CpuTest, op_cb_9b) {
   cpu->e.set_bit(3);
   cpu->op_cb_9b();
 
-  CpuState expected_state = { .e = 0 };
+  CpuState expected_state = {.e = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2827,7 +2916,7 @@ TEST_F(CpuTest, op_cb_9c) {
   cpu->h.set_bit(3);
   cpu->op_cb_9c();
 
-  CpuState expected_state = { .h = 0 };
+  CpuState expected_state = {.h = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2835,7 +2924,7 @@ TEST_F(CpuTest, op_cb_9d) {
   cpu->l.set_bit(3);
   cpu->op_cb_9d();
 
-  CpuState expected_state = { .l = 0 };
+  CpuState expected_state = {.l = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2845,7 +2934,7 @@ TEST_F(CpuTest, op_cb_9e) {
   EXPECT_CALL(*mmu, write(ADDR, 0)).Times(1);
 
   cpu->op_cb_9e();
-  CpuState expected_state = { .hl = ADDR };
+  CpuState expected_state = {.hl = ADDR};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2853,7 +2942,7 @@ TEST_F(CpuTest, op_cb_9f) {
   cpu->a.set_bit(3);
   cpu->op_cb_9f();
 
-  CpuState expected_state = { .a = 0 };
+  CpuState expected_state = {.a = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2861,7 +2950,7 @@ TEST_F(CpuTest, op_cb_a0) {
   cpu->b.set_bit(4);
   cpu->op_cb_a0();
 
-  CpuState expected_state = { .b = 0 };
+  CpuState expected_state = {.b = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2869,7 +2958,7 @@ TEST_F(CpuTest, op_cb_a1) {
   cpu->c.set_bit(4);
   cpu->op_cb_a1();
 
-  CpuState expected_state = { .c = 0 };
+  CpuState expected_state = {.c = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2877,7 +2966,7 @@ TEST_F(CpuTest, op_cb_a2) {
   cpu->d.set_bit(4);
   cpu->op_cb_a2();
 
-  CpuState expected_state = { .d = 0 };
+  CpuState expected_state = {.d = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2885,7 +2974,7 @@ TEST_F(CpuTest, op_cb_a3) {
   cpu->e.set_bit(4);
   cpu->op_cb_a3();
 
-  CpuState expected_state = { .e = 0 };
+  CpuState expected_state = {.e = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2893,7 +2982,7 @@ TEST_F(CpuTest, op_cb_a4) {
   cpu->h.set_bit(4);
   cpu->op_cb_a4();
 
-  CpuState expected_state = { .h = 0 };
+  CpuState expected_state = {.h = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2901,7 +2990,7 @@ TEST_F(CpuTest, op_cb_a5) {
   cpu->l.set_bit(4);
   cpu->op_cb_a5();
 
-  CpuState expected_state = { .l = 0 };
+  CpuState expected_state = {.l = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2911,7 +3000,7 @@ TEST_F(CpuTest, op_cb_a6) {
   EXPECT_CALL(*mmu, write(ADDR, 0)).Times(1);
 
   cpu->op_cb_a6();
-  CpuState expected_state = { .hl = ADDR };
+  CpuState expected_state = {.hl = ADDR};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2919,7 +3008,7 @@ TEST_F(CpuTest, op_cb_a7) {
   cpu->a.set_bit(4);
   cpu->op_cb_a7();
 
-  CpuState expected_state = { .a = 0 };
+  CpuState expected_state = {.a = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2927,7 +3016,7 @@ TEST_F(CpuTest, op_cb_a8) {
   cpu->b.set_bit(5);
   cpu->op_cb_a8();
 
-  CpuState expected_state = { .b = 0 };
+  CpuState expected_state = {.b = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2935,7 +3024,7 @@ TEST_F(CpuTest, op_cb_a9) {
   cpu->c.set_bit(5);
   cpu->op_cb_a9();
 
-  CpuState expected_state = { .c = 0 };
+  CpuState expected_state = {.c = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2943,7 +3032,7 @@ TEST_F(CpuTest, op_cb_aa) {
   cpu->d.set_bit(5);
   cpu->op_cb_aa();
 
-  CpuState expected_state = { .d = 0 };
+  CpuState expected_state = {.d = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2951,7 +3040,7 @@ TEST_F(CpuTest, op_cb_ab) {
   cpu->e.set_bit(5);
   cpu->op_cb_ab();
 
-  CpuState expected_state = { .e = 0 };
+  CpuState expected_state = {.e = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2959,7 +3048,7 @@ TEST_F(CpuTest, op_cb_ac) {
   cpu->h.set_bit(5);
   cpu->op_cb_ac();
 
-  CpuState expected_state = { .h = 0 };
+  CpuState expected_state = {.h = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2967,7 +3056,7 @@ TEST_F(CpuTest, op_cb_ad) {
   cpu->l.set_bit(5);
   cpu->op_cb_ad();
 
-  CpuState expected_state = { .l = 0 };
+  CpuState expected_state = {.l = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2977,7 +3066,7 @@ TEST_F(CpuTest, op_cb_ae) {
   EXPECT_CALL(*mmu, write(ADDR, 0)).Times(1);
 
   cpu->op_cb_ae();
-  CpuState expected_state = { .hl = ADDR };
+  CpuState expected_state = {.hl = ADDR};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2985,7 +3074,7 @@ TEST_F(CpuTest, op_cb_af) {
   cpu->a.set_bit(5);
   cpu->op_cb_af();
 
-  CpuState expected_state = { .a = 0 };
+  CpuState expected_state = {.a = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -2993,7 +3082,7 @@ TEST_F(CpuTest, op_cb_b0) {
   cpu->b.set_bit(6);
   cpu->op_cb_b0();
 
-  CpuState expected_state = { .b = 0 };
+  CpuState expected_state = {.b = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -3001,7 +3090,7 @@ TEST_F(CpuTest, op_cb_b1) {
   cpu->c.set_bit(6);
   cpu->op_cb_b1();
 
-  CpuState expected_state = { .c = 0 };
+  CpuState expected_state = {.c = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -3009,7 +3098,7 @@ TEST_F(CpuTest, op_cb_b2) {
   cpu->d.set_bit(6);
   cpu->op_cb_b2();
 
-  CpuState expected_state = { .d = 0 };
+  CpuState expected_state = {.d = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -3017,7 +3106,7 @@ TEST_F(CpuTest, op_cb_b3) {
   cpu->e.set_bit(6);
   cpu->op_cb_b3();
 
-  CpuState expected_state = { .e = 0 };
+  CpuState expected_state = {.e = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -3025,7 +3114,7 @@ TEST_F(CpuTest, op_cb_b4) {
   cpu->h.set_bit(6);
   cpu->op_cb_b4();
 
-  CpuState expected_state = { .h = 0 };
+  CpuState expected_state = {.h = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -3033,7 +3122,7 @@ TEST_F(CpuTest, op_cb_b5) {
   cpu->l.set_bit(6);
   cpu->op_cb_b5();
 
-  CpuState expected_state = { .l = 0 };
+  CpuState expected_state = {.l = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -3043,7 +3132,7 @@ TEST_F(CpuTest, op_cb_b6) {
   EXPECT_CALL(*mmu, write(ADDR, 0)).Times(1);
 
   cpu->op_cb_b6();
-  CpuState expected_state = { .hl = ADDR };
+  CpuState expected_state = {.hl = ADDR};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -3051,7 +3140,7 @@ TEST_F(CpuTest, op_cb_b7) {
   cpu->a.set_bit(6);
   cpu->op_cb_b7();
 
-  CpuState expected_state = { .a = 0 };
+  CpuState expected_state = {.a = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -3059,7 +3148,7 @@ TEST_F(CpuTest, op_cb_b8) {
   cpu->b.set_bit(7);
   cpu->op_cb_b8();
 
-  CpuState expected_state = { .b = 0 };
+  CpuState expected_state = {.b = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -3067,7 +3156,7 @@ TEST_F(CpuTest, op_cb_b9) {
   cpu->c.set_bit(7);
   cpu->op_cb_b9();
 
-  CpuState expected_state = { .c = 0 };
+  CpuState expected_state = {.c = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -3075,7 +3164,7 @@ TEST_F(CpuTest, op_cb_ba) {
   cpu->d.set_bit(7);
   cpu->op_cb_ba();
 
-  CpuState expected_state = { .d = 0 };
+  CpuState expected_state = {.d = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -3083,7 +3172,7 @@ TEST_F(CpuTest, op_cb_bb) {
   cpu->e.set_bit(7);
   cpu->op_cb_bb();
 
-  CpuState expected_state = { .e = 0 };
+  CpuState expected_state = {.e = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -3091,7 +3180,7 @@ TEST_F(CpuTest, op_cb_bc) {
   cpu->h.set_bit(7);
   cpu->op_cb_bc();
 
-  CpuState expected_state = { .h = 0 };
+  CpuState expected_state = {.h = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -3099,7 +3188,7 @@ TEST_F(CpuTest, op_cb_bd) {
   cpu->l.set_bit(7);
   cpu->op_cb_bd();
 
-  CpuState expected_state = { .l = 0 };
+  CpuState expected_state = {.l = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -3109,7 +3198,7 @@ TEST_F(CpuTest, op_cb_be) {
   EXPECT_CALL(*mmu, write(ADDR, 0)).Times(1);
 
   cpu->op_cb_be();
-  CpuState expected_state = { .hl = ADDR };
+  CpuState expected_state = {.hl = ADDR};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -3117,49 +3206,49 @@ TEST_F(CpuTest, op_cb_bf) {
   cpu->a.set_bit(7);
   cpu->op_cb_bf();
 
-  CpuState expected_state = { .a = 0 };
+  CpuState expected_state = {.a = 0};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_c0) {
   cpu->op_cb_c0();
 
-  CpuState expected_state = { .b = (1 << 0) };
+  CpuState expected_state = {.b = (1 << 0)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_c1) {
   cpu->op_cb_c1();
 
-  CpuState expected_state = { .c = (1 << 0) };
+  CpuState expected_state = {.c = (1 << 0)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_c2) {
   cpu->op_cb_c2();
 
-  CpuState expected_state = { .d = (1 << 0) };
+  CpuState expected_state = {.d = (1 << 0)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_c3) {
   cpu->op_cb_c3();
 
-  CpuState expected_state = { .e = (1 << 0) };
+  CpuState expected_state = {.e = (1 << 0)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_c4) {
   cpu->op_cb_c4();
 
-  CpuState expected_state = { .h = (1 << 0) };
+  CpuState expected_state = {.h = (1 << 0)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_c5) {
   cpu->op_cb_c5();
 
-  CpuState expected_state = { .l = (1 << 0) };
+  CpuState expected_state = {.l = (1 << 0)};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -3169,56 +3258,56 @@ TEST_F(CpuTest, op_cb_c6) {
   EXPECT_CALL(*mmu, write(ADDR, (1 << 0))).Times(1);
 
   cpu->op_cb_c6();
-  CpuState expected_state = { .hl = ADDR };
+  CpuState expected_state = {.hl = ADDR};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_c7) {
   cpu->op_cb_c7();
 
-  CpuState expected_state = { .a = (1 << 0) };
+  CpuState expected_state = {.a = (1 << 0)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_c8) {
   cpu->op_cb_c8();
 
-  CpuState expected_state = { .b = (1 << 1) };
+  CpuState expected_state = {.b = (1 << 1)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_c9) {
   cpu->op_cb_c9();
 
-  CpuState expected_state = { .c = (1 << 1) };
+  CpuState expected_state = {.c = (1 << 1)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_ca) {
   cpu->op_cb_ca();
 
-  CpuState expected_state = { .d = (1 << 1) };
+  CpuState expected_state = {.d = (1 << 1)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_cb) {
   cpu->op_cb_cb();
 
-  CpuState expected_state = { .e = (1 << 1) };
+  CpuState expected_state = {.e = (1 << 1)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_cc) {
   cpu->op_cb_cc();
 
-  CpuState expected_state = { .h = (1 << 1) };
+  CpuState expected_state = {.h = (1 << 1)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_cd) {
   cpu->op_cb_cd();
 
-  CpuState expected_state = { .l = (1 << 1) };
+  CpuState expected_state = {.l = (1 << 1)};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -3228,56 +3317,56 @@ TEST_F(CpuTest, op_cb_ce) {
   EXPECT_CALL(*mmu, write(ADDR, (1 << 1))).Times(1);
 
   cpu->op_cb_ce();
-  CpuState expected_state = { .hl = ADDR };
+  CpuState expected_state = {.hl = ADDR};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_cf) {
   cpu->op_cb_cf();
 
-  CpuState expected_state = { .a = (1 << 1) };
+  CpuState expected_state = {.a = (1 << 1)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_d0) {
   cpu->op_cb_d0();
 
-  CpuState expected_state = { .b = (1 << 2) };
+  CpuState expected_state = {.b = (1 << 2)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_d1) {
   cpu->op_cb_d1();
 
-  CpuState expected_state = { .c = (1 << 2) };
+  CpuState expected_state = {.c = (1 << 2)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_d2) {
   cpu->op_cb_d2();
 
-  CpuState expected_state = { .d = (1 << 2) };
+  CpuState expected_state = {.d = (1 << 2)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_d3) {
   cpu->op_cb_d3();
 
-  CpuState expected_state = { .e = (1 << 2) };
+  CpuState expected_state = {.e = (1 << 2)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_d4) {
   cpu->op_cb_d4();
 
-  CpuState expected_state = { .h = (1 << 2) };
+  CpuState expected_state = {.h = (1 << 2)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_d5) {
   cpu->op_cb_d5();
 
-  CpuState expected_state = { .l = (1 << 2) };
+  CpuState expected_state = {.l = (1 << 2)};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -3287,56 +3376,56 @@ TEST_F(CpuTest, op_cb_d6) {
   EXPECT_CALL(*mmu, write(ADDR, (1 << 2))).Times(1);
 
   cpu->op_cb_d6();
-  CpuState expected_state = { .hl = ADDR };
+  CpuState expected_state = {.hl = ADDR};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_d7) {
   cpu->op_cb_d7();
 
-  CpuState expected_state = { .a = (1 << 2) };
+  CpuState expected_state = {.a = (1 << 2)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_d8) {
   cpu->op_cb_d8();
 
-  CpuState expected_state = { .b = (1 << 3) };
+  CpuState expected_state = {.b = (1 << 3)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_d9) {
   cpu->op_cb_d9();
 
-  CpuState expected_state = { .c = (1 << 3) };
+  CpuState expected_state = {.c = (1 << 3)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_da) {
   cpu->op_cb_da();
 
-  CpuState expected_state = { .d = (1 << 3) };
+  CpuState expected_state = {.d = (1 << 3)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_db) {
   cpu->op_cb_db();
 
-  CpuState expected_state = { .e = (1 << 3) };
+  CpuState expected_state = {.e = (1 << 3)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_dc) {
   cpu->op_cb_dc();
 
-  CpuState expected_state = { .h = (1 << 3) };
+  CpuState expected_state = {.h = (1 << 3)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_dd) {
   cpu->op_cb_dd();
 
-  CpuState expected_state = { .l = (1 << 3) };
+  CpuState expected_state = {.l = (1 << 3)};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -3346,56 +3435,56 @@ TEST_F(CpuTest, op_cb_de) {
   EXPECT_CALL(*mmu, write(ADDR, (1 << 3))).Times(1);
 
   cpu->op_cb_de();
-  CpuState expected_state = { .hl = ADDR };
+  CpuState expected_state = {.hl = ADDR};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_df) {
   cpu->op_cb_df();
 
-  CpuState expected_state = { .a = (1 << 3) };
+  CpuState expected_state = {.a = (1 << 3)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_e0) {
   cpu->op_cb_e0();
 
-  CpuState expected_state = { .b = (1 << 4) };
+  CpuState expected_state = {.b = (1 << 4)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_e1) {
   cpu->op_cb_e1();
 
-  CpuState expected_state = { .c = (1 << 4) };
+  CpuState expected_state = {.c = (1 << 4)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_e2) {
   cpu->op_cb_e2();
 
-  CpuState expected_state = { .d = (1 << 4) };
+  CpuState expected_state = {.d = (1 << 4)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_e3) {
   cpu->op_cb_e3();
 
-  CpuState expected_state = { .e = (1 << 4) };
+  CpuState expected_state = {.e = (1 << 4)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_e4) {
   cpu->op_cb_e4();
 
-  CpuState expected_state = { .h = (1 << 4) };
+  CpuState expected_state = {.h = (1 << 4)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_e5) {
   cpu->op_cb_e5();
 
-  CpuState expected_state = { .l = (1 << 4) };
+  CpuState expected_state = {.l = (1 << 4)};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -3405,56 +3494,56 @@ TEST_F(CpuTest, op_cb_e6) {
   EXPECT_CALL(*mmu, write(ADDR, (1 << 4))).Times(1);
 
   cpu->op_cb_e6();
-  CpuState expected_state = { .hl = ADDR };
+  CpuState expected_state = {.hl = ADDR};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_e7) {
   cpu->op_cb_e7();
 
-  CpuState expected_state = { .a = (1 << 4) };
+  CpuState expected_state = {.a = (1 << 4)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_e8) {
   cpu->op_cb_e8();
 
-  CpuState expected_state = { .b = (1 << 5) };
+  CpuState expected_state = {.b = (1 << 5)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_e9) {
   cpu->op_cb_e9();
 
-  CpuState expected_state = { .c = (1 << 5) };
+  CpuState expected_state = {.c = (1 << 5)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_ea) {
   cpu->op_cb_ea();
 
-  CpuState expected_state = { .d = (1 << 5) };
+  CpuState expected_state = {.d = (1 << 5)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_eb) {
   cpu->op_cb_eb();
 
-  CpuState expected_state = { .e = (1 << 5) };
+  CpuState expected_state = {.e = (1 << 5)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_ec) {
   cpu->op_cb_ec();
 
-  CpuState expected_state = { .h = (1 << 5) };
+  CpuState expected_state = {.h = (1 << 5)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_ed) {
   cpu->op_cb_ed();
 
-  CpuState expected_state = { .l = (1 << 5) };
+  CpuState expected_state = {.l = (1 << 5)};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -3464,56 +3553,56 @@ TEST_F(CpuTest, op_cb_ee) {
   EXPECT_CALL(*mmu, write(ADDR, (1 << 5))).Times(1);
 
   cpu->op_cb_ee();
-  CpuState expected_state = { .hl = ADDR };
+  CpuState expected_state = {.hl = ADDR};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_ef) {
   cpu->op_cb_ef();
 
-  CpuState expected_state = { .a = (1 << 5) };
+  CpuState expected_state = {.a = (1 << 5)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_f0) {
   cpu->op_cb_f0();
 
-  CpuState expected_state = { .b = (1 << 6) };
+  CpuState expected_state = {.b = (1 << 6)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_f1) {
   cpu->op_cb_f1();
 
-  CpuState expected_state = { .c = (1 << 6) };
+  CpuState expected_state = {.c = (1 << 6)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_f2) {
   cpu->op_cb_f2();
 
-  CpuState expected_state = { .d = (1 << 6) };
+  CpuState expected_state = {.d = (1 << 6)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_f3) {
   cpu->op_cb_f3();
 
-  CpuState expected_state = { .e = (1 << 6) };
+  CpuState expected_state = {.e = (1 << 6)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_f4) {
   cpu->op_cb_f4();
 
-  CpuState expected_state = { .h = (1 << 6) };
+  CpuState expected_state = {.h = (1 << 6)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_f5) {
   cpu->op_cb_f5();
 
-  CpuState expected_state = { .l = (1 << 6) };
+  CpuState expected_state = {.l = (1 << 6)};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -3523,56 +3612,56 @@ TEST_F(CpuTest, op_cb_f6) {
   EXPECT_CALL(*mmu, write(ADDR, (1 << 6))).Times(1);
 
   cpu->op_cb_f6();
-  CpuState expected_state = { .hl = ADDR };
+  CpuState expected_state = {.hl = ADDR};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_f7) {
   cpu->op_cb_f7();
 
-  CpuState expected_state = { .a = (1 << 6) };
+  CpuState expected_state = {.a = (1 << 6)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_f8) {
   cpu->op_cb_f8();
 
-  CpuState expected_state = { .b = (1 << 7) };
+  CpuState expected_state = {.b = (1 << 7)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_f9) {
   cpu->op_cb_f9();
 
-  CpuState expected_state = { .c = (1 << 7) };
+  CpuState expected_state = {.c = (1 << 7)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_fa) {
   cpu->op_cb_fa();
 
-  CpuState expected_state = { .d = (1 << 7) };
+  CpuState expected_state = {.d = (1 << 7)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_fb) {
   cpu->op_cb_fb();
 
-  CpuState expected_state = { .e = (1 << 7) };
+  CpuState expected_state = {.e = (1 << 7)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_fc) {
   cpu->op_cb_fc();
 
-  CpuState expected_state = { .h = (1 << 7) };
+  CpuState expected_state = {.h = (1 << 7)};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_fd) {
   cpu->op_cb_fd();
 
-  CpuState expected_state = { .l = (1 << 7) };
+  CpuState expected_state = {.l = (1 << 7)};
   EXPECT_EQ(expected_state, cpu);
 }
 
@@ -3582,14 +3671,14 @@ TEST_F(CpuTest, op_cb_fe) {
   EXPECT_CALL(*mmu, write(ADDR, (1 << 7))).Times(1);
 
   cpu->op_cb_fe();
-  CpuState expected_state = { .hl = ADDR };
+  CpuState expected_state = {.hl = ADDR};
   EXPECT_EQ(expected_state, cpu);
 }
 
 TEST_F(CpuTest, op_cb_ff) {
   cpu->op_cb_ff();
 
-  CpuState expected_state = { .a = (1 << 7) };
+  CpuState expected_state = {.a = (1 << 7)};
   EXPECT_EQ(expected_state, cpu);
 }
 

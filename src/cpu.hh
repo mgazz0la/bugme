@@ -123,6 +123,14 @@ private:
   void set(const bit_t bit, ByteRegister &reg);
   void set(const bit_t bit, const word_t addr);
 
+  void pop(WordRegister &reg);
+
+  void push(const WordRegister &reg);
+
+  void ret();
+  void ret_if(bool condition);
+  /* void reti(); */  // we'll deal with this when we think about interrupts
+
   ByteRegister a, b, c, d, e, h, l;
   ByteRegisterPair af, bc, de, hl;
   WordValuedRegister pc;

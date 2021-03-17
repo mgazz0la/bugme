@@ -208,16 +208,16 @@ void Cpu::op_bd() { cp(l); }
 void Cpu::op_be() { cp(_(hl)); }
 void Cpu::op_bf() { cp(a); }
 
-void Cpu::op_c0() { /* TODO */ }
-void Cpu::op_c1() { /* TODO */ }
+void Cpu::op_c0() { ret_if(!f.zero_flag()); }
+void Cpu::op_c1() { pop(bc); }
 void Cpu::op_c2() { /* TODO */ }
 void Cpu::op_c3() { /* TODO */ }
 void Cpu::op_c4() { /* TODO */ }
-void Cpu::op_c5() { /* TODO */ }
+void Cpu::op_c5() { push(bc); }
 void Cpu::op_c6() { add(a); }
 void Cpu::op_c7() { /* TODO */ }
-void Cpu::op_c8() { /* TODO */ }
-void Cpu::op_c9() { /* TODO */ }
+void Cpu::op_c8() { ret_if(f.zero_flag()); }
+void Cpu::op_c9() { ret(); }
 void Cpu::op_ca() { /* TODO */ }
 void Cpu::op_cb() { /* TODO */ }
 void Cpu::op_cc() { /* TODO */ }
@@ -225,16 +225,16 @@ void Cpu::op_cd() { /* TODO */ }
 void Cpu::op_ce() { adc(a); }
 void Cpu::op_cf() { /* TODO */ }
 
-void Cpu::op_d0() { /* TODO */ }
-void Cpu::op_d1() { /* TODO */ }
+void Cpu::op_d0() { ret_if(!f.carry_flag()); }
+void Cpu::op_d1() { pop(de); }
 void Cpu::op_d2() { /* TODO */ }
 void Cpu::op_d3() { throw "illegal op d3"; }
 void Cpu::op_d4() { /* TODO */ }
-void Cpu::op_d5() { /* TODO */ }
+void Cpu::op_d5() { push(de); }
 void Cpu::op_d6() { sub(a); }
 void Cpu::op_d7() { /* TODO */ }
-void Cpu::op_d8() { /* TODO */ }
-void Cpu::op_d9() { /* TODO */ }
+void Cpu::op_d8() { ret_if(f.carry_flag()); }
+void Cpu::op_d9() { /* reti(); */ }
 void Cpu::op_da() { /* TODO */ }
 void Cpu::op_db() { throw "illegal op db"; }
 void Cpu::op_dc() { /* TODO */ }
@@ -243,11 +243,11 @@ void Cpu::op_de() { sbc(a); }
 void Cpu::op_df() { /* TODO */ }
 
 void Cpu::op_e0() { /* TODO */ }
-void Cpu::op_e1() { /* TODO */ }
+void Cpu::op_e1() { pop(hl); }
 void Cpu::op_e2() { /* TODO */ }
 void Cpu::op_e3() { throw "illegal op e3"; }
 void Cpu::op_e4() { throw "illegal op e4"; }
-void Cpu::op_e5() { /* TODO */ }
+void Cpu::op_e5() { push(hl); }
 void Cpu::op_e6() { a_and(); }
 void Cpu::op_e7() { /* TODO */ }
 void Cpu::op_e8() { /* TODO */ }
@@ -260,11 +260,11 @@ void Cpu::op_ee() { a_xor(); }
 void Cpu::op_ef() { /* TODO */ }
 
 void Cpu::op_f0() { /* TODO */ }
-void Cpu::op_f1() { /* TODO */ }
+void Cpu::op_f1() { pop(af); }
 void Cpu::op_f2() { /* TODO */ }
 void Cpu::op_f3() { /* TODO */ }
 void Cpu::op_f4() { throw "illegal op f4"; }
-void Cpu::op_f5() { /* TODO */ }
+void Cpu::op_f5() { push(af); }
 void Cpu::op_f6() { a_or(); }
 void Cpu::op_f7() { /* TODO */ }
 void Cpu::op_f8() { /* TODO */ }
