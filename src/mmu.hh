@@ -20,8 +20,6 @@ public:
   virtual bool is_boot_rom_active() const;
   void reset();
 private:
-  // before you ask, it's inclusive
-  bool in_range(word_t addr, word_t low, word_t high) const;
   byte_t _read(word_t addr) const;
   void _write(word_t addr, byte_t byte);
 

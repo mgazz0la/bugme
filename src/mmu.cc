@@ -166,10 +166,6 @@ void Mmu::write(word_t addr, byte_t byte) {
   throw "could not write to address " + addr;
 }
 
-bool Mmu::in_range(word_t addr, word_t low, word_t high) const {
-  return ((low <= addr) && (addr <= high));
-}
-
 bool Mmu::is_boot_rom_active() const { return _read(REG_BOOT_ROM_ACTIVE) != 0x1; }
 
 byte_t Mmu::_read(word_t addr) const { return memory_.at(addr); }
