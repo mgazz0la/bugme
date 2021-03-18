@@ -1,3 +1,4 @@
 build/*
 .vim/
 Session.vim
+.ccls-cache/
