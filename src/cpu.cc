@@ -20,11 +20,11 @@ void Cpu::run() {
   while (!stopped_ && !halted_) {
     opcode = next_byte();
     if (opcode != 0xcb) {
-      log_info("0x%04X: %s (0x%x)", pc.value(), opcode::NAMES[opcode].c_str(), opcode);
+      log_debug("0x%04X: %s (0x%x)", pc.value(), opcode::NAMES[opcode].c_str(), opcode);
       op(opcode);
     } else {
       opcode = next_byte();
-      log_info("0x%04X: %s (0x%x)", pc.value(), opcode::CB_NAMES[opcode].c_str(), opcode);
+      log_debug("0x%04X: %s (0x%x)", pc.value(), opcode::CB_NAMES[opcode].c_str(), opcode);
       cb_op(opcode);
     }
 
@@ -430,7 +430,7 @@ void Cpu::stop() { stopped_ = true; }
 void Cpu::halt() { halted_ = true; }
 
 void Cpu::jr() {
-  std::int8_t offset = static_cast<std::int8_t>(next_byte());
+  std::int16_t offset = static_cast<std::int8_t>(next_byte());
   pc.set(static_cast<uint16_t>(pc.value() + offset));
 }
 
@@ -709,6 +709,20 @@ void Cpu::ret_if(bool condition) {
 }
 
 //void Cpu::reti() {}
+
+void Cpu::ldh(const byte_t addr_low, const ByteRegister &reg) {
+  mmu_->write(util::fuse(0xFF, addr_low), reg.value());
+}
+
+void Cpu::ldh(ByteRegister &reg, const byte_t addr_low) {
+  reg.set(mmu_->read(util::fuse(0xFF, addr_low)));
+}
+
+void Cpu::call() {
+  word_t jp_addr = next_word();
+  push(pc);
+  pc.set(jp_addr);
+}
 
 /* clang-format off */
 void Cpu::op(word_t word) {

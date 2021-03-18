@@ -19,6 +19,7 @@ public:
 private:
   // Alias for reg.value()
   static inline word_t _(WordRegister &reg) { return reg.value(); }
+  static inline byte_t _(ByteRegister &reg) { return reg.value(); }
 
   byte_t next_byte();
   word_t next_word();
@@ -132,6 +133,12 @@ private:
   void ret();
   void ret_if(bool condition);
   /* void reti(); */  // we'll deal with this when we think about interrupts
+
+  void ldh(const byte_t addr_low, const ByteRegister &reg);
+  void ldh(ByteRegister &reg, const byte_t addr_low);
+
+  void call();
+  /* void call_if(bool condition); */
 
   ByteRegister a, b, c, d, e, h, l;
   ByteRegisterPair af, bc, de, hl;

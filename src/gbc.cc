@@ -8,7 +8,7 @@ namespace gbc {
 Gbc::Gbc() : mmu(new Mmu()), cpu(new Cpu(mmu)) {}
 
 void Gbc::start() {
-  log_set_level(LogLevel::Info);
+  log_set_level(LogLevel::Debug);
   cpu->run();
 }
 std::string Gbc::status() const { return "cpu, mmu instantiate correctly"; }
