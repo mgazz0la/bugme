@@ -1,8 +1,12 @@
 #ifndef GBC_REGISTER_H
 #define GBC_REGISTER_H
 
+#include "log.hh"
 #include "types.hh"
 #include <cstdint>
+
+#include <functional>
+#include <memory>
 
 namespace gbc {
 
@@ -20,6 +24,18 @@ public:
 template <typename T> class WriteableValue : public ReadableValue<T> {
 public:
   virtual void set(T) = 0;
+  virtual void reset() { set(0); }
+
+  virtual void increment() { set(this->value() + 1); }
+  virtual void decrement() { set(this->value() - 1); }
+
+  bool get_bit(bit_t bit) const { return !!(this->value() & (1 << bit)); }
+  virtual void set_bit(bit_t bit) { set(this->value() | (1 << bit)); }
+  void clear_bit(bit_t bit) { set(this->value() & ~(1 << bit)); }
+  virtual void flip_bit(bit_t bit) { set(this->value() ^ (1 << bit)); }
+  virtual void write_bit(bit_t bit, bool bit_value) {
+    bit_value ? set_bit(bit) : clear_bit(bit);
+  }
 };
 
 typedef ReadableValue<byte_t> ReadableByte;
@@ -54,21 +70,42 @@ public:
 
   byte_t value() const override { return value_; }
   virtual void set(byte_t new_value) override { value_ = new_value; }
-  virtual void reset() { value_ = 0x0; }
-
-  virtual void increment() { value_ += 1; }
-  virtual void decrement() { value_ -= 1; }
-
-  bool get_bit(bit_t bit) const { return !!(value_ & (1 << bit)); }
-  virtual void set_bit(bit_t bit) { value_ |= (1 << bit); }
-  void clear_bit(bit_t bit) { value_ &= ~(1 << bit); }
-  virtual void flip_bit(bit_t bit) { value_ ^= (1 << bit); }
-  virtual void write_bit(bit_t bit, bool bit_value) {
-    bit_value ? set_bit(bit) : clear_bit(bit);
-  }
 
 private:
   byte_t value_ = 0x0;
+};
+
+struct AddressProvider {
+  AddressProvider() = default;
+  virtual ~AddressProvider() = default;
+
+  virtual byte_t read(word_t addr) const = 0;
+  virtual void write(word_t addr, byte_t value) = 0;
+};
+
+class Address {
+public:
+  Address(std::shared_ptr<AddressProvider> mmu, word_t addr)
+      : mmu_(mmu), addr_(addr) {}
+
+  byte_t read() const { return mmu_->read(addr_); }
+  void write(byte_t v) { mmu_->write(addr_, v); }
+
+private:
+  std::shared_ptr<AddressProvider> mmu_;
+  word_t addr_;
+};
+
+class AddressRegister : public WriteableByte {
+public:
+  AddressRegister(Address addr) : addr_(addr) {}
+  virtual ~AddressRegister() = default;
+
+  byte_t value() const override { return addr_.read(); }
+  virtual void set(byte_t new_value) override { addr_.write(new_value); }
+
+private:
+  Address addr_;
 };
 
 class WordRegister : public WriteableWord {
@@ -78,9 +115,6 @@ public:
 
   virtual byte_t low() const = 0;
   virtual byte_t high() const = 0;
-
-  virtual void increment() = 0;
-  virtual void decrement() = 0;
 };
 
 class WordValuedRegister : public WordRegister {
@@ -89,13 +123,9 @@ public:
 
   word_t value() const override { return value_; }
   void set(word_t new_value) override { value_ = new_value; }
-  void reset() { value_ = 0x0; }
 
   byte_t low() const override { return static_cast<byte_t>(value_); }
   byte_t high() const override { return static_cast<byte_t>(value_ >> 8); }
-
-  void increment() override { value_ += 1; }
-  void decrement() override { value_ -= 1; }
 
 private:
   word_t value_ = 0x0;
@@ -117,9 +147,6 @@ public:
 
   byte_t low() const override { return low_.value(); }
   byte_t high() const override { return high_.value(); }
-
-  void increment() override { set(value() + 1); }
-  void decrement() override { set(value() - 1); }
 
 private:
   ByteRegister &high_;

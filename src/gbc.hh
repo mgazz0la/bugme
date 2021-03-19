@@ -8,6 +8,7 @@ namespace gbc {
 
 class Cpu;
 class Mmu;
+class Ppu;
 
 class Gbc {
 public:
@@ -19,6 +20,7 @@ public:
 private:
   std::shared_ptr<Mmu> mmu;
   std::shared_ptr<Cpu> cpu;
+  std::shared_ptr<Ppu> ppu;
 };
 } // namespace gbc
 #endif

@@ -14,7 +14,7 @@ class Cpu {
 public:
   explicit Cpu(std::shared_ptr<Mmu> mmu);
 
-  void run();
+  cycles_t tick();
   void reset();
 
 private:

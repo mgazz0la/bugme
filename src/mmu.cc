@@ -1,6 +1,7 @@
 #include "mmu.hh"
 #include "bootrom.hh"
 #include "cpu.hh"
+#include "log.hh"
 #include "util.hh"
 
 #include <algorithm>
@@ -177,4 +178,5 @@ void Mmu::_write(word_t addr, byte_t byte) { memory_.at(addr) = byte; }
 
 void Mmu::reset() { memory_ = std::vector<byte_t>(0x10000); }
 
+Address Mmu::addr(word_t addr_) { return Address(shared_from_this(), addr_); }
 } // namespace gbc

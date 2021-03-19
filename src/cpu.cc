@@ -13,24 +13,33 @@
 namespace gbc {
 
 Cpu::Cpu(std::shared_ptr<Mmu> mmu)
-    : af(a, f), bc(b, c), de(d, e), hl(h, l), mmu_(mmu) {}
+    : af(a, f), bc(b, c), de(d, e), hl(h, l), mmu_(mmu) {
+  pc.set(0xFFFF);
+}
 
-void Cpu::run() {
-  byte_t opcode;
-  pc.decrement();
-
-  while (!stopped_ && !halted_) {
-    opcode = next_byte();
-    if (opcode != 0xcb) {
-      log_debug("0x%04X: %s (0x%x)", pc.value(), opcode::NAMES[opcode].c_str(),
-                opcode);
-      op(opcode);
-    } else {
-      opcode = next_byte();
-      log_debug("0x%04X: %s (0x%x)", pc.value(),
-                opcode::CB_NAMES[opcode].c_str(), opcode);
-      cb_op(opcode);
+cycles_t Cpu::tick() {
+  if (halted_ || stopped_) {
+    return 1;
+  }
+  byte_t opcode = next_byte();
+  if (opcode == 0x00) {
+    exit(1);
+  }
+  if (opcode != 0xcb) {
+    log_debug("0x%04X: %s (0x%x)", pc.value(), opcode::NAMES[opcode].c_str(),
+              opcode);
+    op(opcode);
+    if (did_branch_) {
+      did_branch_ = false;
+      return opcode::BRANCHED_CYCLES[opcode];
     }
+    return opcode::CYCLES[opcode];
+  } else {
+    opcode = next_byte();
+    log_debug("0x%04X: %s (0xcb 0x%x)", pc.value(),
+              opcode::CB_NAMES[opcode].c_str(), opcode);
+    cb_op(opcode);
+    return opcode::CB_CYCLES[opcode];
   }
 }
 
@@ -444,6 +453,7 @@ void Cpu::jr_if(bool condition) {
     jr();
   } else {
     next_byte(); // gotta waste this arg
+    return;
   }
 }
 
