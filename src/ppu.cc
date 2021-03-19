@@ -54,7 +54,6 @@ void Ppu::tick(cycles_t cycles) {
         lcd_status.set_bit(0);
         lcd_status.clear_bit(1);
         mode_ = Mode::VBLANK;
-      } else if (line.value() == 145) {
       } else {
         lcd_status.clear_bit(0);
         lcd_status.set_bit(1);
