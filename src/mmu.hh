@@ -19,6 +19,7 @@ public:
 
   virtual bool is_boot_rom_active() const;
   void reset();
+
 private:
   byte_t _read(word_t addr) const;
   void _write(word_t addr, byte_t byte);

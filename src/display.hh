@@ -5,6 +5,6 @@ namespace gbc {
 
 class Display {};
 
-}
+} // namespace gbc
 
 #endif

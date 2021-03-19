@@ -1,42 +1,42 @@
-#include "bootrom.hh"
 #include "mmu.hh"
+#include "bootrom.hh"
 #include "cpu.hh"
 #include "util.hh"
 
 #include <algorithm>
 
-#define CARTRIDGE_ROM_START   (0)
-#define CARTRIDGE_ROM_END     (0x7FFF)
+#define CARTRIDGE_ROM_START (0)
+#define CARTRIDGE_ROM_END (0x7FFF)
 
-#define BOOT_ROM_START        (0)
-#define BOOT_ROM_END          (0x00FF)
+#define BOOT_ROM_START (0)
+#define BOOT_ROM_END (0x00FF)
 
-#define VRAM_START            (0x8000)
-#define VRAM_END              (0x9FFF)
+#define VRAM_START (0x8000)
+#define VRAM_END (0x9FFF)
 
-#define CARTRIDGE_RAM_START   (0xA000)
-#define CARTRIDGE_RAM_END     (0xBFFF)
+#define CARTRIDGE_RAM_START (0xA000)
+#define CARTRIDGE_RAM_END (0xBFFF)
 
-#define WORK_RAM_START        (0xC000)
-#define WORK_RAM_END          (0xDFFF)
+#define WORK_RAM_START (0xC000)
+#define WORK_RAM_END (0xDFFF)
 
-#define ECHO_WORK_RAM_START   (0xE000)
-#define ECHO_WORK_RAM_END     (0xFDFF)
+#define ECHO_WORK_RAM_START (0xE000)
+#define ECHO_WORK_RAM_END (0xFDFF)
 
-#define OAM_START             (0xFE00)
-#define OAM_END               (0xFE9F)
+#define OAM_START (0xFE00)
+#define OAM_END (0xFE9F)
 
-#define UNUSED_START          (0xFEA0)
-#define UNUSED_END            (0xFEFF)
+#define UNUSED_START (0xFEA0)
+#define UNUSED_END (0xFEFF)
 
-#define IO_REGISTERS_START    (0xFF00)
-#define IO_REGISTERS_END      (0xFF7F)
+#define IO_REGISTERS_START (0xFF00)
+#define IO_REGISTERS_END (0xFF7F)
 
-#define ZERO_PAGE_START       (0xFF80)
-#define ZERO_PAGE_END         (0xFFFE)
+#define ZERO_PAGE_START (0xFF80)
+#define ZERO_PAGE_END (0xFFFE)
 
-#define INTERRUPTS_ENABLED    (0xFFFF)
-#define REG_BOOT_ROM_ACTIVE   (0xFF50)
+#define INTERRUPTS_ENABLED (0xFFFF)
+#define REG_BOOT_ROM_ACTIVE (0xFF50)
 
 namespace gbc {
 
@@ -45,7 +45,8 @@ Mmu::Mmu() : memory_(std::vector<byte_t>(0x10000)) {}
 byte_t Mmu::read(word_t addr) const {
   // cartridge rom
   if (util::in_range(addr, CARTRIDGE_ROM_START, CARTRIDGE_ROM_END)) {
-    if (util::in_range(addr, BOOT_ROM_START, BOOT_ROM_END) && is_boot_rom_active()) {
+    if (util::in_range(addr, BOOT_ROM_START, BOOT_ROM_END) &&
+        is_boot_rom_active()) {
       return boot::ROM[addr];
     }
 
@@ -166,14 +167,14 @@ void Mmu::write(word_t addr, byte_t byte) {
   throw "could not write to address " + addr;
 }
 
-bool Mmu::is_boot_rom_active() const { return _read(REG_BOOT_ROM_ACTIVE) != 0x1; }
+bool Mmu::is_boot_rom_active() const {
+  return _read(REG_BOOT_ROM_ACTIVE) != 0x1;
+}
 
 byte_t Mmu::_read(word_t addr) const { return memory_.at(addr); }
 
 void Mmu::_write(word_t addr, byte_t byte) { memory_.at(addr) = byte; }
 
-void Mmu::reset() {
-  memory_ = std::vector<byte_t>(0x10000);
-}
+void Mmu::reset() { memory_ = std::vector<byte_t>(0x10000); }
 
 } // namespace gbc

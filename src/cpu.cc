@@ -1,6 +1,6 @@
 #include "cpu.hh"
-#include "mmu.hh"
 #include "log.hh"
+#include "mmu.hh"
 #include "opcode_cycles.hh"
 #include "opcode_names.hh"
 #include "register.hh"
@@ -12,24 +12,24 @@
 
 namespace gbc {
 
-Cpu::Cpu(std::shared_ptr<Mmu> mmu) : af(a, f), bc(b, c), de(d, e), hl(h, l), mmu_(mmu) {}
+Cpu::Cpu(std::shared_ptr<Mmu> mmu)
+    : af(a, f), bc(b, c), de(d, e), hl(h, l), mmu_(mmu) {}
 
 void Cpu::run() {
   byte_t opcode;
   pc.decrement();
+
   while (!stopped_ && !halted_) {
     opcode = next_byte();
     if (opcode != 0xcb) {
-      log_debug("0x%04X: %s (0x%x)", pc.value(), opcode::NAMES[opcode].c_str(), opcode);
+      log_debug("0x%04X: %s (0x%x)", pc.value(), opcode::NAMES[opcode].c_str(),
+                opcode);
       op(opcode);
     } else {
       opcode = next_byte();
-      log_debug("0x%04X: %s (0x%x)", pc.value(), opcode::CB_NAMES[opcode].c_str(), opcode);
+      log_debug("0x%04X: %s (0x%x)", pc.value(),
+                opcode::CB_NAMES[opcode].c_str(), opcode);
       cb_op(opcode);
-    }
-
-    if (opcode == 0x00) {
-      exit(0);
     }
   }
 }
@@ -60,8 +60,10 @@ byte_t Cpu::next_byte() {
 }
 
 word_t Cpu::next_word() {
-  word_t word = util::fuse(mmu_->read(pc.value() + 2), mmu_->read(pc.value() + 1));
-  pc.increment(); pc.increment();
+  word_t word =
+      util::fuse(mmu_->read(pc.value() + 2), mmu_->read(pc.value() + 1));
+  pc.increment();
+  pc.increment();
   return word;
 }
 
@@ -73,7 +75,9 @@ void Cpu::ld(ByteRegister &reg) {
   reg.set(v);
 }
 
-void Cpu::ld(ByteRegister &reg, const word_t addr) { reg.set(mmu_->read(addr)); }
+void Cpu::ld(ByteRegister &reg, const word_t addr) {
+  reg.set(mmu_->read(addr));
+}
 
 void Cpu::ld(ByteRegister &reg, const ByteRegister &other) {
   reg.set(other.value());
@@ -439,7 +443,7 @@ void Cpu::jr_if(bool condition) {
     did_branch_ = true;
     jr();
   } else {
-    next_byte();  // gotta waste this arg
+    next_byte(); // gotta waste this arg
   }
 }
 
@@ -636,8 +640,7 @@ void Cpu::cp(ByteRegister &reg) {
 
   f.write_zero_flag(value == other_value);
   f.set_subtract_flag();
-  f.write_half_carry_flag(((value & 0xF) - (other_value & 0xF)) <
-                          0);
+  f.write_half_carry_flag(((value & 0xF) - (other_value & 0xF)) < 0);
   f.write_carry_flag(value < other_value);
 }
 
@@ -647,8 +650,7 @@ void Cpu::cp(const word_t addr) {
 
   f.write_zero_flag(value == other_value);
   f.set_subtract_flag();
-  f.write_half_carry_flag(((value & 0xF) - (other_value & 0xF)) <
-                          0);
+  f.write_half_carry_flag(((value & 0xF) - (other_value & 0xF)) < 0);
   f.write_carry_flag(value < other_value);
 }
 
@@ -658,22 +660,17 @@ void Cpu::cp() {
 
   f.write_zero_flag(value == other_value);
   f.set_subtract_flag();
-  f.write_half_carry_flag(((value & 0xF) - (other_value & 0xF)) <
-                          0);
+  f.write_half_carry_flag(((value & 0xF) - (other_value & 0xF)) < 0);
   f.write_carry_flag(value < other_value);
 }
 
-void Cpu::res(const bit_t bit, ByteRegister &reg) {
-  reg.clear_bit(bit);
-}
+void Cpu::res(const bit_t bit, ByteRegister &reg) { reg.clear_bit(bit); }
 
 void Cpu::res(const bit_t bit, const word_t addr) {
   mmu_->write(addr, mmu_->read(addr) & ~(1 << bit));
 }
 
-void Cpu::set(const bit_t bit, ByteRegister &reg) {
-  reg.set_bit(bit);
-}
+void Cpu::set(const bit_t bit, ByteRegister &reg) { reg.set_bit(bit); }
 
 void Cpu::set(const bit_t bit, const word_t addr) {
   mmu_->write(addr, mmu_->read(addr) | (1 << bit));
@@ -695,9 +692,7 @@ void Cpu::push(const WordRegister &reg) {
   mmu_->write(sp.value(), reg.low());
 }
 
-void Cpu::ret() {
-  pop(pc);
-}
+void Cpu::ret() { pop(pc); }
 
 void Cpu::ret_if(bool condition) {
   if (condition) {
@@ -708,7 +703,7 @@ void Cpu::ret_if(bool condition) {
   }
 }
 
-//void Cpu::reti() {}
+// void Cpu::reti() {}
 
 void Cpu::ldh(const byte_t addr_low, const ByteRegister &reg) {
   mmu_->write(util::fuse(0xFF, addr_low), reg.value());

@@ -16,6 +16,7 @@ public:
 
   void run();
   void reset();
+
 private:
   // Alias for reg.value()
   static inline word_t _(WordRegister &reg) { return reg.value(); }
@@ -132,7 +133,7 @@ private:
 
   void ret();
   void ret_if(bool condition);
-  /* void reti(); */  // we'll deal with this when we think about interrupts
+  /* void reti(); */ // we'll deal with this when we think about interrupts
 
   void ldh(const byte_t addr_low, const ByteRegister &reg);
   void ldh(ByteRegister &reg, const byte_t addr_low);

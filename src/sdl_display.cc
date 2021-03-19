@@ -4,9 +4,7 @@ namespace gbc {
 
 class SdlDisplay : public Display {
 public:
-  SdlDisplay() {
-
-  }
+  SdlDisplay() {}
 
   virtual ~SdlDisplay() = default;
 };

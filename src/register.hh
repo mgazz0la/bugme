@@ -10,9 +10,7 @@ template <typename T> class ReadableValue {
 public:
   virtual T value() const = 0;
 
-  bool operator==(const T other) const {
-    return value() == other;
-  }
+  bool operator==(const T other) const { return value() == other; }
 
   bool operator==(const ReadableValue<T> &other) const {
     return value() == other.value();
@@ -94,9 +92,7 @@ public:
   void reset() { value_ = 0x0; }
 
   byte_t low() const override { return static_cast<byte_t>(value_); }
-  byte_t high() const override {
-    return static_cast<byte_t>(value_ >> 8);
-  }
+  byte_t high() const override { return static_cast<byte_t>(value_ >> 8); }
 
   void increment() override { value_ += 1; }
   void decrement() override { value_ -= 1; }
@@ -135,9 +131,7 @@ public:
   FlagRegister() = default;
   virtual ~FlagRegister() = default;
 
-  void set(byte_t new_value) override {
-    ByteRegister::set(new_value & 0xF0);
-  }
+  void set(byte_t new_value) override { ByteRegister::set(new_value & 0xF0); }
   void reset() override { ByteRegister::reset(); }
 
   void increment() override {}
