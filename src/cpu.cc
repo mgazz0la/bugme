@@ -13,7 +13,8 @@
 namespace gbc {
 
 Cpu::Cpu(std::shared_ptr<Mmu> mmu)
-    : af(a, f), bc(b, c), de(d, e), hl(h, l), mmu_(mmu) {
+    : af(a, f), bc(b, c), de(d, e), hl(h, l), mmu_(mmu),
+      interrupt_enable(mmu->addr(0xFFFF)), interrupt_flag(mmu->addr(0xFF0F)) {
   pc.set(0xFFFF);
 }
 

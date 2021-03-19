@@ -149,6 +149,10 @@ private:
 
   std::shared_ptr<Mmu> mmu_;
 
+  bool interrupt_master_enable;
+  AddressRegister interrupt_enable;
+  AddressRegister interrupt_flag;
+
   bool stopped_ = false;
   bool halted_ = false;
   bool did_branch_ = false;
