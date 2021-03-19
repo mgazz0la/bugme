@@ -5,10 +5,13 @@
 #include "types.hh"
 
 #include <memory>
+#include <vector>
 
 namespace gbc {
 
 class Mmu;
+
+enum class Color { WHITE = 0, LIGHT_GRAY, DARK_GRAY, BLACK };
 
 class Ppu {
 public:
@@ -16,6 +19,15 @@ public:
   virtual ~Ppu() = default;
 
   void tick(cycles_t cycles);
+
+  bool display_enabled() const;
+  bool window_tile_map() const;
+  bool window_enabled() const;
+  bool bg_window_tile_data() const;
+  bool bg_tile_map_display() const;
+  bool sprite_size() const;
+  bool sprites_enabled() const;
+  bool bg_enabled() const;
 
   AddressRegister control_byte;
   AddressRegister lcd_status;
@@ -30,9 +42,18 @@ public:
   AddressRegister sprite_palette_1;
 
 private:
+  enum class Mode { READ_OAM, READ_VRAM, HBLANK, VBLANK };
+
+  void set_mode_(Mode mode);
+  void write_scanline_();
+  void write_bg_line_();
+  void write_window_line_();
+  void set_pixel_(unsigned int x, unsigned int y, Color color);
+  Color get_color_(byte_t color);
   std::shared_ptr<Mmu> mmu_;
-  enum class Mode { READ_OAM, READ_VRAM, HBLANK, VBLANK } mode_;
+  Mode mode_;
   cycles_t cycles_elapsed_;
+  std::vector<Color> frame_buffer_;
 };
 
 } // namespace gbc

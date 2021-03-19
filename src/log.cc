@@ -47,6 +47,7 @@ void Logger::log(LogLevel level, const char *fmt, ...) {
 void Logger::set_level(LogLevel level) { current_level = level; }
 
 void Logger::enable_tracing() { tracing_enabled = true; }
+void Logger::disable_tracing() { tracing_enabled = false; }
 
 bool Logger::should_log(LogLevel level) const {
   if (!tracing_enabled && level == LogLevel::Trace) {

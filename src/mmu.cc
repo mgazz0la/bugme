@@ -6,40 +6,42 @@
 
 #include <algorithm>
 
-#define CARTRIDGE_ROM_START (0)
-#define CARTRIDGE_ROM_END (0x7FFF)
-
-#define BOOT_ROM_START (0)
-#define BOOT_ROM_END (0x00FF)
-
-#define VRAM_START (0x8000)
-#define VRAM_END (0x9FFF)
-
-#define CARTRIDGE_RAM_START (0xA000)
-#define CARTRIDGE_RAM_END (0xBFFF)
-
-#define WORK_RAM_START (0xC000)
-#define WORK_RAM_END (0xDFFF)
-
-#define ECHO_WORK_RAM_START (0xE000)
-#define ECHO_WORK_RAM_END (0xFDFF)
-
-#define OAM_START (0xFE00)
-#define OAM_END (0xFE9F)
-
-#define UNUSED_START (0xFEA0)
-#define UNUSED_END (0xFEFF)
-
-#define IO_REGISTERS_START (0xFF00)
-#define IO_REGISTERS_END (0xFF7F)
-
-#define ZERO_PAGE_START (0xFF80)
-#define ZERO_PAGE_END (0xFFFE)
-
-#define INTERRUPTS_ENABLED (0xFFFF)
-#define REG_BOOT_ROM_ACTIVE (0xFF50)
-
 namespace gbc {
+
+namespace {
+const word_t CARTRIDGE_ROM_START = 0;
+const word_t CARTRIDGE_ROM_END = 0x7FFF;
+
+const word_t BOOT_ROM_START = 0;
+const word_t BOOT_ROM_END = 0x00FF;
+
+const word_t VRAM_START = 0x8000;
+const word_t VRAM_END = 0x9FFF;
+
+const word_t CARTRIDGE_RAM_START = 0xA000;
+const word_t CARTRIDGE_RAM_END = 0xBFFF;
+
+const word_t WORK_RAM_START = 0xC000;
+const word_t WORK_RAM_END = 0xDFFF;
+
+const word_t ECHO_WORK_RAM_START = 0xE000;
+const word_t ECHO_WORK_RAM_END = 0xFDFF;
+
+const word_t OAM_START = 0xFE00;
+const word_t OAM_END = 0xFE9F;
+
+const word_t UNUSED_START = 0xFEA0;
+const word_t UNUSED_END = 0xFEFF;
+
+const word_t IO_REGISTERS_START = 0xFF00;
+const word_t IO_REGISTERS_END = 0xFF7F;
+
+const word_t ZERO_PAGE_START = 0xFF80;
+const word_t ZERO_PAGE_END = 0xFFFE;
+
+const word_t INTERRUPTS_ENABLED = 0xFFFF;
+const word_t REG_BOOT_ROM_ACTIVE = 0xFF50;
+} // namespace
 
 Mmu::Mmu() : memory_(std::vector<byte_t>(0x10000)) {}
 
@@ -50,6 +52,10 @@ byte_t Mmu::read(word_t addr) const {
         is_boot_rom_active()) {
       return boot::ROM[addr];
     }
+
+    /*if (util::in_range(addr, 0x0100, 0x014F)) {
+      return boot::HEADER[addr - 0x0100];
+    }*/
 
     return _read(addr);
   }
@@ -101,7 +107,8 @@ byte_t Mmu::read(word_t addr) const {
     return _read(addr);
   }
 
-  throw "could not read from address " + addr;
+  log_error("could not read from address 0x%x", addr);
+  throw "";
 }
 
 void Mmu::write(word_t addr, byte_t byte) {
@@ -165,7 +172,8 @@ void Mmu::write(word_t addr, byte_t byte) {
     return;
   }
 
-  throw "could not write to address " + addr;
+  log_error("could not write to address 0x%x", addr);
+  throw "";
 }
 
 bool Mmu::is_boot_rom_active() const {

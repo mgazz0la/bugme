@@ -24,11 +24,12 @@ cycles_t Cpu::tick() {
   }
   byte_t opcode = next_byte();
   if (opcode == 0x00) {
+    log_error("received unexpected nop at 0x%x, exiting now", pc.value() - 1);
     exit(1);
   }
   if (opcode != 0xcb) {
-    log_trace("0x%04X: %s (0x%x)", pc.value(), opcode::NAMES[opcode].c_str(),
-              opcode);
+    log_info("0x%04X: %s (0x%x)", pc.value(), opcode::NAMES[opcode].c_str(),
+             opcode);
     op(opcode);
     if (did_branch_) {
       did_branch_ = false;
@@ -37,8 +38,8 @@ cycles_t Cpu::tick() {
     return opcode::CYCLES[opcode];
   } else {
     opcode = next_byte();
-    log_trace("0x%04X: %s (0xcb 0x%x)", pc.value(),
-              opcode::CB_NAMES[opcode].c_str(), opcode);
+    log_info("0x%04X: %s (0xcb 0x%x)", pc.value(),
+             opcode::CB_NAMES[opcode].c_str(), opcode);
     cb_op(opcode);
     return opcode::CB_CYCLES[opcode];
   }
@@ -725,7 +726,7 @@ void Cpu::ldh(ByteRegister &reg, const byte_t addr_low) {
 }
 
 void Cpu::call() {
-  word_t jp_addr = next_word();
+  word_t jp_addr = next_word() - 1;
   push(pc);
   pc.set(jp_addr);
 }

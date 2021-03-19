@@ -38,6 +38,7 @@ public:
   void set_level(LogLevel level);
 
   void enable_tracing();
+  void disable_tracing();
 
 private:
   bool should_log(LogLevel level) const;

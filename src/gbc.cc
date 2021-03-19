@@ -9,7 +9,7 @@ namespace gbc {
 Gbc::Gbc() : mmu(new Mmu()), cpu(new Cpu(mmu)), ppu(new Ppu(mmu)) {}
 
 void Gbc::start() {
-  log_set_level(LogLevel::Info);
+  log_set_level(LogLevel::Warning);
   cycles_t cycles;
   while (true) {
     cycles = cpu->tick();
