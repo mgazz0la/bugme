@@ -26,7 +26,7 @@ cycles_t Cpu::tick() {
     exit(1);
   }
   if (opcode != 0xcb) {
-    log_debug("0x%04X: %s (0x%x)", pc.value(), opcode::NAMES[opcode].c_str(),
+    log_trace("0x%04X: %s (0x%x)", pc.value(), opcode::NAMES[opcode].c_str(),
               opcode);
     op(opcode);
     if (did_branch_) {
@@ -36,7 +36,7 @@ cycles_t Cpu::tick() {
     return opcode::CYCLES[opcode];
   } else {
     opcode = next_byte();
-    log_debug("0x%04X: %s (0xcb 0x%x)", pc.value(),
+    log_trace("0x%04X: %s (0xcb 0x%x)", pc.value(),
               opcode::CB_NAMES[opcode].c_str(), opcode);
     cb_op(opcode);
     return opcode::CB_CYCLES[opcode];
