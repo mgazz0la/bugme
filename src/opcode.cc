@@ -46,7 +46,7 @@ void Cpu::op_23() { inc(hl); }
 void Cpu::op_24() { inc(h); }
 void Cpu::op_25() { dec(h); }
 void Cpu::op_26() { ld(h); }
-void Cpu::op_27() { log_unimplemented("UNIMPLEMENTED OP CODE 0x27"); }  // DAA
+void Cpu::op_27() { log_error("UNIMPLEMENTED OP CODE 0x27"); }  // DAA
 void Cpu::op_28() { jr_if(f.zero_flag()); }
 void Cpu::op_29() { add(hl, hl); }
 void Cpu::op_2a() { ldi(a, _(hl)); }
@@ -54,7 +54,7 @@ void Cpu::op_2b() { dec(hl); }
 void Cpu::op_2c() { inc(l); }
 void Cpu::op_2d() { dec(l); }
 void Cpu::op_2e() { ld(l); }
-void Cpu::op_2f() { log_unimplemented("UNIMPLEMENTED OP CODE 0x2f"); }  // CPL
+void Cpu::op_2f() { log_error("UNIMPLEMENTED OP CODE 0x2f"); }  // CPL
 
 void Cpu::op_30() { jr_if(!f.carry_flag()); }
 void Cpu::op_31() { ld(sp, d16()); }
@@ -63,7 +63,7 @@ void Cpu::op_33() { inc(sp); }
 void Cpu::op_34() { inc(_(hl)); }
 void Cpu::op_35() { dec(_(hl)); }
 void Cpu::op_36() { ld(_(hl)); }
-void Cpu::op_37() { log_unimplemented("UNIMPLEMENTED OP CODE 0x37"); }  // SCF
+void Cpu::op_37() { log_error("UNIMPLEMENTED OP CODE 0x37"); }  // SCF
 void Cpu::op_38() { jr_if(f.carry_flag()); }
 void Cpu::op_39() { add(hl, sp); }
 void Cpu::op_3a() { ldd(a, _(hl)); }
@@ -71,7 +71,7 @@ void Cpu::op_3b() { dec(sp); }
 void Cpu::op_3c() { inc(a); }
 void Cpu::op_3d() { dec(a); }
 void Cpu::op_3e() { ld(a); }
-void Cpu::op_3f() { log_unimplemented("UNIMPLEMENTED OP CODE 0x3f"); }  // CCF
+void Cpu::op_3f() { log_error("UNIMPLEMENTED OP CODE 0x3f"); }  // CCF
 
 void Cpu::op_40() { ld(b, b); }
 void Cpu::op_41() { ld(b, c); }
@@ -211,71 +211,71 @@ void Cpu::op_bf() { cp(a); }
 
 void Cpu::op_c0() { ret_if(!f.zero_flag()); }
 void Cpu::op_c1() { pop(bc); }
-void Cpu::op_c2() { log_unimplemented("UNIMPLEMENTED OP CODE 0xc2"); }
-void Cpu::op_c3() { log_unimplemented("UNIMPLEMENTED OP CODE 0xc3"); }
-void Cpu::op_c4() { log_unimplemented("UNIMPLEMENTED OP CODE 0xc4"); }
+void Cpu::op_c2() { log_error("UNIMPLEMENTED OP CODE 0xc2"); }
+void Cpu::op_c3() { jp(); }
+void Cpu::op_c4() { log_error("UNIMPLEMENTED OP CODE 0xc4"); }
 void Cpu::op_c5() { push(bc); }
 void Cpu::op_c6() { add(a); }
-void Cpu::op_c7() { log_unimplemented("UNIMPLEMENTED OP CODE 0xc7"); }
+void Cpu::op_c7() { log_error("UNIMPLEMENTED OP CODE 0xc7"); }
 void Cpu::op_c8() { ret_if(f.zero_flag()); }
 void Cpu::op_c9() { ret(); }
-void Cpu::op_ca() { log_unimplemented("UNIMPLEMENTED OP CODE 0xca"); }
-void Cpu::op_cb() { log_unimplemented("UNIMPLEMENTED OP CODE 0xcb"); }
-void Cpu::op_cc() { log_unimplemented("UNIMPLEMENTED OP CODE 0xcc"); }
+void Cpu::op_ca() { log_error("UNIMPLEMENTED OP CODE 0xca"); }
+void Cpu::op_cb() { log_error("UNIMPLEMENTED OP CODE 0xcb"); }
+void Cpu::op_cc() { log_error("UNIMPLEMENTED OP CODE 0xcc"); }
 void Cpu::op_cd() { call(); }
 void Cpu::op_ce() { adc(a); }
-void Cpu::op_cf() { log_unimplemented("UNIMPLEMENTED OP CODE 0xcf"); }
+void Cpu::op_cf() { log_error("UNIMPLEMENTED OP CODE 0xcf"); }
 
 void Cpu::op_d0() { ret_if(!f.carry_flag()); }
 void Cpu::op_d1() { pop(de); }
-void Cpu::op_d2() { log_unimplemented("UNIMPLEMENTED OP CODE 0xd2"); }
-void Cpu::op_d3() { log_unimplemented("UNIMPLEMENTED OP CODE 0xd3"); }
-void Cpu::op_d4() { log_unimplemented("UNIMPLEMENTED OP CODE 0xd4"); }
+void Cpu::op_d2() { log_error("UNIMPLEMENTED OP CODE 0xd2"); }
+void Cpu::op_d3() { log_error("UNIMPLEMENTED OP CODE 0xd3"); }
+void Cpu::op_d4() { log_error("UNIMPLEMENTED OP CODE 0xd4"); }
 void Cpu::op_d5() { push(de); }
 void Cpu::op_d6() { sub(a); }
-void Cpu::op_d7() { log_unimplemented("UNIMPLEMENTED OP CODE 0xd7"); }
+void Cpu::op_d7() { log_error("UNIMPLEMENTED OP CODE 0xd7"); }
 void Cpu::op_d8() { ret_if(f.carry_flag()); }
 void Cpu::op_d9() { /* reti(); */ }
-void Cpu::op_da() { log_unimplemented("UNIMPLEMENTED OP CODE 0xda"); }
-void Cpu::op_db() { log_unimplemented("UNIMPLEMENTED OP CODE 0xdb"); }
-void Cpu::op_dc() { log_unimplemented("UNIMPLEMENTED OP CODE 0xdc"); }
-void Cpu::op_dd() { log_unimplemented("UNIMPLEMENTED OP CODE 0xdd"); }
+void Cpu::op_da() { log_error("UNIMPLEMENTED OP CODE 0xda"); }
+void Cpu::op_db() { log_error("UNIMPLEMENTED OP CODE 0xdb"); }
+void Cpu::op_dc() { log_error("UNIMPLEMENTED OP CODE 0xdc"); }
+void Cpu::op_dd() { log_error("UNIMPLEMENTED OP CODE 0xdd"); }
 void Cpu::op_de() { sbc(a); }
-void Cpu::op_df() { log_unimplemented("UNIMPLEMENTED OP CODE 0xdf"); }
+void Cpu::op_df() { log_error("UNIMPLEMENTED OP CODE 0xdf"); }
 
 void Cpu::op_e0() { ldh(next_byte(), a); }
 void Cpu::op_e1() { pop(hl); }
 void Cpu::op_e2() { ldh(_(c), a); }
-void Cpu::op_e3() { log_unimplemented("UNIMPLEMENTED OP CODE 0xe3"); }
-void Cpu::op_e4() { log_unimplemented("UNIMPLEMENTED OP CODE 0xe4"); }
+void Cpu::op_e3() { log_error("UNIMPLEMENTED OP CODE 0xe3"); }
+void Cpu::op_e4() { log_error("UNIMPLEMENTED OP CODE 0xe4"); }
 void Cpu::op_e5() { push(hl); }
 void Cpu::op_e6() { a_and(); }
-void Cpu::op_e7() { log_unimplemented("UNIMPLEMENTED OP CODE 0xe7"); }
-void Cpu::op_e8() { log_unimplemented("UNIMPLEMENTED OP CODE 0xe8"); }
-void Cpu::op_e9() { log_unimplemented("UNIMPLEMENTED OP CODE 0xe9"); }
+void Cpu::op_e7() { log_error("UNIMPLEMENTED OP CODE 0xe7"); }
+void Cpu::op_e8() { log_error("UNIMPLEMENTED OP CODE 0xe8"); }
+void Cpu::op_e9() { log_error("UNIMPLEMENTED OP CODE 0xe9"); }
 void Cpu::op_ea() { ld(next_word(), a); }
-void Cpu::op_eb() { log_unimplemented("UNIMPLEMENTED OP CODE 0xeb"); }
-void Cpu::op_ec() { log_unimplemented("UNIMPLEMENTED OP CODE 0xec"); }
-void Cpu::op_ed() { log_unimplemented("UNIMPLEMENTED OP CODE 0xed"); }
+void Cpu::op_eb() { log_error("UNIMPLEMENTED OP CODE 0xeb"); }
+void Cpu::op_ec() { log_error("UNIMPLEMENTED OP CODE 0xec"); }
+void Cpu::op_ed() { log_error("UNIMPLEMENTED OP CODE 0xed"); }
 void Cpu::op_ee() { a_xor(); }
-void Cpu::op_ef() { log_unimplemented("UNIMPLEMENTED OP CODE 0xef"); }
+void Cpu::op_ef() { log_error("UNIMPLEMENTED OP CODE 0xef"); }
 
 void Cpu::op_f0() { ldh(a, next_byte()); }
 void Cpu::op_f1() { pop(af); }
-void Cpu::op_f2() { log_unimplemented("UNIMPLEMENTED OP CODE 0xf2"); }
-void Cpu::op_f3() { log_unimplemented("UNIMPLEMENTED OP CODE 0xf3"); }
-void Cpu::op_f4() { log_unimplemented("UNIMPLEMENTED OP CODE 0xf4"); }
+void Cpu::op_f2() { log_error("UNIMPLEMENTED OP CODE 0xf2"); }
+void Cpu::op_f3() { log_error("UNIMPLEMENTED OP CODE 0xf3"); }
+void Cpu::op_f4() { log_error("UNIMPLEMENTED OP CODE 0xf4"); }
 void Cpu::op_f5() { push(af); }
 void Cpu::op_f6() { a_or(); }
-void Cpu::op_f7() { log_unimplemented("UNIMPLEMENTED OP CODE 0xf7"); }
-void Cpu::op_f8() { log_unimplemented("UNIMPLEMENTED OP CODE 0xf8"); }
-void Cpu::op_f9() { log_unimplemented("UNIMPLEMENTED OP CODE 0xf9"); }
-void Cpu::op_fa() { log_unimplemented("UNIMPLEMENTED OP CODE 0xfa"); }
-void Cpu::op_fb() { log_unimplemented("UNIMPLEMENTED OP CODE 0xfb"); }
-void Cpu::op_fc() { log_unimplemented("UNIMPLEMENTED OP CODE 0xfc"); }
-void Cpu::op_fd() { log_unimplemented("UNIMPLEMENTED OP CODE 0xfd"); }
+void Cpu::op_f7() { log_error("UNIMPLEMENTED OP CODE 0xf7"); }
+void Cpu::op_f8() { log_error("UNIMPLEMENTED OP CODE 0xf8"); }
+void Cpu::op_f9() { log_error("UNIMPLEMENTED OP CODE 0xf9"); }
+void Cpu::op_fa() { log_error("UNIMPLEMENTED OP CODE 0xfa"); }
+void Cpu::op_fb() { log_error("UNIMPLEMENTED OP CODE 0xfb"); }
+void Cpu::op_fc() { log_error("UNIMPLEMENTED OP CODE 0xfc"); }
+void Cpu::op_fd() { log_error("UNIMPLEMENTED OP CODE 0xfd"); }
 void Cpu::op_fe() { cp(); }
-void Cpu::op_ff() { log_unimplemented("UNIMPLEMENTED OP CODE 0xff"); }
+void Cpu::op_ff() { log_error("UNIMPLEMENTED OP CODE 0xff"); }
 
 void Cpu::op_cb_00() { rlc(b); }
 void Cpu::op_cb_01() { rlc(c); }

@@ -141,6 +141,8 @@ private:
   void call();
   /* void call_if(bool condition); */
 
+  void jp();
+
   ByteRegister a, b, c, d, e, h, l;
   ByteRegisterPair af, bc, de, hl;
   WordValuedRegister pc;

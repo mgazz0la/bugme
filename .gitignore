@@ -4,3 +4,7 @@ Session.vim
 .ccls-cache/
 compile_commands.json
 cmake/*
+dump
+test.out
+pkmndump
+pkmnredcc

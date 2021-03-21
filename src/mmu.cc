@@ -53,11 +53,11 @@ byte_t Mmu::read(word_t addr) const {
       return boot::ROM[addr];
     }
 
-    if (util::in_range(addr, 0x0100, 0x014F)) {
-      return boot::HEADER[addr - 0x0100];
-    }
+    //if (util::in_range(addr, 0x0100, 0x014F)) {
+//      return boot::HEADER[addr - 0x0100];
+ //   }
 
-    return _read(addr);
+    return boot::PKMN_RED[addr];
   }
 
   // vram
@@ -77,7 +77,7 @@ byte_t Mmu::read(word_t addr) const {
 
   // echo work ram
   if (util::in_range(addr, ECHO_WORK_RAM_START, ECHO_WORK_RAM_END)) {
-    // log something if this happens?
+    log_warn("reading from echo ram [%x]", addr);
     return _read(addr - 0x2000);
   }
 
@@ -88,7 +88,7 @@ byte_t Mmu::read(word_t addr) const {
 
   // unused
   if (util::in_range(addr, UNUSED_START, UNUSED_END)) {
-    // log something if this happens?
+    log_warn("reading from unused ram [%x]", addr);
     return 0xFF;
   }
 
@@ -108,7 +108,7 @@ byte_t Mmu::read(word_t addr) const {
   }
 
   log_error("could not read from address 0x%x", addr);
-  throw "";
+  return 0x0;
 }
 
 void Mmu::write(word_t addr, byte_t byte) {
@@ -138,7 +138,7 @@ void Mmu::write(word_t addr, byte_t byte) {
 
   // echo work ram
   if (util::in_range(addr, ECHO_WORK_RAM_START, ECHO_WORK_RAM_END)) {
-    // log something if this happens?
+    log_warn("writing to echo ram [%x]", addr);
     _write(addr - 0x2000, byte);
     return;
   }
@@ -151,6 +151,7 @@ void Mmu::write(word_t addr, byte_t byte) {
 
   // unused
   if (util::in_range(addr, UNUSED_START, UNUSED_END)) {
+    log_warn("writing to unused ram [%x]", addr);
     // do nothing
     return;
   }
@@ -173,7 +174,7 @@ void Mmu::write(word_t addr, byte_t byte) {
   }
 
   log_error("could not write to address 0x%x", addr);
-  throw "";
+  return;
 }
 
 bool Mmu::is_boot_rom_active() const {

@@ -11,6 +11,10 @@ add_library(mmu mmu.cc)
 target_include_directories(mmu PUBLIC .)
 target_link_libraries(mmu LINK_PRIVATE cpu log)
 
+add_library(cartridge cartridge.cc)
+target_include_directories(cartridge PUBLIC .)
+target_link_libraries(cartridge LINK_PRIVATE log)
+
 add_library(timer timer.cc)
 target_include_directories(timer PUBLIC .)
 target_link_libraries(timer LINK_PRIVATE register log)

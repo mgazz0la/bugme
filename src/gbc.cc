@@ -18,7 +18,7 @@ Gbc::Gbc()
 }
 
 void Gbc::start() {
-  log_set_level(LogLevel::Warning);
+  log_set_level(LogLevel::Debug);
   cycles_t cycles;
   while (!should_exit_) {
     cycles = cpu->tick();

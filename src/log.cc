@@ -42,6 +42,10 @@ void Logger::log(LogLevel level, const char *fmt, ...) {
 
   fprintf((level < LogLevel::Error) ? stdout : stderr, "%s| %s%s\n",
           level_color(level), COLOR_RESET, msg.c_str());
+
+  if (level == LogLevel::Error) {
+    //exit(-1);
+  }
 }
 
 void Logger::set_level(LogLevel level) { current_level = level; }

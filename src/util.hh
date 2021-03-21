@@ -14,7 +14,8 @@ inline word_t fuse(byte_t high, byte_t low) {
 }
 
 inline byte_t fuse_b(bit_t high, bit_t low) {
-  high &= 0x1; low &= 0x1;
+  high &= 0x1;
+  low &= 0x1;
 
   return static_cast<byte_t>((high << 1) | low);
 }
