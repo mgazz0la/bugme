@@ -50,7 +50,7 @@ private:
   void write_bg_line_();
   void write_window_line_();
   void set_pixel_(unsigned int x, unsigned int y, Color color);
-  Color get_color_(byte_t color);
+  Color get_color_(byte_t color, const AddressRegister& palette_register) const;
   std::shared_ptr<Mmu> mmu_;
   Mode mode_;
   cycles_t cycles_elapsed_;

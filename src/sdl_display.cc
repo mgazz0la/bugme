@@ -98,7 +98,7 @@ std::uint32_t SdlDisplay::convert_color_(Color color) {
     r = g = b = 255;
     break;
   case Color::LIGHT_GRAY:
-    r = g = b = 0;
+    r = g = b = 170;
     break;
   case Color::DARK_GRAY:
     r = g = b = 85;

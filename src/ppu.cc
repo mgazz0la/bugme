@@ -3,6 +3,7 @@
 #include "color.hh"
 #include "log.hh"
 #include "mmu.hh"
+#include "util.hh"
 
 #include <string>
 
@@ -192,8 +193,9 @@ void Ppu::write_bg_line_() {
     byte_t pixels0 = mmu_->read(tile_set_addr);
     byte_t pixels1 = mmu_->read(tile_set_addr + 1);
 
-    Color color = get_color_((((pixels1 >> (7 - tile_pixel_x)) & 0x1) << 1) |
-                             ((pixels0 >> (7 - tile_pixel_x)) & 0x1));
+    Color color = get_color_(util::fuse_b(pixels1 >> (7 - tile_pixel_x),
+                                          pixels0 >> (7 - tile_pixel_x)),
+                             bg_palette);
     set_pixel_(x, line.value(), color);
   }
 }
@@ -204,18 +206,22 @@ void Ppu::set_pixel_(unsigned int x, unsigned int y, Color color) {
   frame_buffer_.at(y * FRAME_WIDTH + x) = color;
 }
 
-Color Ppu::get_color_(byte_t color) {
-  switch (color) {
-  case 0x00:
+// takes palette into account
+Color Ppu::get_color_(byte_t color,
+                      const AddressRegister &palette_register) const {
+  switch (util::fuse_b(palette_register.value() >> (6 * color),
+                       palette_register.value() >> (6 * color + 1))) {
+  case 0b00:
     return Color::WHITE;
-  case 0x01:
+  case 0b01:
     return Color::LIGHT_GRAY;
-  case 0x10:
+  case 0b10:
     return Color::DARK_GRAY;
-  case 0x11:
+  case 0b11:
     return Color::BLACK;
   default:
-    log_warn("UNKNOWN COLOR: 0x%x", color);
+    log_warn("UNKNOWN COLOR: 0x%x",
+             (palette_register.value() >> (6 - (2 * color))) & 0x3);
     return Color::WHITE;
   }
 }

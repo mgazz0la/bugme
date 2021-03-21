@@ -727,9 +727,9 @@ void Cpu::ldh(ByteRegister &reg, const byte_t addr_low) {
 }
 
 void Cpu::call() {
-  word_t jp_addr = next_word() - 1;
+  word_t jp_addr = next_word();
   push(pc);
-  pc.set(jp_addr);
+  pc.set(jp_addr - 1);
 }
 
 /* clang-format off */
