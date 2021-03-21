@@ -26,6 +26,6 @@ void Gbc::start() {
   }
 }
 
-void Gbc::exit() { should_exit_ = true; }
+void Gbc::exit() { log_error("[gbc] exiting!"); should_exit_ = true; }
 
 } // namespace gbc
