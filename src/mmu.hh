@@ -10,11 +10,11 @@
 
 namespace gbc {
 
-class Cpu;
+class Cartridge;
 
 class Mmu : public AddressProvider, public std::enable_shared_from_this<Mmu> {
 public:
-  Mmu();
+  Mmu(std::shared_ptr<Cartridge> cartridge);
 
   virtual byte_t read(word_t addr) const override;
   virtual void write(word_t addr, byte_t byte) override;
@@ -29,6 +29,7 @@ private:
   void _write(word_t addr, byte_t byte);
 
   std::vector<byte_t> memory_;
+  std::shared_ptr<Cartridge> cartridge_;
 };
 
 } // namespace gbc

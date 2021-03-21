@@ -33,10 +33,9 @@ add_library(cpu cpu.cc opcode.cc)
 target_include_directories(cpu PUBLIC .)
 target_link_libraries(cpu LINK_PRIVATE display log mmu ppu timer register)
 
-
 add_library(gbccore gbc.cc)
 target_include_directories(gbccore PUBLIC .)
-target_link_libraries(gbccore LINK_PRIVATE display cpu log mmu timer ppu)
+target_link_libraries(gbccore LINK_PRIVATE display cartridge cpu log mmu timer ppu)
 
 add_executable(gbc main.cc)
 target_link_libraries(gbc LINK_PRIVATE gbccore sdl_display)

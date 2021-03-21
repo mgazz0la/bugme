@@ -1,5 +1,6 @@
 #include "mmu.hh"
 #include "bootrom.hh"
+#include "cartridge.hh"
 #include "cpu.hh"
 #include "log.hh"
 #include "util.hh"
@@ -43,7 +44,8 @@ const word_t INTERRUPTS_ENABLED = 0xFFFF;
 const word_t REG_BOOT_ROM_ACTIVE = 0xFF50;
 } // namespace
 
-Mmu::Mmu() : memory_(std::vector<byte_t>(0x10000)) {}
+Mmu::Mmu(std::shared_ptr<Cartridge> cartridge)
+    : memory_(std::vector<byte_t>(0x10000)), cartridge_(cartridge) {}
 
 byte_t Mmu::read(word_t addr) const {
   // cartridge rom
@@ -53,11 +55,13 @@ byte_t Mmu::read(word_t addr) const {
       return boot::ROM[addr];
     }
 
-    //if (util::in_range(addr, 0x0100, 0x014F)) {
-//      return boot::HEADER[addr - 0x0100];
- //   }
+    // if (util::in_range(addr, 0x0100, 0x014F)) {
+    //      return boot::HEADER[addr - 0x0100];
+    //   }
 
-    return boot::PKMN_RED[addr];
+    // return boot::PKMN_RED[addr];
+
+    return cartridge_->read(addr);
   }
 
   // vram
