@@ -136,7 +136,6 @@ TEST(ByteRegisterPairTest, Sets) {
     EXPECT_EQ(i, ab.value());
     EXPECT_EQ((i >> 8) & 0xFF, ab.high());
     EXPECT_EQ(i & 0xFF, ab.low());
-    ;
     ab.increment();
   }
 

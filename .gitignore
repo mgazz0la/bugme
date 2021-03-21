@@ -2,3 +2,5 @@ build/*
 .vim/
 Session.vim
 .ccls-cache/
+compile_commands.json
+cmake/*

@@ -4,18 +4,19 @@
 #include "register.hh"
 #include "types.hh"
 
+#include <functional>
 #include <memory>
 #include <vector>
 
 namespace gbc {
 
 class Mmu;
-
-enum class Color { WHITE = 0, LIGHT_GRAY, DARK_GRAY, BLACK };
+enum class Color;
 
 class Ppu {
 public:
-  Ppu(std::shared_ptr<Mmu> mmu);
+  Ppu(std::shared_ptr<Mmu> mmu,
+      std::function<void(std::vector<Color> &)> draw_fn);
   virtual ~Ppu() = default;
 
   void tick(cycles_t cycles);
@@ -54,6 +55,7 @@ private:
   Mode mode_;
   cycles_t cycles_elapsed_;
   std::vector<Color> frame_buffer_;
+  std::function<void(std::vector<Color> &)> draw_fn_;
 };
 
 } // namespace gbc

@@ -53,9 +53,9 @@ byte_t Mmu::read(word_t addr) const {
       return boot::ROM[addr];
     }
 
-    /*if (util::in_range(addr, 0x0100, 0x014F)) {
+    if (util::in_range(addr, 0x0100, 0x014F)) {
       return boot::HEADER[addr - 0x0100];
-    }*/
+    }
 
     return _read(addr);
   }

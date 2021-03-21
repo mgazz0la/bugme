@@ -1,5 +1,6 @@
 #include "ppu.hh"
 
+#include "color.hh"
 #include "log.hh"
 #include "mmu.hh"
 
@@ -48,7 +49,8 @@ const unsigned int CLOCKS_PER_FRAME =
     (CLOCKS_PER_SCANLINE * SCANLINES_PER_FRAME) + CLOCKS_PER_VBLANK;
 } // namespace
 
-Ppu::Ppu(std::shared_ptr<Mmu> mmu)
+Ppu::Ppu(std::shared_ptr<Mmu> mmu,
+         std::function<void(std::vector<Color> &)> draw_fn)
     : control_byte(mmu->addr(CONTROL_BYTE)), lcd_status(mmu->addr(LCD_STATUS)),
       scroll_y(mmu->addr(SCROLL_Y)), scroll_x(mmu->addr(SCROLL_X)),
       line(mmu->addr(LINE)), ly_compare(mmu->addr(LY_COMPARE)),
@@ -56,7 +58,8 @@ Ppu::Ppu(std::shared_ptr<Mmu> mmu)
       bg_palette(mmu->addr(BG_PALETTE)),
       sprite_palette_0(mmu->addr(SPRITE_PALETTE_0)),
       sprite_palette_1(mmu->addr(SPRITE_PALETTE_1)), mmu_(mmu),
-      frame_buffer_(std::vector<Color>(FRAME_WIDTH * FRAME_HEIGHT)) {}
+      frame_buffer_(std::vector<Color>(FRAME_WIDTH * FRAME_HEIGHT)),
+      draw_fn_(draw_fn) {}
 
 void Ppu::tick(cycles_t cycles) {
   cycles_elapsed_ += cycles;
@@ -94,9 +97,7 @@ void Ppu::tick(cycles_t cycles) {
 
       if (line.value() == 154) {
         set_mode_(Mode::READ_OAM);
-        log_warn(" ");
-        log_warn(" ");
-        log_warn(" ");
+        draw_fn_(frame_buffer_);
         line.reset();
         for (unsigned int px = 0; px < FRAME_WIDTH * FRAME_HEIGHT; ++px) {
           frame_buffer_.at(px) = Color::WHITE;
@@ -153,7 +154,6 @@ void Ppu::write_scanline_() {
 }
 
 void Ppu::write_bg_line_() {
-  std::string logline;
   bool is_tile_set_zero = bg_window_tile_data();
   bool is_bg_map_zero = !bg_tile_map_display();
 
@@ -195,13 +195,7 @@ void Ppu::write_bg_line_() {
     Color color = get_color_((((pixels1 >> (7 - tile_pixel_x)) & 0x1) << 1) |
                              ((pixels0 >> (7 - tile_pixel_x)) & 0x1));
     set_pixel_(x, line.value(), color);
-    logline.append(color == Color::WHITE        ? " @ "
-                   : color == Color::LIGHT_GRAY ? "   "
-                   : color == Color::DARK_GRAY  ? " @ "
-                                                : " @ ");
   }
-
-  log_warn(logline.c_str());
 }
 
 void Ppu::write_window_line_() {}
