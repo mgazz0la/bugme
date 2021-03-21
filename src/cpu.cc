@@ -24,8 +24,9 @@ cycles_t Cpu::tick() {
   }
   byte_t opcode = next_byte();
   if (opcode == 0x00) {
-    log_error("received unexpected nop at 0x%x, exiting now", pc.value() - 1);
-    exit(1);
+    // log_error("received unexpected nop at 0x%x, exiting now", pc.value() -
+    // 1);
+    // exit(1);
   }
   if (opcode != 0xcb) {
     log_info("0x%04X: %s (0x%x)", pc.value(), opcode::NAMES[opcode].c_str(),

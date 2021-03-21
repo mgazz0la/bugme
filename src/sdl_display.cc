@@ -5,33 +5,33 @@
 
 #include <SDL.h>
 
+namespace {
+static const unsigned int GAMEBOY_WIDTH = 160;
+static const unsigned int GAMEBOY_HEIGHT = 144;
+} // namespace
+
 namespace gbc {
 
 SdlDisplay::SdlDisplay(std::function<void(bool)> exit_callback)
-    : exit_callback_(exit_callback) {
-  SDL_Init(SDL_INIT_VIDEO);
-
-  window_ = std::unique_ptr<SDL_Window, std::function<void(SDL_Window *)>>(
-      SDL_CreateWindow("gbc", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                       160, 144, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE),
-      SDL_DestroyWindow);
-
+    : window_((SDL_Init(SDL_INIT_VIDEO),
+               SDL_CreateWindow("gbc", SDL_WINDOWPOS_UNDEFINED,
+                                SDL_WINDOWPOS_UNDEFINED, GAMEBOY_WIDTH,
+                                GAMEBOY_HEIGHT,
+                                SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN)),
+              SDL_DestroyWindow),
+      renderer_(SDL_CreateRenderer(window_.get(), -1,
+                                   SDL_RENDERER_ACCELERATED |
+                                       SDL_RENDERER_PRESENTVSYNC),
+                SDL_DestroyRenderer),
+      texture_(SDL_CreateTexture(renderer_.get(), SDL_PIXELFORMAT_ARGB8888,
+                                 SDL_TEXTUREACCESS_STREAMING, GAMEBOY_WIDTH,
+                                 GAMEBOY_HEIGHT),
+               SDL_DestroyTexture),
+      exit_callback_(exit_callback) {
   if (window_ == nullptr) {
     log_error("Could not instantiate SDL2 window. Crashing.");
     exit(2);
   }
-
-  renderer_ =
-      std::unique_ptr<SDL_Renderer, std::function<void(SDL_Renderer *)>>(
-          SDL_CreateRenderer(window_.get(), -1,
-                             SDL_RENDERER_ACCELERATED |
-                                 SDL_RENDERER_PRESENTVSYNC),
-          SDL_DestroyRenderer);
-
-  texture_ = std::unique_ptr<SDL_Texture, std::function<void(SDL_Texture *)>>(
-      SDL_CreateTexture(renderer_.get(), SDL_PIXELFORMAT_ARGB8888,
-                        SDL_TEXTUREACCESS_STREAMING, 160, 144),
-      SDL_DestroyTexture);
 }
 
 SdlDisplay::~SdlDisplay() { SDL_Quit(); }
@@ -46,10 +46,10 @@ void SdlDisplay::draw(std::vector<Color> &buffer) {
   SDL_LockTexture(texture_.get(), nullptr, &pixels_ptr, &pitch);
 
   uint32_t *pixels = static_cast<uint32_t *>(pixels_ptr);
-  for (uint y = 0; y < 144; y++) {
-    for (uint x = 0; x < 160; x++) {
-      Color color = buffer.at(y * 160 + x);
-      pixels[y * 160 + x] = convert_color_(color);
+  for (uint y = 0; y < GAMEBOY_HEIGHT; y++) {
+    for (uint x = 0; x < GAMEBOY_WIDTH; x++) {
+      Color color = buffer.at(y * GAMEBOY_WIDTH + x);
+      pixels[y * GAMEBOY_WIDTH + x] = convert_color_(color);
     }
   }
   SDL_UnlockTexture(texture_.get());
@@ -61,16 +61,15 @@ void SdlDisplay::draw(std::vector<Color> &buffer) {
 void SdlDisplay::process_events_() {
   SDL_Event event;
 
-  while (SDL_PollEvent(&event)) {
-    log_info("Received event of type %d", event.type);
+  while (SDL_PollEvent(&event) != 0) {
     switch (event.type) {
     case SDL_WINDOWEVENT:
       if (event.window.event == SDL_WINDOWEVENT_CLOSE) {
-        should_exit_ = true;
+        exit_callback_(true);
       }
       break;
     case SDL_QUIT:
-      should_exit_ = true;
+      exit_callback_(true);
       break;
     }
   };
