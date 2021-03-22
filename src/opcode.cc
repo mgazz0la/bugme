@@ -211,69 +211,69 @@ void Cpu::op_bf() { cp(a); }
 
 void Cpu::op_c0() { ret_if(!f.zero_flag()); }
 void Cpu::op_c1() { pop(bc); }
-void Cpu::op_c2() { log_error("UNIMPLEMENTED OP CODE 0xc2"); }
+void Cpu::op_c2() { jp_if(!f.zero_flag()); }
 void Cpu::op_c3() { jp(); }
-void Cpu::op_c4() { log_error("UNIMPLEMENTED OP CODE 0xc4"); }
+void Cpu::op_c4() { call_if(!f.zero_flag()); }
 void Cpu::op_c5() { push(bc); }
 void Cpu::op_c6() { add(a); }
 void Cpu::op_c7() { log_error("UNIMPLEMENTED OP CODE 0xc7"); }
 void Cpu::op_c8() { ret_if(f.zero_flag()); }
 void Cpu::op_c9() { ret(); }
-void Cpu::op_ca() { log_error("UNIMPLEMENTED OP CODE 0xca"); }
+void Cpu::op_ca() { jp_if(f.zero_flag()); }
 void Cpu::op_cb() { log_error("UNIMPLEMENTED OP CODE 0xcb"); }
-void Cpu::op_cc() { log_error("UNIMPLEMENTED OP CODE 0xcc"); }
+void Cpu::op_cc() { call_if(f.zero_flag()); }
 void Cpu::op_cd() { call(); }
 void Cpu::op_ce() { adc(a); }
 void Cpu::op_cf() { log_error("UNIMPLEMENTED OP CODE 0xcf"); }
 
 void Cpu::op_d0() { ret_if(!f.carry_flag()); }
 void Cpu::op_d1() { pop(de); }
-void Cpu::op_d2() { log_error("UNIMPLEMENTED OP CODE 0xd2"); }
-void Cpu::op_d3() { log_error("UNIMPLEMENTED OP CODE 0xd3"); }
-void Cpu::op_d4() { log_error("UNIMPLEMENTED OP CODE 0xd4"); }
+void Cpu::op_d2() { jp_if(!f.carry_flag()); }
+void Cpu::op_d3() { log_error("[op] illegal opcode 0xd3"); }
+void Cpu::op_d4() { call_if(!f.carry_flag()); }
 void Cpu::op_d5() { push(de); }
 void Cpu::op_d6() { sub(a); }
 void Cpu::op_d7() { log_error("UNIMPLEMENTED OP CODE 0xd7"); }
 void Cpu::op_d8() { ret_if(f.carry_flag()); }
 void Cpu::op_d9() { /* reti(); */ }
-void Cpu::op_da() { log_error("UNIMPLEMENTED OP CODE 0xda"); }
-void Cpu::op_db() { log_error("UNIMPLEMENTED OP CODE 0xdb"); }
-void Cpu::op_dc() { log_error("UNIMPLEMENTED OP CODE 0xdc"); }
-void Cpu::op_dd() { log_error("UNIMPLEMENTED OP CODE 0xdd"); }
+void Cpu::op_da() { jp_if(f.carry_flag()); }
+void Cpu::op_db() { log_error("[op] illegal opcode 0xdb"); }
+void Cpu::op_dc() { call_if(f.carry_flag()); }
+void Cpu::op_dd() { log_error("[op] illegal opcode 0xdd"); }
 void Cpu::op_de() { sbc(a); }
 void Cpu::op_df() { log_error("UNIMPLEMENTED OP CODE 0xdf"); }
 
 void Cpu::op_e0() { ldh(next_byte(), a); }
 void Cpu::op_e1() { pop(hl); }
 void Cpu::op_e2() { ldh(_(c), a); }
-void Cpu::op_e3() { log_error("UNIMPLEMENTED OP CODE 0xe3"); }
-void Cpu::op_e4() { log_error("UNIMPLEMENTED OP CODE 0xe4"); }
+void Cpu::op_e3() { log_error("[op] illegal opcode 0xe3"); }
+void Cpu::op_e4() { log_error("[op] illegal opcode 0xe4"); }
 void Cpu::op_e5() { push(hl); }
 void Cpu::op_e6() { a_and(); }
 void Cpu::op_e7() { log_error("UNIMPLEMENTED OP CODE 0xe7"); }
 void Cpu::op_e8() { log_error("UNIMPLEMENTED OP CODE 0xe8"); }
-void Cpu::op_e9() { log_error("UNIMPLEMENTED OP CODE 0xe9"); }
+void Cpu::op_e9() { jp(_(hl)); }
 void Cpu::op_ea() { ld(next_word(), a); }
-void Cpu::op_eb() { log_error("UNIMPLEMENTED OP CODE 0xeb"); }
-void Cpu::op_ec() { log_error("UNIMPLEMENTED OP CODE 0xec"); }
-void Cpu::op_ed() { log_error("UNIMPLEMENTED OP CODE 0xed"); }
+void Cpu::op_eb() { log_error("[op] illegal opcode 0xeb"); }
+void Cpu::op_ec() { log_error("[op] illegal opcode 0xec"); }
+void Cpu::op_ed() { log_error("[op] illegal opcode 0xed"); }
 void Cpu::op_ee() { a_xor(); }
 void Cpu::op_ef() { log_error("UNIMPLEMENTED OP CODE 0xef"); }
 
 void Cpu::op_f0() { ldh(a, next_byte()); }
 void Cpu::op_f1() { pop(af); }
-void Cpu::op_f2() { log_error("UNIMPLEMENTED OP CODE 0xf2"); }
-void Cpu::op_f3() { log_error("UNIMPLEMENTED OP CODE 0xf3"); }
-void Cpu::op_f4() { log_error("UNIMPLEMENTED OP CODE 0xf4"); }
+void Cpu::op_f2() { log_error("[op] illegal opcode 0xf2"); }
+void Cpu::op_f3() { di(); }
+void Cpu::op_f4() { log_error("[op] illegal opcode 0xf4"); }
 void Cpu::op_f5() { push(af); }
 void Cpu::op_f6() { a_or(); }
 void Cpu::op_f7() { log_error("UNIMPLEMENTED OP CODE 0xf7"); }
-void Cpu::op_f8() { log_error("UNIMPLEMENTED OP CODE 0xf8"); }
+void Cpu::op_f8() { ei(); }
 void Cpu::op_f9() { log_error("UNIMPLEMENTED OP CODE 0xf9"); }
-void Cpu::op_fa() { log_error("UNIMPLEMENTED OP CODE 0xfa"); }
+void Cpu::op_fa() { ld(a, next_word()); }
 void Cpu::op_fb() { log_error("UNIMPLEMENTED OP CODE 0xfb"); }
-void Cpu::op_fc() { log_error("UNIMPLEMENTED OP CODE 0xfc"); }
-void Cpu::op_fd() { log_error("UNIMPLEMENTED OP CODE 0xfd"); }
+void Cpu::op_fc() { log_error("[op] illegal opcode 0xfc"); }
+void Cpu::op_fd() { log_error("[op] illegal opcode 0xfd"); }
 void Cpu::op_fe() { cp(); }
 void Cpu::op_ff() { log_error("UNIMPLEMENTED OP CODE 0xff"); }
 

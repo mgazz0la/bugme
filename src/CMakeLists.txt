@@ -29,7 +29,7 @@ add_library(ppu ppu.cc)
 target_include_directories(ppu PUBLIC .)
 target_link_libraries(ppu LINK_PRIVATE display log)
 
-add_library(cpu cpu.cc opcode.cc)
+add_library(cpu cpu.cc opcode.cc opcode_internal.cc)
 target_include_directories(cpu PUBLIC .)
 target_link_libraries(cpu LINK_PRIVATE display log mmu ppu timer register)
 

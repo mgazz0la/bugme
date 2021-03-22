@@ -23,7 +23,7 @@ Gbc::Gbc(CliOptions &cli_options)
       cli_options_(cli_options) {}
 
 void Gbc::start() {
-  log_set_level(LogLevel::Debug);
+  log_set_level(LogLevel::Warning);
   cycles_t cycles;
   while (!should_exit_) {
     cycles = cpu->tick();

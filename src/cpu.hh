@@ -18,6 +18,8 @@ public:
   void reset();
 
 private:
+  void check_interrupts();
+
   // Alias for reg.value()
   static inline word_t _(WordRegister &reg) { return reg.value(); }
   static inline byte_t _(ByteRegister &reg) { return reg.value(); }
@@ -139,9 +141,14 @@ private:
   void ldh(ByteRegister &reg, const byte_t addr_low);
 
   void call();
-  /* void call_if(bool condition); */
+  void call_if(bool condition);
 
   void jp();
+  void jp(const word_t addr);
+  void jp_if(bool condition);
+
+  void ei();
+  void di();
 
   ByteRegister a, b, c, d, e, h, l;
   ByteRegisterPair af, bc, de, hl;
