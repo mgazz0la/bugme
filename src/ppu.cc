@@ -200,7 +200,50 @@ void Ppu::write_bg_line_() {
   }
 }
 
-void Ppu::write_window_line_() {}
+void Ppu::write_window_line_() {
+  bool is_tile_set_zero = bg_window_tile_data();
+  bool is_window_map_zero = !window_tile_map();
+
+  word_t tile_set_base_addr =
+      is_tile_set_zero ? TILESET_0_START : TILESET_1_START;
+  word_t bg_map_base_addr = is_window_map_zero ? BG_MAP_0_START : BG_MAP_1_START;
+
+  unsigned int y = line.value();
+  unsigned int frame_y = y - window_y.value();
+  if (frame_y >= FRAME_HEIGHT) { return; }
+  for (unsigned int x = 0; x < FRAME_WIDTH; ++x) {
+    // adjust for window
+    unsigned int frame_x = x + window_x.value() - 7; // ??
+
+    // windows don't wraparound
+
+    // ascertain the tile coords
+    unsigned int tile_x = frame_x / TILE_LENGTH_PX;
+    unsigned int tile_y = frame_y / TILE_LENGTH_PX;
+
+    // where are we within that tile
+    unsigned int tile_pixel_x = frame_x % TILE_LENGTH_PX;
+    unsigned int tile_pixel_y = frame_y % TILE_LENGTH_PX;
+
+    unsigned int tile_id_idx = tile_y * TILES_PER_LINE + tile_x;
+    word_t tile_id_address = bg_map_base_addr + tile_id_idx;
+    byte_t tile_id = mmu_->read(tile_id_address);
+
+    word_t tile_set_addr =
+        tile_set_base_addr +
+        ((is_tile_set_zero ? tile_id
+                           : static_cast<std::int8_t>(tile_id) - 128) *
+         (8 /* lines */ * 2 /* bytes per line */)) +
+        (tile_pixel_y * 2);
+    byte_t pixels0 = mmu_->read(tile_set_addr);
+    byte_t pixels1 = mmu_->read(tile_set_addr + 1);
+
+    Color color = get_color_(util::fuse_b(pixels1 >> (7 - tile_pixel_x),
+                                          pixels0 >> (7 - tile_pixel_x)),
+                             bg_palette);
+    set_pixel_(x, line.value(), color);
+  }
+}
 
 void Ppu::set_pixel_(unsigned int x, unsigned int y, Color color) {
   frame_buffer_.at(y * FRAME_WIDTH + x) = color;
