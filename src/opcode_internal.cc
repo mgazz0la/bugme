@@ -638,7 +638,10 @@ void Cpu::ret_if(bool condition) {
   }
 }
 
-// void Cpu::reti() {}
+void Cpu::reti() {
+  ret();
+  ei();
+}
 
 void Cpu::ldh(const byte_t addr_low, const ByteRegister &reg) {
   mmu_->write(util::fuse(0xFF, addr_low), reg.value());

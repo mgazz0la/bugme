@@ -16,7 +16,9 @@ enum class Color;
 class Ppu {
 public:
   Ppu(std::shared_ptr<Mmu> mmu,
-      std::function<void(std::vector<Color> &)> draw_fn);
+      std::function<void(std::vector<Color> &)> draw_fn,
+      std::function<void()> lcdc_status_cb,
+      std::function<void()> vblank_cb);
   virtual ~Ppu() = default;
 
   void tick(cycles_t cycles);
@@ -56,6 +58,8 @@ private:
   cycles_t cycles_elapsed_;
   std::vector<Color> frame_buffer_;
   std::function<void(std::vector<Color> &)> draw_fn_;
+  std::function<void()> vblank_cb_;
+  std::function<void()> lcdc_status_cb_;
 };
 
 } // namespace gbc

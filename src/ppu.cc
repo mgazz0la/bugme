@@ -51,7 +51,8 @@ const unsigned int CLOCKS_PER_FRAME =
 } // namespace
 
 Ppu::Ppu(std::shared_ptr<Mmu> mmu,
-         std::function<void(std::vector<Color> &)> draw_fn)
+         std::function<void(std::vector<Color> &)> draw_fn,
+         std::function<void()> vblank_cb, std::function<void()> lcdc_status_cb)
     : control_byte(mmu->addr(CONTROL_BYTE)), lcd_status(mmu->addr(LCD_STATUS)),
       scroll_y(mmu->addr(SCROLL_Y)), scroll_x(mmu->addr(SCROLL_X)),
       line(mmu->addr(LINE)), ly_compare(mmu->addr(LY_COMPARE)),
@@ -60,7 +61,8 @@ Ppu::Ppu(std::shared_ptr<Mmu> mmu,
       sprite_palette_0(mmu->addr(SPRITE_PALETTE_0)),
       sprite_palette_1(mmu->addr(SPRITE_PALETTE_1)), mmu_(mmu),
       frame_buffer_(std::vector<Color>(FRAME_WIDTH * FRAME_HEIGHT)),
-      draw_fn_(draw_fn) {}
+      draw_fn_(draw_fn), vblank_cb_(vblank_cb),
+      lcdc_status_cb_(lcdc_status_cb) {}
 
 void Ppu::tick(cycles_t cycles) {
   cycles_elapsed_ += cycles;
@@ -75,6 +77,10 @@ void Ppu::tick(cycles_t cycles) {
     if (cycles_elapsed_ >= CLOCKS_PER_SCANLINE_VRAM) {
       cycles_elapsed_ %= CLOCKS_PER_SCANLINE_VRAM;
 
+      if (lcd_status.get_bit(3) ||
+          (lcd_status.get_bit(6) && ly_compare.value() == line.value())) {
+        lcdc_status_cb_();
+      }
       lcd_status.write_bit(2, ly_compare == line);
       set_mode_(Mode::HBLANK);
     }
@@ -85,6 +91,7 @@ void Ppu::tick(cycles_t cycles) {
       write_scanline_();
       line.increment();
       if (line.value() == 144) {
+        vblank_cb_();
         set_mode_(Mode::VBLANK);
       } else {
         set_mode_(Mode::READ_OAM);
@@ -206,11 +213,14 @@ void Ppu::write_window_line_() {
 
   word_t tile_set_base_addr =
       is_tile_set_zero ? TILESET_0_START : TILESET_1_START;
-  word_t bg_map_base_addr = is_window_map_zero ? BG_MAP_0_START : BG_MAP_1_START;
+  word_t bg_map_base_addr =
+      is_window_map_zero ? BG_MAP_0_START : BG_MAP_1_START;
 
   unsigned int y = line.value();
   unsigned int frame_y = y - window_y.value();
-  if (frame_y >= FRAME_HEIGHT) { return; }
+  if (frame_y >= FRAME_HEIGHT) {
+    return;
+  }
   for (unsigned int x = 0; x < FRAME_WIDTH; ++x) {
     // adjust for window
     unsigned int frame_x = x + window_x.value() - 7; // ??

@@ -19,7 +19,8 @@ Gbc::Gbc(CliOptions &cli_options)
           this->exit();
       })),
       ppu(new Ppu(mmu,
-                  [&](std::vector<Color> &buffer) { display->draw(buffer); })),
+                  [&](std::vector<Color> &buffer) { display->draw(buffer); },
+                  cpu->vblank_cb(), cpu->lcdc_cb())),
       cli_options_(cli_options) {}
 
 void Gbc::start() {

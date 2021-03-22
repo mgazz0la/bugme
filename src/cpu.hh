@@ -7,6 +7,13 @@
 #include <memory>
 
 namespace gbc {
+namespace interrupt {
+static const word_t VBLANK = 0x0040;
+static const word_t LCDC_STATUS = 0x0048;
+static const word_t TIMER = 0x0050;
+static const word_t SERIAL = 0x0058;
+static const word_t JOYPAD = 0x0060;
+} // namespace interrupt
 
 class Mmu;
 
@@ -17,6 +24,11 @@ public:
   cycles_t tick();
   void reset();
 
+  std::function<void()> vblank_cb();
+  std::function<void()> lcdc_cb();
+  std::function<void()> timer_cb();
+  std::function<void()> serial_cb();
+  std::function<void()> joypad_cb();
 private:
   void check_interrupts();
 
@@ -135,7 +147,7 @@ private:
 
   void ret();
   void ret_if(bool condition);
-  /* void reti(); */ // we'll deal with this when we think about interrupts
+  void reti();
 
   void ldh(const byte_t addr_low, const ByteRegister &reg);
   void ldh(ByteRegister &reg, const byte_t addr_low);

@@ -69,13 +69,55 @@ void Cpu::reset() {
   did_branch_ = false;
 }
 
+std::function<void()> Cpu::vblank_cb() {
+ return [&]() { this->interrupt_flag.set_bit(0); };
+}
+
+std::function<void()> Cpu::lcdc_cb() {
+  return [&]() { this->interrupt_flag.set_bit(1); };
+}
+std::function<void()> Cpu::timer_cb() {
+  return [&]() { this->interrupt_flag.set_bit(2); };
+}
+std::function<void()> Cpu::serial_cb() {
+  return [&]() { this->interrupt_flag.set_bit(3); };
+}
+std::function<void()> Cpu::joypad_cb() {
+  return [&]() { this->interrupt_flag.set_bit(4); };
+}
+
 void Cpu::check_interrupts() {
   if (interrupt_master_enable) {
     byte_t fired_interrupts = interrupt_flag.value() & interrupt_enable.value();
 
     if (!fired_interrupts) return;
 
-    log_error("unhandled interrupt!");
+    halted_ = false;  // unhalt now that we found an interrupt
+    push(pc);
+
+    if ((fired_interrupts >> 0) & 1) {
+      interrupt_flag.clear_bit(0);
+      pc.set(interrupt::VBLANK);
+      interrupt_master_enable = false;
+      log_error("INTERRUPT!");
+    } else if ((fired_interrupts >> 1) & 1) {
+      interrupt_flag.clear_bit(1);
+      pc.set(interrupt::LCDC_STATUS);
+      interrupt_master_enable = false;
+      log_error("INTERRUPT!");
+    } else if ((fired_interrupts >> 2) & 1) {
+      interrupt_flag.clear_bit(2);
+      pc.set(interrupt::TIMER);
+      interrupt_master_enable = false;
+    } else if ((fired_interrupts >> 3) & 1) {
+      pc.set(interrupt::SERIAL);
+      interrupt_flag.clear_bit(3);
+      interrupt_master_enable = false;
+    } else if ((fired_interrupts >> 4) & 1) {
+      pc.set(interrupt::JOYPAD);
+      interrupt_flag.clear_bit(4);
+      interrupt_master_enable = false;
+    }
   }
 }
 
