@@ -99,12 +99,10 @@ void Cpu::check_interrupts() {
       interrupt_flag.clear_bit(0);
       pc.set(interrupt::VBLANK);
       interrupt_master_enable = false;
-      log_error("INTERRUPT!");
     } else if ((fired_interrupts >> 1) & 1) {
       interrupt_flag.clear_bit(1);
       pc.set(interrupt::LCDC_STATUS);
       interrupt_master_enable = false;
-      log_error("INTERRUPT!");
     } else if ((fired_interrupts >> 2) & 1) {
       interrupt_flag.clear_bit(2);
       pc.set(interrupt::TIMER);

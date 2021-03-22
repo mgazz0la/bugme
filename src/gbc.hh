@@ -15,6 +15,8 @@ class Cpu;
 class Mmu;
 class Ppu;
 class Display;
+class Timer;
+class Joypad;
 
 class Gbc {
 public:
@@ -30,6 +32,8 @@ private:
   std::shared_ptr<Cpu> cpu;
   std::shared_ptr<Display> display;
   std::shared_ptr<Ppu> ppu;
+  std::shared_ptr<Timer> timer;
+  std::shared_ptr<Joypad> joypad;
 
   bool should_exit_ = false;
   CliOptions &cli_options_;

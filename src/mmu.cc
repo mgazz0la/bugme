@@ -3,6 +3,7 @@
 #include "cartridge.hh"
 #include "cpu.hh"
 #include "log.hh"
+#include "register.hh"
 #include "util.hh"
 
 #include <algorithm>
@@ -92,13 +93,12 @@ byte_t Mmu::read(word_t addr) const {
 
   // unused
   if (util::in_range(addr, UNUSED_START, UNUSED_END)) {
-    log_warn("reading from unused ram [%x]", addr);
-    return 0xFF;
+    // log_warn("reading from unused ram [%x]", addr);
+    return _read(addr);
   }
 
   // i/o registers
   if (util::in_range(addr, IO_REGISTERS_START, IO_REGISTERS_END)) {
-    // this is way more complicated
     return _read(addr);
   }
 
@@ -155,13 +155,22 @@ void Mmu::write(word_t addr, byte_t byte) {
 
   // unused
   if (util::in_range(addr, UNUSED_START, UNUSED_END)) {
-    log_warn("writing to unused ram [%x]", addr);
-    // do nothing
+    // log_warn("writing to unused ram [%x]", addr);
+    _write(addr, byte);
     return;
   }
 
   // i/o registers
   if (util::in_range(addr, IO_REGISTERS_START, IO_REGISTERS_END)) {
+    if (addr == 0xFF00) {
+      // hack to make sure that no buttons are pressed?
+      _write(addr, byte | 0b1111);
+      return;
+    }
+
+    if (addr == 0xFF46) {
+      dma_transfer_(byte);
+    }
     _write(addr, byte);
     return;
   }
@@ -177,7 +186,7 @@ void Mmu::write(word_t addr, byte_t byte) {
     return;
   }
 
-  log_error("could not write to address 0x%x", addr);
+  //log_error("could not write to address 0x%x", addr);
   return;
 }
 
@@ -191,5 +200,13 @@ void Mmu::_write(word_t addr, byte_t byte) { memory_.at(addr) = byte; }
 
 void Mmu::reset() { memory_ = std::vector<byte_t>(0x10000); }
 
+void Mmu::dma_transfer_(byte_t source) {
+  word_t source_addr = static_cast<word_t>(source) * 0x100;
+  for (word_t offset = 0; offset <= 0x009F; ++offset) {
+    write(0xFE00 + offset, read(source_addr + offset));
+  }
+}
+
 Address Mmu::addr(word_t addr_) { return Address(shared_from_this(), addr_); }
+
 } // namespace gbc

@@ -27,9 +27,12 @@ public:
 private:
   byte_t _read(word_t addr) const;
   void _write(word_t addr, byte_t byte);
+  void dma_transfer_(byte_t source);
 
   std::vector<byte_t> memory_;
   std::shared_ptr<Cartridge> cartridge_;
+
+  AddressRegister dma_;
 };
 
 } // namespace gbc

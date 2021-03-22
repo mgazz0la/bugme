@@ -660,6 +660,7 @@ void Cpu::call() {
 void Cpu::call_if(bool condition) {
   if (condition) {
     call();
+    did_branch_ = true;
   } else {
     next_word(); // waste the arg
   }
@@ -677,6 +678,7 @@ void Cpu::jp(const word_t addr) {
 void Cpu::jp_if(bool condition) {
   if (condition) {
     jp();
+    did_branch_ = true;
   } else {
     next_word(); // waste the arg
   }
@@ -688,6 +690,18 @@ void Cpu::ei() {
 
 void Cpu::di() {
   interrupt_master_enable = false;
+}
+
+void Cpu::cpl() {
+  a.set(~a.value());
+
+  f.set_subtract_flag();
+  f.set_half_carry_flag();
+}
+
+void Cpu::rst(const word_t addr) {
+  push(pc);
+  pc.set(addr);
 }
 
 /* clang-format off */

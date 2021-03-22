@@ -54,7 +54,7 @@ void Cpu::op_2b() { dec(hl); }
 void Cpu::op_2c() { inc(l); }
 void Cpu::op_2d() { dec(l); }
 void Cpu::op_2e() { ld(l); }
-void Cpu::op_2f() { log_error("UNIMPLEMENTED OP CODE 0x2f"); }  // CPL
+void Cpu::op_2f() { cpl(); }  // CPL
 
 void Cpu::op_30() { jr_if(!f.carry_flag()); }
 void Cpu::op_31() { ld(sp, d16()); }
@@ -258,7 +258,7 @@ void Cpu::op_eb() { log_error("[op] illegal opcode 0xeb"); }
 void Cpu::op_ec() { log_error("[op] illegal opcode 0xec"); }
 void Cpu::op_ed() { log_error("[op] illegal opcode 0xed"); }
 void Cpu::op_ee() { a_xor(); }
-void Cpu::op_ef() { log_error("UNIMPLEMENTED OP CODE 0xef"); }
+void Cpu::op_ef() { rst(rst::_28); }
 
 void Cpu::op_f0() { ldh(a, next_byte()); }
 void Cpu::op_f1() { pop(af); }

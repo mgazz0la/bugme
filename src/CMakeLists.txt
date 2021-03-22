@@ -19,6 +19,10 @@ add_library(timer timer.cc)
 target_include_directories(timer PUBLIC .)
 target_link_libraries(timer LINK_PRIVATE register log)
 
+add_library(joypad joypad.cc)
+target_include_directories(joypad PUBLIC .)
+target_link_libraries(joypad LINK_PRIVATE register log)
+
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIR})
 add_library(sdl_display sdl_display.cc)
@@ -31,7 +35,7 @@ target_link_libraries(ppu LINK_PRIVATE display log)
 
 add_library(cpu cpu.cc opcode.cc opcode_internal.cc)
 target_include_directories(cpu PUBLIC .)
-target_link_libraries(cpu LINK_PRIVATE display log mmu ppu timer register)
+target_link_libraries(cpu LINK_PRIVATE display joypad log mmu ppu timer register)
 
 add_library(gbccore gbc.cc)
 target_include_directories(gbccore PUBLIC .)

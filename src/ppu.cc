@@ -262,8 +262,8 @@ void Ppu::set_pixel_(unsigned int x, unsigned int y, Color color) {
 // takes palette into account
 Color Ppu::get_color_(byte_t color,
                       const AddressRegister &palette_register) const {
-  switch (util::fuse_b(palette_register.value() >> (6 * color),
-                       palette_register.value() >> (6 * color + 1))) {
+  switch (util::fuse_b(palette_register.value() >> (2 * color),
+                       palette_register.value() >> (2 * color + 1))) {
   case 0b00:
     return Color::WHITE;
   case 0b01:

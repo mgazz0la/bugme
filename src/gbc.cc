@@ -1,11 +1,13 @@
 #include "gbc.hh"
 #include "cartridge.hh"
 #include "cpu.hh"
+#include "joypad.hh"
 #include "log.hh"
 #include "mmu.hh"
 #include "options.hh"
 #include "ppu.hh"
 #include "sdl_display.hh"
+#include "timer.hh"
 
 #include <fstream>
 
@@ -18,9 +20,10 @@ Gbc::Gbc(CliOptions &cli_options)
         if (should_exit)
           this->exit();
       })),
-      ppu(new Ppu(mmu,
-                  [&](std::vector<Color> &buffer) { display->draw(buffer); },
-                  cpu->vblank_cb(), cpu->lcdc_cb())),
+      ppu(new Ppu(
+          mmu, [&](std::vector<Color> &buffer) { display->draw(buffer); },
+          cpu->vblank_cb(), cpu->lcdc_cb())),
+      timer(new Timer(mmu, cpu->timer_cb())), joypad(new Joypad(mmu)),
       cli_options_(cli_options) {}
 
 void Gbc::start() {

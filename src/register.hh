@@ -98,6 +98,7 @@ private:
 
 class AddressRegister : public WriteableByte {
 public:
+  AddressRegister() : addr_(nullptr, 0x0) {}
   AddressRegister(Address addr) : addr_(addr) {}
   virtual ~AddressRegister() = default;
 
