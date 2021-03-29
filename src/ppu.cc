@@ -15,6 +15,7 @@ const unsigned int FRAME_HEIGHT = 144;
 const unsigned int BG_MAP_LENGTH = 256;
 const unsigned int TILES_PER_LINE = 32;
 const unsigned int TILE_LENGTH_PX = 8;
+const word_t BYTES_PER_SPRITE = 4;
 
 const word_t TILESET_0_START = 0x8000;
 const word_t TILESET_0_END = 0x8FFF;
@@ -104,6 +105,9 @@ void Ppu::tick(cycles_t cycles) {
       line.increment();
 
       if (line.value() == 154) {
+        if (sprites_enabled()) {
+          draw_sprites_();
+        }
         set_mode_(Mode::READ_OAM);
         draw_fn_(frame_buffer_);
         line.reset();
@@ -117,12 +121,19 @@ void Ppu::tick(cycles_t cycles) {
 }
 
 bool Ppu::display_enabled() const { return control_byte.get_bit(7); }
+
 bool Ppu::window_tile_map() const { return control_byte.get_bit(6); }
+
 bool Ppu::window_enabled() const { return control_byte.get_bit(5); }
+
 bool Ppu::bg_window_tile_data() const { return control_byte.get_bit(4); }
+
 bool Ppu::bg_tile_map_display() const { return control_byte.get_bit(3); }
+
 bool Ppu::sprite_size() const { return control_byte.get_bit(2); }
+
 bool Ppu::sprites_enabled() const { return control_byte.get_bit(1); }
+
 bool Ppu::bg_enabled() const { return control_byte.get_bit(0); }
 
 void Ppu::set_mode_(Mode mode) {
@@ -252,6 +263,43 @@ void Ppu::write_window_line_() {
                                           pixels0 >> (7 - tile_pixel_x)),
                              bg_palette);
     set_pixel_(x, line.value(), color);
+  }
+}
+
+void Ppu::draw_sprites_() {
+  for (word_t sprite_idx = 0; sprite_idx < 40; ++sprite_idx) {
+    word_t start = 0xFE00 + (sprite_idx * BYTES_PER_SPRITE);
+
+    byte_t sprite_y = mmu_->read(start);
+    byte_t sprite_x = mmu_->read(start + 1);
+    byte_t tile_idx = mmu_->read(start + 2);
+    byte_t sprite_attr = mmu_->read(start + 3);
+
+    // offscreen check
+    if (sprite_y == 0 || sprite_y >= 160 || sprite_x == 0 || sprite_x >= 168) {
+      return;
+    }
+    const byte_t sprite_y_scale = sprite_size() ? 2 : 1;
+
+    word_t pattern_addr = TILESET_0_START + tile_idx * 16;
+    bool should_flip_x = util::get_bit(sprite_attr, 5);
+    bool should_flip_y = util::get_bit(sprite_attr, 6);
+    for (byte_t _y = 0; _y < TILE_LENGTH_PX * sprite_y_scale; ++_y) {
+      for (byte_t _x = 0; _x < TILE_LENGTH_PX; ++_x) {
+        byte_t y =
+            should_flip_y ? (TILE_LENGTH_PX * sprite_y_scale) - _y - 1 : _y;
+        byte_t x = should_flip_x ? TILESET_0_START - _x - 1 : _x;
+        word_t tile_line_addr = pattern_addr + (y * 2);
+        byte_t pixels0 = mmu_->read(tile_line_addr);
+        byte_t pixels1 = mmu_->read(tile_line_addr + 1);
+
+        Color color =
+            get_color_(util::fuse_b(pixels1 >> (7 - x), pixels0 >> (7 - x)),
+                       util::get_bit(sprite_attr, 4) ? sprite_palette_1
+                                                     : sprite_palette_0);
+        set_pixel_(sprite_x + x - 8, sprite_y + y - 16, color);
+      }
+    }
   }
 }
 

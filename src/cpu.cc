@@ -15,8 +15,8 @@ namespace gbc {
 Cpu::Cpu(std::shared_ptr<Mmu> mmu)
     : af(a, f), bc(b, c), de(d, e), hl(h, l), mmu_(mmu),
       interrupt_enable(mmu->addr(0xFFFF)), interrupt_flag(mmu->addr(0xFF0F)) {
-        reset();
-      }
+  reset();
+}
 
 cycles_t Cpu::tick() {
   check_interrupts();
@@ -24,6 +24,7 @@ cycles_t Cpu::tick() {
   if (halted_ || stopped_) {
     return 1;
   }
+
   byte_t opcode = mmu_->read(pc.value());
   next_byte();
   if (opcode == 0x00) {
@@ -69,30 +70,28 @@ void Cpu::reset() {
   did_branch_ = false;
 }
 
-std::function<void()> Cpu::vblank_cb() {
- return [&]() { this->interrupt_flag.set_bit(0); };
-}
+void Cpu::int_vblank() { interrupt_flag.set_bit(0); }
 
-std::function<void()> Cpu::lcdc_cb() {
-  return [&]() { this->interrupt_flag.set_bit(1); };
-}
-std::function<void()> Cpu::timer_cb() {
-  return [&]() { this->interrupt_flag.set_bit(2); };
-}
-std::function<void()> Cpu::serial_cb() {
-  return [&]() { this->interrupt_flag.set_bit(3); };
-}
-std::function<void()> Cpu::joypad_cb() {
-  return [&]() { this->interrupt_flag.set_bit(4); };
-}
+void Cpu::int_lcdc() { interrupt_flag.set_bit(1); }
+
+void Cpu::int_timer() { interrupt_flag.set_bit(2); }
+
+void Cpu::int_serial() { interrupt_flag.set_bit(3); }
+
+void Cpu::int_joypad() { interrupt_flag.set_bit(4); }
 
 void Cpu::check_interrupts() {
   if (interrupt_master_enable) {
     byte_t fired_interrupts = interrupt_flag.value() & interrupt_enable.value();
+    log_warn("[%x] = interrupt_flag [%x] & interrupt_enable [%x]",
+             fired_interrupts, interrupt_flag.value(),
+             interrupt_enable.value());
 
-    if (!fired_interrupts) return;
+    if (!fired_interrupts) {
+      return;
+    }
 
-    halted_ = false;  // unhalt now that we found an interrupt
+    halted_ = false; // unhalt now that we found an interrupt
     push(pc);
 
     if ((fired_interrupts >> 0) & 1) {
@@ -126,8 +125,7 @@ byte_t Cpu::next_byte() {
 }
 
 word_t Cpu::next_word() {
-  word_t word =
-      util::fuse(mmu_->read(pc.value() + 1), mmu_->read(pc.value()));
+  word_t word = util::fuse(mmu_->read(pc.value() + 1), mmu_->read(pc.value()));
   pc.increment();
   pc.increment();
   return word;

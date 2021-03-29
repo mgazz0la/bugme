@@ -30,6 +30,9 @@ inline bool in_range(word_t n, word_t low, word_t high) {
   return ((low <= n) && (n <= high));
 }
 
+inline bool get_bit(byte_t n, bit_t bit) {
+  return ((n >> bit) & 0x1);
+}
 } // namespace util
 } // namespace gbc
 #endif

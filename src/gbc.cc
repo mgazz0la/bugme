@@ -22,16 +22,17 @@ Gbc::Gbc(CliOptions &cli_options)
       })),
       ppu(new Ppu(
           mmu, [&](std::vector<Color> &buffer) { display->draw(buffer); },
-          cpu->vblank_cb(), cpu->lcdc_cb())),
-      timer(new Timer(mmu, cpu->timer_cb())), joypad(new Joypad(mmu)),
-      cli_options_(cli_options) {}
+          [&]() { cpu->int_vblank(); }, [&]() { cpu->int_lcdc(); })),
+      timer(new Timer(mmu, [&]() { cpu->int_timer(); })),
+      joypad(new Joypad(mmu)), cli_options_(cli_options) {}
 
 void Gbc::start() {
-  log_set_level(LogLevel::Warning);
+  log_set_level(LogLevel::Debug);
   cycles_t cycles;
   while (!should_exit_) {
     cycles = cpu->tick();
     ppu->tick(cycles);
+    timer->tick(cycles * 4);
   }
 }
 

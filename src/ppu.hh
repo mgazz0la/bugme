@@ -51,6 +51,7 @@ private:
   void write_scanline_();
   void write_bg_line_();
   void write_window_line_();
+  void draw_sprites_();
   void set_pixel_(unsigned int x, unsigned int y, Color color);
   Color get_color_(byte_t color, const AddressRegister& palette_register) const;
   std::shared_ptr<Mmu> mmu_;

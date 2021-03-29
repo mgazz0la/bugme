@@ -46,7 +46,7 @@ void Cpu::op_23() { inc(hl); }
 void Cpu::op_24() { inc(h); }
 void Cpu::op_25() { dec(h); }
 void Cpu::op_26() { ld(h); }
-void Cpu::op_27() { log_error("UNIMPLEMENTED OP CODE 0x27"); }  // DAA
+void Cpu::op_27() { daa(); }
 void Cpu::op_28() { jr_if(f.zero_flag()); }
 void Cpu::op_29() { add(hl, hl); }
 void Cpu::op_2a() { ldi(a, _(hl)); }
@@ -268,8 +268,8 @@ void Cpu::op_f4() { log_error("[op] illegal opcode 0xf4"); }
 void Cpu::op_f5() { push(af); }
 void Cpu::op_f6() { a_or(); }
 void Cpu::op_f7() { log_error("UNIMPLEMENTED OP CODE 0xf7"); }
-void Cpu::op_f8() { log_error("UNIMPLEMENTED OP CODE 0xf8"); }
-void Cpu::op_f9() { log_error("UNIMPLEMENTED OP CODE 0xf9"); }
+void Cpu::op_f8() { ldhlsp(); }
+void Cpu::op_f9() { ld(sp, hl); }
 void Cpu::op_fa() { ld(a, next_word()); }
 void Cpu::op_fb() { ei(); }
 void Cpu::op_fc() { log_error("[op] illegal opcode 0xfc"); }

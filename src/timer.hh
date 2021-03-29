@@ -21,6 +21,9 @@ private:
   std::shared_ptr<Mmu> mmu_;
   AddressRegister divider, timer_counter, timer_modulo, timer_control;
   std::function<void()> timer_cb_;
+
+  int cycle_counter_ = 0;
+  int tima_counter_ = 0;
 };
 
 } // namespace gbc

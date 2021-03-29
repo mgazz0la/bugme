@@ -21,6 +21,8 @@ void Cpu::ld(ByteRegister &reg, const ByteRegister &other) {
 
 void Cpu::ld(WordRegister &reg, const word_t value) { reg.set(value); }
 
+void Cpu::ld(WordRegister &reg, const WordRegister &other) { reg.set(other.value()); }
+
 void Cpu::ld(const word_t addr) {
   byte_t v = next_byte();
   mmu_->write(addr, v);
@@ -33,6 +35,21 @@ void Cpu::ld(const word_t addr, ByteRegister &reg) {
 void Cpu::ld(const word_t addr, WordRegister &reg) {
   mmu_->write(addr, reg.low());
   mmu_->write(addr + 1, reg.high());
+}
+
+void Cpu::ldhlsp() {
+  word_t reg = sp.value();
+  std::int8_t value = static_cast<std::int8_t>(next_byte());
+
+  word_t result = static_cast<word_t>(reg + value);
+
+
+  f.clear_zero_flag();
+  f.clear_subtract_flag();
+  f.write_half_carry_flag(((reg ^ value ^ (result & 0xFFFF)) & 0x10) == 0x10);
+  f.write_carry_flag(((reg ^ value ^ (result & 0xFFFF)) & 0x100) == 0x100);
+
+  hl.set(result);
 }
 
 void Cpu::ldi(const word_t addr, ByteRegister &reg) {
@@ -702,6 +719,34 @@ void Cpu::cpl() {
 void Cpu::rst(const word_t addr) {
   push(pc);
   pc.set(addr);
+}
+
+void Cpu::daa() {
+    byte_t reg = a.value();
+    word_t correction = f.carry_flag() ? 0x60 : 0x00;
+
+    if (f.half_carry_flag() || (!f.subtract_flag() && ((reg & 0x0F) > 9))) {
+        correction |= 0x06;
+    }
+
+    if (f.carry_flag() || (!f.subtract_flag() && (reg > 0x99))) {
+        correction |= 0x60;
+    }
+
+    if (f.subtract_flag()) {
+        reg = static_cast<byte_t>(reg - correction);
+    } else {
+        reg = static_cast<byte_t>(reg + correction);
+    }
+
+    if (((correction << 2) & 0x100) != 0) {
+        f.set_carry_flag();
+    }
+
+    f.clear_half_carry_flag();
+    f.write_zero_flag(reg == 0);
+
+    a.set(static_cast<byte_t>(reg));
 }
 
 /* clang-format off */

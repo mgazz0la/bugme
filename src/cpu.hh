@@ -35,11 +35,11 @@ public:
   cycles_t tick();
   void reset();
 
-  std::function<void()> vblank_cb();
-  std::function<void()> lcdc_cb();
-  std::function<void()> timer_cb();
-  std::function<void()> serial_cb();
-  std::function<void()> joypad_cb();
+  void int_vblank();
+  void int_lcdc();
+  void int_timer();
+  void int_serial();
+  void int_joypad();
 
 private:
   void check_interrupts();
@@ -61,9 +61,11 @@ private:
   void ld(ByteRegister &reg, const word_t addr);
   void ld(ByteRegister &reg, const ByteRegister &other);
   void ld(WordRegister &reg, const word_t value);
+  void ld(WordRegister &reg, const WordRegister &other);
   void ld(const word_t addr);
   void ld(const word_t addr, ByteRegister &reg);
   void ld(const word_t addr, WordRegister &reg);
+  void ldhlsp();
 
   void ldi(const word_t addr, ByteRegister &reg);
   void ldi(ByteRegister &reg, const word_t addr);
@@ -177,6 +179,8 @@ private:
   void cpl();
 
   void rst(const word_t addr);
+
+  void daa();
 
   ByteRegister a, b, c, d, e, h, l;
   ByteRegisterPair af, bc, de, hl;
