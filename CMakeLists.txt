@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.4)
-project(gbc LANGUAGES CXX)
+project(bugme LANGUAGES CXX)
 
 add_definitions(-std=c++20 -Wall -Werror -Wextra -pedantic -g)
 set(CMAKE_CXX_STANDARD 20)
