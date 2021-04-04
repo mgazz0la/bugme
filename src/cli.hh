@@ -31,8 +31,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef GBC_CLI_H
 #define GBC_CLI_H
 
-#include "options.hh"
 #include "log.hh"
+#include "options.hh"
 
 #include <string>
 #include <vector>
@@ -50,30 +50,22 @@ CliOptions get_cli_options(int argc, char *argv[]) {
 
   std::vector<std::string> flags(argv + 2, argv + argc);
 
-/*
-  for (std::string &flag : flags) {
-    if (flag == "--debug") {
-      cliOptions.options.debugger = true;
-    } else if (flag == "--trace") {
-      cliOptions.options.trace = true;
-    } else if (flag == "--silent") {
-      cliOptions.options.disable_logs = true;
-    } else if (flag == "--headless") {
-      cliOptions.options.headless = true;
-    } else if (flag == "--whole-framebuffer") {
-      cliOptions.options.show_full_framebuffer = true;
-    } else if (flag == "--exit-on-infinite-jr") {
-      cliOptions.options.exit_on_infinite_jr = true;
-    } else if (flag == "--print-serial") {
-      cliOptions.options.print_serial = true;
+  for (unsigned int i = 0; i < flags.size(); ++i) {
+    if (flags[i] == "--debug") {
+      cliOptions.options.debug = true;
+    } else if (flags[i] == "-v") {
+      int verbosity = std::atoi(flags[i + 1].c_str());
+      // bound it to 0-3
+      cliOptions.options.verbosity =
+          verbosity >= 0 ? (verbosity <= 3 ? verbosity : 3) : 0;
+      ++i;
     } else {
-      fatal_error("Unknown flag: %s", flag.c_str());
+      log_error("Unknown flag: %s", flags[i].c_str());
     }
   }
-  */
-
   return cliOptions;
 }
+
 } // namespace gbc
 
 #endif

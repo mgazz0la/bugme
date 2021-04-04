@@ -35,6 +35,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace gbc {
 struct Options {
+  bool debug = false;
+  int verbosity = 0;
   /*
     bool debugger = false;
     bool trace = false;
@@ -53,4 +55,3 @@ struct CliOptions {
 
 } // namespace gbc
 #endif
-

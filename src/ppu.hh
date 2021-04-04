@@ -17,8 +17,7 @@ class Ppu {
 public:
   Ppu(std::shared_ptr<Mmu> mmu,
       std::function<void(std::vector<Color> &)> draw_fn,
-      std::function<void()> lcdc_status_cb,
-      std::function<void()> vblank_cb);
+      std::function<void()> lcdc_status_cb, std::function<void()> vblank_cb);
   virtual ~Ppu() = default;
 
   void tick(cycles_t cycles);
@@ -53,7 +52,7 @@ private:
   void write_window_line_();
   void draw_sprites_();
   void set_pixel_(unsigned int x, unsigned int y, Color color);
-  Color get_color_(byte_t color, const AddressRegister& palette_register) const;
+  Color get_color_(byte_t color, const AddressRegister &palette_register) const;
   std::shared_ptr<Mmu> mmu_;
   Mode mode_;
   cycles_t cycles_elapsed_;

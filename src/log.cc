@@ -44,7 +44,7 @@ void Logger::log(LogLevel level, const char *fmt, ...) {
           level_color(level), COLOR_RESET, msg.c_str());
 
   if (level == LogLevel::Error) {
-    //exit(-1);
+    // exit(-1);
   }
 }
 

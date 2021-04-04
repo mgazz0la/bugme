@@ -10,6 +10,10 @@ typedef unsigned int cycles_t;
 typedef std::uint8_t byte_t;
 typedef std::uint16_t word_t;
 
+class Debuggable {
+  friend class Debug;
+};
+
 } // namespace gbc
 
 #endif

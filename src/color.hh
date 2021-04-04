@@ -4,6 +4,6 @@
 namespace gbc {
 enum class FalseColor { WHITE = 0, LIGHT_GRAY, DARK_GRAY, BLACK };
 enum class Color { WHITE = 0, LIGHT_GRAY, DARK_GRAY, BLACK };
-}
+} // namespace gbc
 
 #endif

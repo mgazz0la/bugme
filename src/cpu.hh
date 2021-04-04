@@ -8,22 +8,22 @@
 
 namespace gbc {
 namespace interrupt {
-static const word_t VBLANK = 0x0040;
-static const word_t LCDC_STATUS = 0x0048;
-static const word_t TIMER = 0x0050;
-static const word_t SERIAL = 0x0058;
-static const word_t JOYPAD = 0x0060;
+inline const word_t VBLANK = 0x0040;
+inline const word_t LCDC_STATUS = 0x0048;
+inline const word_t TIMER = 0x0050;
+inline const word_t SERIAL = 0x0058;
+inline const word_t JOYPAD = 0x0060;
 } // namespace interrupt
 
 namespace rst {
-static const word_t _00 = 0x0000;
-static const word_t _08 = 0x0008;
-static const word_t _10 = 0x0010;
-static const word_t _18 = 0x0018;
-static const word_t _20 = 0x0020;
-static const word_t _28 = 0x0028;
-static const word_t _30 = 0x0030;
-static const word_t _38 = 0x0038;
+inline const word_t _00 = 0x0000;
+inline const word_t _08 = 0x0008;
+inline const word_t _10 = 0x0010;
+inline const word_t _18 = 0x0018;
+inline const word_t _20 = 0x0020;
+inline const word_t _28 = 0x0028;
+inline const word_t _30 = 0x0030;
+inline const word_t _38 = 0x0038;
 } // namespace rst
 
 class Mmu;

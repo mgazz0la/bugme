@@ -15,6 +15,10 @@ add_library(cartridge cartridge.cc)
 target_include_directories(cartridge PUBLIC .)
 target_link_libraries(cartridge LINK_PRIVATE log)
 
+add_library(debug debug.cc)
+target_include_directories(debug PUBLIC .)
+target_link_libraries(debug LINK_PRIVATE log)
+
 add_library(timer timer.cc)
 target_include_directories(timer PUBLIC .)
 target_link_libraries(timer LINK_PRIVATE register log)

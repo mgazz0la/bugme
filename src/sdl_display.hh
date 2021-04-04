@@ -20,9 +20,9 @@ public:
   void draw(std::vector<Color> &buffer) override;
 
 private:
-  SDL_Window* window_;
-  SDL_Renderer* renderer_;
-  SDL_Texture* texture_;
+  SDL_Window *window_;
+  SDL_Renderer *renderer_;
+  SDL_Texture *texture_;
   bool should_exit_ = false;
   std::function<void(bool)> exit_callback_;
 

@@ -33,8 +33,8 @@ cycles_t Cpu::tick() {
     // exit(1);
   }
   if (opcode != 0xcb) {
-    log_info("0x%04X: %s (0x%x)", pc.value() - 1, opcode::NAMES[opcode].c_str(),
-             opcode);
+    log_debug("0x%04X: %s (0x%x)", pc.value() - 1,
+              opcode::NAMES[opcode].c_str(), opcode);
     op(opcode);
     if (did_branch_) {
       did_branch_ = false;
@@ -43,8 +43,8 @@ cycles_t Cpu::tick() {
     return opcode::CYCLES[opcode];
   } else {
     opcode = next_byte();
-    log_info("0x%04X: %s (0xcb 0x%x)", pc.value() - 2,
-             opcode::CB_NAMES[opcode].c_str(), opcode);
+    log_debug("0x%04X: %s (0xcb 0x%x)", pc.value() - 2,
+              opcode::CB_NAMES[opcode].c_str(), opcode);
     cb_op(opcode);
     return opcode::CB_CYCLES[opcode];
   }
@@ -83,10 +83,6 @@ void Cpu::int_joypad() { interrupt_flag.set_bit(4); }
 void Cpu::check_interrupts() {
   if (interrupt_master_enable) {
     byte_t fired_interrupts = interrupt_flag.value() & interrupt_enable.value();
-    log_warn("[%x] = interrupt_flag [%x] & interrupt_enable [%x]",
-             fired_interrupts, interrupt_flag.value(),
-             interrupt_enable.value());
-
     if (!fired_interrupts) {
       return;
     }

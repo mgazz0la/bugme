@@ -186,7 +186,7 @@ void Mmu::write(word_t addr, byte_t byte) {
     return;
   }
 
-  //log_error("could not write to address 0x%x", addr);
+  // log_error("could not write to address 0x%x", addr);
   return;
 }
 

@@ -26,14 +26,32 @@ Gbc::Gbc(CliOptions &cli_options)
       timer(new Timer(mmu, [&]() { cpu->int_timer(); })),
       joypad(new Joypad(mmu)), cli_options_(cli_options) {}
 
-void Gbc::start() {
-  log_set_level(LogLevel::Debug);
+int Gbc::run() {
+  switch (cli_options_.options.verbosity) {
+  case 0:
+    log_set_level(LogLevel::Error);
+    break;
+  case 1:
+    log_set_level(LogLevel::Warning);
+    break;
+  case 2:
+    log_set_level(LogLevel::Info);
+    break;
+  case 3:
+    log_set_level(LogLevel::Debug);
+    break;
+  default:
+    log_set_level(LogLevel::Error);
+  }
+
   cycles_t cycles;
   while (!should_exit_) {
     cycles = cpu->tick();
     ppu->tick(cycles);
     timer->tick(cycles * 4);
   }
+
+  return 0;
 }
 
 void Gbc::exit() {

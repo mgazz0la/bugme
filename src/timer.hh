@@ -1,8 +1,8 @@
 #ifndef GBC_TIMER_H
 #define GBC_TIMER_H
 
-#include <memory>
 #include <functional>
+#include <memory>
 
 #include "register.hh"
 #include "types.hh"
@@ -17,6 +17,7 @@ public:
   virtual ~Timer() = default;
 
   void tick(cycles_t cycles);
+
 private:
   std::shared_ptr<Mmu> mmu_;
   AddressRegister divider, timer_counter, timer_modulo, timer_control;
