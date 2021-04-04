@@ -23,6 +23,11 @@ arguments:
   --headless                Run without a display (console output only)
 ```
 
+## Further documentation
+
+If you have `doxygen` installed, you may run it to generate an HTML class reference. Point your
+browser at `html/index.html` to view.
+
 ## Missing Functionality
 
 * Sprite support

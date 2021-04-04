@@ -7,3 +7,4 @@ cmake/*
 data/*
 html/*
 latex/*
+linux_sdl.supp
