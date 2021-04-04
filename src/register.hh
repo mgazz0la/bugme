@@ -10,65 +10,116 @@
 
 namespace gbc {
 
+/**
+ * Base container class for a standardize Gameboy value.
+ *
+ * For a Gameboy, we can expect this to wrap the 8-bit byte_t and the 16-bit
+ * word_t.
+ *
+ * \tparam T specifies the size of the underlying value
+ */
 template <typename T> class ReadableValue {
 public:
+  /** \return The underlying value */
   virtual T value() const = 0;
 
+  /** Equality operator overload against a raw value. */
   bool operator==(const T other) const { return value() == other; }
 
+  /** Equality operator overload against another ReadableValue<T>. */
   bool operator==(const ReadableValue<T> &other) const {
     return value() == other.value();
   }
 };
 
+/**
+ * A mutable version of ReadableValue.
+ *
+ * This abstract class also defines several helper methods to facilitate
+ * bit-level operations. As with ReadableValue, we can expect this to wrap the
+ * 8-bit byte_t and the 16-bit word_t.
+ *
+ * \tparam T specifies the size of the underlying value
+ */
 template <typename T> class WriteableValue : public ReadableValue<T> {
 public:
-  virtual void set(T) = 0;
+  /**
+   * Replaces the underlying value with new_value.
+   * \param new_value The new value of the same underlying type.
+   */
+  virtual void set(T new_value) = 0;
+
+  /** Sets the underlying value to 0. */
   virtual void reset() { set(0); }
 
+  /**
+   * Sets the underlying value to itself plus one.
+   *
+   * \note Overflow is expected to be handled by the underlying type T.
+   */
   virtual void increment() { set(this->value() + 1); }
+
+  /**
+   * Sets the underlying value to itself minus one.
+   *
+   * \note Underflow is expected to be handled by the underlying type T.
+   */
   virtual void decrement() { set(this->value() - 1); }
 
-  bool get_bit(bit_t bit) const { return !!(this->value() & (1 << bit)); }
-  virtual void set_bit(bit_t bit) { set(this->value() | (1 << bit)); }
-  void clear_bit(bit_t bit) { set(this->value() & ~(1 << bit)); }
-  virtual void flip_bit(bit_t bit) { set(this->value() ^ (1 << bit)); }
-  virtual void write_bit(bit_t bit, bool bit_value) {
-    bit_value ? set_bit(bit) : clear_bit(bit);
+  /**
+   * Retrieves the n-th least significant bit from the underlying value.
+   * \param n Which bit (starting from the least significant, zero-indexed) to
+   * retrieve.
+   * \return The value of the specified bit.
+   */
+  bool get_bit(bit_t n) const { return !!(this->value() & (1 << n)); }
+
+  /**
+   * Sets the n-th least significant bit to 1.
+   * \param n Which bit (starting from the least significant, zero-indexed) to
+   * set.
+   */
+  virtual void set_bit(bit_t n) { set(this->value() | (1 << n)); }
+
+  /**
+   * Sets the n-th least significant bit to 0.
+   * \param n Which bit (starting from the least significant, zero-indexed) to
+   * clear.
+   */
+  void clear_bit(bit_t n) { set(this->value() & ~(1 << n)); }
+
+  /**
+   * Flips the n-th least significant bit.
+   * \param n Which bit (starting from the least significant, zero-indexed) to
+   * flip.
+   */
+  virtual void flip_bit(bit_t n) { set(this->value() ^ (1 << n)); }
+
+  /**
+   * Sets the n-th least significant bit to the specified value.
+   * \param n Which bit (starting from the least significant, zero-indexed) to
+   * write.
+   * \param bit_value The bit to write.
+   */
+  virtual void write_bit(bit_t n, bool bit_value) {
+    bit_value ? set_bit(n) : clear_bit(n);
   }
 };
 
+/** A read-only 8-bit value. */
 typedef ReadableValue<byte_t> ReadableByte;
+/** A read-only 16-bit value. */
 typedef ReadableValue<word_t> ReadableWord;
+/** A read-write 8-bit value. */
 typedef WriteableValue<byte_t> WriteableByte;
+/** A read-write 16-bit value. */
 typedef WriteableValue<word_t> WriteableWord;
 
-class RawByte : public ReadableByte {
-public:
-  RawByte(byte_t value) : value_(value){};
-
-  byte_t value() const override { return value_; }
-
-private:
-  byte_t value_;
-};
-
-class RawWord : public ReadableWord {
-public:
-  RawWord(word_t value) : value_(value){};
-
-  word_t value() const override { return value_; }
-
-private:
-  word_t value_;
-};
-
+/** A general-use 8-bit read-write register with bit manipulation helpers.  */
 class ByteRegister : public WriteableByte {
 public:
-  ByteRegister() = default;
-  virtual ~ByteRegister() = default;
-
   byte_t value() const override { return value_; }
+
   virtual void set(byte_t new_value) override { value_ = new_value; }
 
 private:
@@ -109,6 +160,15 @@ private:
   Address addr_;
 };
 
+/**
+ * A general-use 16-bit read-write register with bit manipulation helpers.
+ *
+ * This class acts as an interface for the two separate ways that the Gameboy
+ * implements word-sized registers.
+ *
+ * \see WordValuedRegister
+ * \see ByteRegisterPair
+ */
 class WordRegister : public WriteableWord {
 public:
   WordRegister() = default;
@@ -118,6 +178,7 @@ public:
   virtual byte_t high() const = 0;
 };
 
+/** A WordRegister implemented by a single 16-bit value.  */
 class WordValuedRegister : public WordRegister {
 public:
   virtual ~WordValuedRegister() = default;
@@ -132,6 +193,7 @@ private:
   word_t value_ = 0x0;
 };
 
+/** A WordRegister implemented by two separate 8-bit registers. */
 class ByteRegisterPair : public WordRegister {
 public:
   ByteRegisterPair(ByteRegister &high, ByteRegister &low)

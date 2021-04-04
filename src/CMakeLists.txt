@@ -7,6 +7,10 @@ target_include_directories(display INTERFACE .)
 add_library(log log.cc)
 target_include_directories(log PUBLIC .)
 
+add_library(options options.cc)
+target_include_directories(options PUBLIC .)
+target_link_libraries(options LINK_PRIVATE log)
+
 add_library(mmu mmu.cc)
 target_include_directories(mmu PUBLIC .)
 target_link_libraries(mmu LINK_PRIVATE cpu log)
@@ -46,5 +50,5 @@ target_include_directories(gbccore PUBLIC .)
 target_link_libraries(gbccore LINK_PRIVATE display cartridge cpu log mmu timer ppu)
 
 add_executable(gbc main.cc)
-target_link_libraries(gbc LINK_PRIVATE gbccore sdl_display)
+target_link_libraries(gbc LINK_PRIVATE gbccore sdl_display options)
 install(TARGETS gbc DESTINATION bin)

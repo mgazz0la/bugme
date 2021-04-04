@@ -16,12 +16,18 @@ namespace gbc {
 Gbc::Gbc(CliOptions &cli_options)
     : cartridge(new Cartridge(read_rom(cli_options.rom_filename))),
       mmu(new Mmu(cartridge)), cpu(new Cpu(mmu)),
-      display(new SdlDisplay([&](bool should_exit) {
-        if (should_exit)
-          this->exit();
-      })),
+      display(cli_options.options.headless
+                  ? nullptr
+                  : new SdlDisplay([&](bool should_exit) {
+                      if (should_exit)
+                        this->exit();
+                    })),
       ppu(new Ppu(
-          mmu, [&](std::vector<Color> &buffer) { display->draw(buffer); },
+          mmu,
+          [&](std::vector<Color> &buffer) {
+            if (!cli_options.options.headless)
+              display->draw(buffer);
+          },
           [&]() { cpu->int_vblank(); }, [&]() { cpu->int_lcdc(); })),
       timer(new Timer(mmu, [&]() { cpu->int_timer(); })),
       joypad(new Joypad(mmu)), cli_options_(cli_options) {}

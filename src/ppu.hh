@@ -54,8 +54,8 @@ private:
   void set_pixel_(unsigned int x, unsigned int y, Color color);
   Color get_color_(byte_t color, const AddressRegister &palette_register) const;
   std::shared_ptr<Mmu> mmu_;
-  Mode mode_;
-  cycles_t cycles_elapsed_;
+  Mode mode_ = Mode::READ_OAM;
+  cycles_t cycles_elapsed_ = 0;
   std::vector<Color> frame_buffer_;
   std::function<void(std::vector<Color> &)> draw_fn_;
   std::function<void()> vblank_cb_;
