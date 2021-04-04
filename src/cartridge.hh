@@ -9,8 +9,7 @@
 namespace gbc {
 
 /**
- * \class Cartridge
- * \brief Representation of a Gameboy cartridge.
+ * Representation of a Gameboy cartridge.
  *
  * This class currently only encapsulates ROM data. Future plans for the class
  * include:
@@ -20,11 +19,12 @@ namespace gbc {
 class Cartridge {
 public:
   /**
-   * \brief ctor
-   * \param rom_data Hexdump vector of the Gameboy ROM.
+   * ctor
    *
    * Absent of MBC functionality, the Mmu will only be able to access the first
    * 0x8000 bytes of ROM.
+   *
+   * \param rom_data Hexdump vector of the Gameboy ROM.
    */
   Cartridge(std::vector<byte_t> rom_data);
 
