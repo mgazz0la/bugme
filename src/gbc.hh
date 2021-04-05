@@ -1,5 +1,5 @@
-#ifndef GBC_GBC_H
-#define GBC_GBC_H
+#ifndef BUGME_BUGME_H
+#define BUGME_BUGME_H
 
 #include "types.hh"
 
@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-namespace gbc {
+namespace bugme {
 
 class Cartridge;
 class CliOptions;
@@ -64,5 +64,5 @@ private:
   std::vector<byte_t> read_rom(const std::string &filename) const;
 };
 
-} // namespace gbc
+} // namespace bugme
 #endif

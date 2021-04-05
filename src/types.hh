@@ -1,9 +1,9 @@
-#ifndef GBC_TYPE_H
-#define GBC_TYPE_H
+#ifndef BUGME_TYPE_H
+#define BUGME_TYPE_H
 
 #include <cstdint>
 
-namespace gbc {
+namespace bugme {
 
 typedef unsigned char bit_t;
 typedef unsigned int cycles_t;
@@ -14,6 +14,6 @@ class Debuggable {
   friend class Debug;
 };
 
-} // namespace gbc
+} // namespace bugme
 
 #endif

@@ -7,7 +7,7 @@
 
 #include <string>
 
-namespace gbc {
+namespace bugme {
 
 namespace {
 const unsigned int FRAME_WIDTH = 160;
@@ -326,4 +326,4 @@ Color Ppu::get_color_(byte_t color,
     return Color::WHITE;
   }
 }
-} // namespace gbc
+} // namespace bugme

@@ -1,8 +1,8 @@
-#ifndef GBC_OPCODE_H
-#define GBC_OPCODE_H
+#ifndef BUGME_OPCODE_H
+#define BUGME_OPCODE_H
 
 #include "opcode_cycles.hh"
 #include "opcode_names.hh"
 
-namespace gbc {} // namespace gbc
+namespace bugme {} // namespace bugme
 #endif

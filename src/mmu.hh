@@ -1,5 +1,5 @@
-#ifndef GBC_MMU_H
-#define GBC_MMU_H
+#ifndef BUGME_MMU_H
+#define BUGME_MMU_H
 
 #include <cstdint>
 #include <memory>
@@ -8,7 +8,7 @@
 #include "register.hh"
 #include "types.hh"
 
-namespace gbc {
+namespace bugme {
 
 class Cartridge;
 
@@ -35,6 +35,6 @@ private:
   AddressRegister dma_;
 };
 
-} // namespace gbc
+} // namespace bugme
 
 #endif

@@ -1,3 +1,3 @@
 #include "debug.hh"
 
-namespace gbc {}
+namespace bugme {}

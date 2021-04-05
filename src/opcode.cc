@@ -2,7 +2,7 @@
 #include "log.hh"
 #include "register.hh"
 
-namespace gbc {
+namespace bugme {
 
 /* clang-format off */
 void Cpu::op_00() { nop(); }
@@ -550,4 +550,4 @@ void Cpu::op_cb_fe() { set(7, _(hl)); }
 void Cpu::op_cb_ff() { set(7, a); }
 /* clang-format on */
 
-} // namespace gbc
+} // namespace bugme

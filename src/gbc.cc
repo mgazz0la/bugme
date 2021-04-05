@@ -11,7 +11,7 @@
 
 #include <fstream>
 
-namespace gbc {
+namespace bugme {
 
 Gbc::Gbc(CliOptions &cli_options)
     : cartridge(new Cartridge(read_rom(cli_options.rom_filename))),
@@ -84,4 +84,4 @@ std::vector<byte_t> Gbc::read_rom(const std::string &filename) const {
            filename.c_str());
   return std::vector<byte_t>(file_contents.begin(), file_contents.end());
 }
-} // namespace gbc
+} // namespace bugme

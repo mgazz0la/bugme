@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-namespace gbc {
+namespace bugme {
 
 namespace {
 const word_t CARTRIDGE_ROM_START = 0;
@@ -209,4 +209,4 @@ void Mmu::dma_transfer_(byte_t source) {
 
 Address Mmu::addr(word_t addr_) { return Address(shared_from_this(), addr_); }
 
-} // namespace gbc
+} // namespace bugme

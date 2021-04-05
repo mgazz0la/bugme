@@ -2,7 +2,7 @@
 #include "mmu.hh"
 #include "util.hh"
 
-namespace gbc {
+namespace bugme {
 void Cpu::nop() const { /* NOP */
 }
 

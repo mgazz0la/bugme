@@ -8,7 +8,7 @@ class SDL_Window;
 class SDL_Renderer;
 class SDL_Texture;
 
-namespace gbc {
+namespace bugme {
 
 enum class Color;
 
@@ -30,4 +30,4 @@ private:
   std::uint32_t convert_color_(Color color);
 };
 
-} // namespace gbc
+} // namespace bugme

@@ -20,7 +20,7 @@
 
 #include <cstdarg>
 
-namespace gbc {
+namespace bugme {
 Logger global_logger;
 const char *COLOR_TRACE = "\033[1;30m";
 const char *COLOR_DEBUG = "\033[1;37m";
@@ -81,4 +81,4 @@ inline const char *Logger::level_color(LogLevel level) const {
 
 void log_set_level(LogLevel level) { global_logger.set_level(level); }
 
-} // namespace gbc
+} // namespace bugme

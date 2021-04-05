@@ -1,9 +1,9 @@
-#ifndef GBC_UTIL_H
-#define GBC_UTIL_H
+#ifndef BUGME_UTIL_H
+#define BUGME_UTIL_H
 
 #include "types.hh"
 
-namespace gbc {
+namespace bugme {
 namespace util {
 
 inline word_t fuse(byte_t high, byte_t low) {
@@ -32,5 +32,5 @@ inline bool in_range(word_t n, word_t low, word_t high) {
 
 inline bool get_bit(byte_t n, bit_t bit) { return ((n >> bit) & 0x1); }
 } // namespace util
-} // namespace gbc
+} // namespace bugme
 #endif

@@ -1,9 +1,9 @@
-#ifndef GBC_OPCODE_NAMES_H
-#define GBC_OPCODE_NAMES_H
+#ifndef BUGME_OPCODE_NAMES_H
+#define BUGME_OPCODE_NAMES_H
 
 #include <string>
 
-namespace gbc {
+namespace bugme {
 namespace opcode {
 
 /* clang-format off */
@@ -557,6 +557,6 @@ static const std::string CB_NAMES[256] = {
 /* clang-format on */
 
 } // namespace opcode
-} // namespace gbc
+} // namespace bugme
 
 #endif

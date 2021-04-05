@@ -1,9 +1,9 @@
-#ifndef GBC_OPCODE_CYCLES_H
-#define GBC_OPCODE_CYCLES_H
+#ifndef BUGME_OPCODE_CYCLES_H
+#define BUGME_OPCODE_CYCLES_H
 
 #include <cstdint>
 
-namespace gbc {
+namespace bugme {
 namespace opcode {
 
 /* clang-format off */
@@ -104,6 +104,6 @@ inline const std::uint8_t CB_CYCLES[256] = {
 /* clang-format on */
 
 } // namespace opcode
-} // namespace gbc
+} // namespace bugme
 
 #endif

@@ -1,12 +1,12 @@
-#ifndef GBC_CPU_H
-#define GBC_CPU_H
+#ifndef BUGME_CPU_H
+#define BUGME_CPU_H
 
 #include "register.hh"
 #include <functional>
 #include <map>
 #include <memory>
 
-namespace gbc {
+namespace bugme {
 namespace interrupt {
 inline const word_t VBLANK = 0x0040;
 inline const word_t LCDC_STATUS = 0x0048;
@@ -752,5 +752,5 @@ private:
   /* clang-format on */
 };
 
-} // namespace gbc
+} // namespace bugme
 #endif

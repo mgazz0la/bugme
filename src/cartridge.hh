@@ -1,12 +1,12 @@
-#ifndef GBC_CARTRIDGE_H
-#define GBC_CARTRIDGE_H
+#ifndef BUGME_CARTRIDGE_H
+#define BUGME_CARTRIDGE_H
 
 #include "types.hh"
 
 #include <string>
 #include <vector>
 
-namespace gbc {
+namespace bugme {
 
 /**
  * Representation of a Gameboy cartridge.
@@ -19,26 +19,27 @@ namespace gbc {
 class Cartridge {
 public:
   /**
-   * ctor
-   *
-   * Absent of MBC functionality, the Mmu will only be able to access the first
-   * 0x8000 bytes of ROM.
+   * Constructor.
    *
    * \param rom_data Hexdump vector of the Gameboy ROM.
+   *
+   * \warning Absent of MBC functionality, the Mmu will only be able to access
+   *          the first 0x8000 bytes of ROM.
    */
   Cartridge(std::vector<byte_t> rom_data);
 
   /**
-   * \brief Retrieves the byte at address addr
+   * Retrieves the byte at address addr
+   *
    * \param addr The address (index) at which to fetch from the Gameboy ROM.
    *
-   * Absent of MBC functionality, the Mmu will only be able to access the first
-   * 0x8000 bytes of ROM.
+   * \warning Absent of MBC functionality, the Mmu will only be able to access
+   *          the first 0x8000 bytes of ROM.
    */
   byte_t read(word_t addr) const;
 
 private:
   std::vector<byte_t> rom_data_;
 };
-} // namespace gbc
+} // namespace bugme
 #endif

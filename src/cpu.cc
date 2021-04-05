@@ -10,7 +10,7 @@
 #include <iostream>
 #include <sstream>
 
-namespace gbc {
+namespace bugme {
 
 Cpu::Cpu(std::shared_ptr<Mmu> mmu)
     : af(a, f), bc(b, c), de(d, e), hl(h, l), mmu_(mmu),
@@ -127,4 +127,4 @@ word_t Cpu::next_word() {
   return word;
 }
 
-} // namespace gbc
+} // namespace bugme

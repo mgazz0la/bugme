@@ -28,15 +28,15 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef GBC_STRING_UTILS_H
-#define GBC_STRING_UTILS_H
+#ifndef BUGME_STRING_UTILS_H
+#define BUGME_STRING_UTILS_H
 
 #include <cstdarg>
 #include <cstdio>
 #include <sstream>
 #include <vector>
 
-namespace gbc {
+namespace bugme {
 using std::string;
 using std::vector;
 
@@ -68,5 +68,5 @@ vector<string> split(string str, char delim) {
 
   return elems;
 }
-} // namespace gbc
+} // namespace bugme
 #endif

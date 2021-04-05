@@ -13,7 +13,7 @@ static const unsigned int GAMEBOY_WIDTH = 160;
 static const unsigned int GAMEBOY_HEIGHT = 144;
 } // namespace
 
-namespace gbc {
+namespace bugme {
 
 SdlDisplay::SdlDisplay(std::function<void(bool)> exit_callback)
     : window_(SDL_Init(SDL_INIT_VIDEO) < 0
@@ -110,4 +110,4 @@ std::uint32_t SdlDisplay::convert_color_(Color color) {
 
   return (r << 16) | (g << 8) | (b << 0);
 }
-} // namespace gbc
+} // namespace bugme

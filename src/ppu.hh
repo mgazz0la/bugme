@@ -1,5 +1,5 @@
-#ifndef GBC_PPU_H
-#define GBC_PPU_H
+#ifndef BUGME_PPU_H
+#define BUGME_PPU_H
 
 #include "register.hh"
 #include "types.hh"
@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-namespace gbc {
+namespace bugme {
 
 class Mmu;
 enum class Color;
@@ -62,5 +62,5 @@ private:
   std::function<void()> lcdc_status_cb_;
 };
 
-} // namespace gbc
+} // namespace bugme
 #endif

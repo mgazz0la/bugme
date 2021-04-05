@@ -1,5 +1,5 @@
-#ifndef GBC_TIMER_H
-#define GBC_TIMER_H
+#ifndef BUGME_TIMER_H
+#define BUGME_TIMER_H
 
 #include <functional>
 #include <memory>
@@ -7,7 +7,7 @@
 #include "register.hh"
 #include "types.hh"
 
-namespace gbc {
+namespace bugme {
 
 class Mmu;
 
@@ -27,6 +27,6 @@ private:
   int tima_counter_ = 0;
 };
 
-} // namespace gbc
+} // namespace bugme
 
 #endif

@@ -1,9 +1,9 @@
-#ifndef GBC_DISPLAY_H
-#define GBC_DISPLAY_H
+#ifndef BUGME_DISPLAY_H
+#define BUGME_DISPLAY_H
 
 #include <vector>
 
-namespace gbc {
+namespace bugme {
 
 enum class Color;
 
@@ -13,6 +13,6 @@ public:
   virtual void draw(std::vector<Color> &) = 0;
 };
 
-} // namespace gbc
+} // namespace bugme
 
 #endif

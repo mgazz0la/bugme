@@ -2,7 +2,7 @@
 
 #include "mmu.hh"
 
-namespace gbc {
+namespace bugme {
 
 namespace {
 const int DIVIDERS[4] = {1024, 16, 64, 256};
@@ -37,4 +37,4 @@ void Timer::tick(cycles_t cycles) {
   }
 }
 
-} // namespace gbc
+} // namespace bugme

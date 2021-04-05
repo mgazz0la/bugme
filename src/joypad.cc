@@ -2,8 +2,8 @@
 
 #include "mmu.hh"
 
-namespace gbc {
+namespace bugme {
 Joypad::Joypad(std::shared_ptr<Mmu> mmu) : mmu_(mmu), joyp_(mmu->addr(0xFF00)) {
   joyp_.set(0b111111);
 }
-} // namespace gbc
+} // namespace bugme

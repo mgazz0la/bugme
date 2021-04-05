@@ -1,5 +1,5 @@
-#ifndef GBC_LOG_H
-#define GBC_LOG_H
+#ifndef BUGME_LOG_H
+#define BUGME_LOG_H
 
 /*
  * Copyright (C) 2015 Alex Smith
@@ -19,7 +19,7 @@
 
 #include <string>
 
-namespace gbc {
+namespace bugme {
 
 enum class LogLevel {
   Trace,
@@ -72,5 +72,5 @@ extern const char *COLOR_RESET;
 //#pragma clang diagnostic pop
 
 extern void log_set_level(LogLevel level);
-} // namespace gbc
+} // namespace bugme
 #endif

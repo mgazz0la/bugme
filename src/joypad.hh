@@ -1,11 +1,11 @@
-#ifndef GBC_JOYPAD_H
-#define GBC_JOYPAD_H
+#ifndef BUGME_JOYPAD_H
+#define BUGME_JOYPAD_H
 
 #include "register.hh"
 
 #include <memory>
 
-namespace gbc {
+namespace bugme {
 class Mmu;
 enum class Button { Up, Down, Left, Right, A, B, Select, Start };
 
@@ -17,5 +17,5 @@ private:
   std::shared_ptr<Mmu> mmu_;
   AddressRegister joyp_;
 };
-} // namespace gbc
+} // namespace bugme
 #endif

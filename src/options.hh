@@ -1,9 +1,9 @@
-#ifndef GBC_OPTIONS_H
-#define GBC_OPTIONS_H
+#ifndef BUGME_OPTIONS_H
+#define BUGME_OPTIONS_H
 
 #include <string>
 
-namespace gbc {
+namespace bugme {
 struct Options {
   bool debug = false;
   int verbosity = 0;
@@ -16,5 +16,5 @@ struct CliOptions {
 };
 
 extern CliOptions get_cli_options(int argc, char *argv[]);
-} // namespace gbc
+} // namespace bugme
 #endif

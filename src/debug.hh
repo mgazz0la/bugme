@@ -1,10 +1,10 @@
-#ifndef GBC_DEBUG_H
-#define GBC_DEBUG_H
+#ifndef BUGME_DEBUG_H
+#define BUGME_DEBUG_H
 
-namespace gbc {
+namespace bugme {
 class Debug {
   Debug() = default;
   virtual ~Debug() = default;
 };
-} // namespace gbc
+} // namespace bugme
 #endif

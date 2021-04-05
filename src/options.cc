@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-namespace gbc {
+namespace bugme {
 CliOptions get_cli_options(int argc, char *argv[]) {
   if (argc < 2) {
     log_error("ROM file required");
@@ -33,4 +33,4 @@ CliOptions get_cli_options(int argc, char *argv[]) {
   }
   return cliOptions;
 }
-} // namespace gbc
+} // namespace bugme
