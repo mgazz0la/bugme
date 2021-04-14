@@ -18,13 +18,14 @@ Cpu::Cpu(std::shared_ptr<Mmu> mmu)
   reset();
 }
 
-cycles_t Cpu::tick() {
+mcycles_t Cpu::tick() {
   check_interrupts();
 
   if (halted_ || stopped_) {
     return 1;
   }
 
+  //word_t old_pc = pc.value();
   byte_t opcode = mmu_->read(pc.value());
   next_byte();
   if (opcode == 0x00) {
@@ -36,11 +37,17 @@ cycles_t Cpu::tick() {
     log_debug("0x%04X: %s (0x%x)", pc.value() - 1,
               opcode::NAMES[opcode].c_str(), opcode);
     op(opcode);
+    mcycles_t cycles;
     if (did_branch_) {
       did_branch_ = false;
-      return opcode::BRANCHED_CYCLES[opcode];
+      cycles = opcode::BRANCHED_CYCLES[opcode];
     }
-    return opcode::CYCLES[opcode];
+    cycles = opcode::CYCLES[opcode];
+    /*if (old_pc == pc.value() && opcode != 0x00) {
+      log_error("Upcoming tight loop detected. Exiting.");
+      exit(2);
+    }*/
+    return cycles;
   } else {
     opcode = next_byte();
     log_debug("0x%04X: %s (0xcb 0x%x)", pc.value() - 2,
@@ -81,13 +88,12 @@ void Cpu::int_serial() { interrupt_flag.set_bit(3); }
 void Cpu::int_joypad() { interrupt_flag.set_bit(4); }
 
 void Cpu::check_interrupts() {
-  if (interrupt_master_enable) {
-    byte_t fired_interrupts = interrupt_flag.value() & interrupt_enable.value();
-    if (!fired_interrupts) {
-      return;
-    }
+  byte_t fired_interrupts = interrupt_flag.value() & interrupt_enable.value();
+  if (!fired_interrupts) {
+    return;
+  }
 
-    halted_ = false; // unhalt now that we found an interrupt
+  if (interrupt_master_enable) {
     push(pc);
 
     if ((fired_interrupts >> 0) & 1) {
@@ -111,11 +117,19 @@ void Cpu::check_interrupts() {
       interrupt_flag.clear_bit(4);
       interrupt_master_enable = false;
     }
+  } else if (halted_) {
+    halt_bug_no_step_mode_ = true;
   }
+
+  halted_ = false; // unhalt now that we found an interrupt
 }
 
 byte_t Cpu::next_byte() {
   byte_t byte = mmu_->read(pc.value());
+  if (halt_bug_no_step_mode_) {
+    halt_bug_no_step_mode_ = false;
+    return byte;
+  }
   pc.increment();
   return byte;
 }

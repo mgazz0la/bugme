@@ -168,6 +168,11 @@ void Mmu::write(word_t addr, byte_t byte) {
       return;
     }
 
+    if (addr == 0xFF04) {
+      // DIV register -- writes 0 on attempt
+      _write(addr, 0);
+    }
+
     if (addr == 0xFF46) {
       dma_transfer_(byte);
     }

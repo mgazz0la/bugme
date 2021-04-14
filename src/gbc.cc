@@ -50,10 +50,10 @@ int Gbc::run() {
     log_set_level(LogLevel::Error);
   }
 
-  cycles_t cycles;
+  mcycles_t cycles;
   while (!should_exit_) {
     cycles = cpu->tick();
-    ppu->tick(cycles);
+    ppu->tick(cycles * 4);
     timer->tick(cycles * 4);
   }
 

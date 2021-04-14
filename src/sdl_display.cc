@@ -67,7 +67,7 @@ void SdlDisplay::draw(std::vector<Color> &buffer) {
 
   SDL_RenderCopy(renderer_, texture_, nullptr, nullptr);
   SDL_RenderPresent(renderer_);
-  // SDL_Delay(50);
+  //SDL_Delay(16);
 }
 
 void SdlDisplay::process_events_() {
@@ -89,25 +89,17 @@ void SdlDisplay::process_events_() {
 }
 
 std::uint32_t SdlDisplay::convert_color_(Color color) {
-  uint8_t r;
-  uint8_t g;
-  uint8_t b;
-
   switch (color) {
   case Color::WHITE:
-    r = g = b = 255;
-    break;
+    return DmgRealColor::WHITE;
   case Color::LIGHT_GRAY:
-    r = g = b = 170;
-    break;
+    return DmgRealColor::LIGHT_GRAY;
   case Color::DARK_GRAY:
-    r = g = b = 85;
-    break;
+    return DmgRealColor::DARK_GRAY;
   case Color::BLACK:
-    r = g = b = 0;
-    break;
+    return DmgRealColor::BLACK;
   }
 
-  return (r << 16) | (g << 8) | (b << 0);
+  return DmgRealColor::BLACK;
 }
 } // namespace bugme

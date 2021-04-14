@@ -6,7 +6,8 @@
 namespace bugme {
 
 typedef unsigned char bit_t;
-typedef unsigned int cycles_t;
+typedef unsigned int mcycles_t;
+typedef unsigned int tcycles_t;
 typedef std::uint8_t byte_t;
 typedef std::uint16_t word_t;
 

@@ -20,7 +20,7 @@ public:
       std::function<void()> lcdc_status_cb, std::function<void()> vblank_cb);
   virtual ~Ppu() = default;
 
-  void tick(cycles_t cycles);
+  void tick(tcycles_t cycles);
 
   bool display_enabled() const;
   bool window_tile_map() const;
@@ -55,7 +55,7 @@ private:
   Color get_color_(byte_t color, const AddressRegister &palette_register) const;
   std::shared_ptr<Mmu> mmu_;
   Mode mode_ = Mode::READ_OAM;
-  cycles_t cycles_elapsed_ = 0;
+  tcycles_t cycles_elapsed_ = 0;
   std::vector<Color> frame_buffer_;
   std::function<void(std::vector<Color> &)> draw_fn_;
   std::function<void()> vblank_cb_;

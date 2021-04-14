@@ -65,7 +65,7 @@ Ppu::Ppu(std::shared_ptr<Mmu> mmu,
       draw_fn_(draw_fn), vblank_cb_(vblank_cb),
       lcdc_status_cb_(lcdc_status_cb) {}
 
-void Ppu::tick(cycles_t cycles) {
+void Ppu::tick(tcycles_t cycles) {
   cycles_elapsed_ += cycles;
   switch (mode_) {
   case Mode::READ_OAM:

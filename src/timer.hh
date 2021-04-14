@@ -16,15 +16,16 @@ public:
   Timer(std::shared_ptr<Mmu> mmu, std::function<void()> timer_cb);
   virtual ~Timer() = default;
 
-  void tick(cycles_t cycles);
+  void tick(tcycles_t cycles);
 
 private:
   std::shared_ptr<Mmu> mmu_;
   AddressRegister divider, timer_counter, timer_modulo, timer_control;
   std::function<void()> timer_cb_;
 
-  int cycle_counter_ = 0;
-  int tima_counter_ = 0;
+  tcycles_t div_cycle_counter_ = 0;
+  tcycles_t tima_counter_ = 0;
+  bool is_stopped_ = false;
 };
 
 } // namespace bugme

@@ -32,7 +32,7 @@ class Cpu {
 public:
   explicit Cpu(std::shared_ptr<Mmu> mmu);
 
-  cycles_t tick();
+  mcycles_t tick();
   void reset();
 
   void int_vblank();
@@ -197,6 +197,7 @@ private:
   bool stopped_ = false;
   bool halted_ = false;
   bool did_branch_ = false;
+  bool halt_bug_no_step_mode_ = false;
 
   void op(word_t word);
   void cb_op(word_t word);
