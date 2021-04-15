@@ -20,6 +20,10 @@ inline byte_t fuse_b(bit_t high, bit_t low) {
   return static_cast<byte_t>((high << 1) | low);
 }
 
+inline byte_t fuse_nibbles(byte_t high, byte_t low) {
+  return static_cast<byte_t>(((high & 0x0F) << 4) | (low & 0x0F));
+}
+
 inline byte_t low(word_t word) { return static_cast<byte_t>(word); }
 
 inline byte_t high(word_t word) { return static_cast<byte_t>(word >> 8); }

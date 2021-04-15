@@ -53,6 +53,7 @@ private:
   inline word_t a16() { return next_word(); }
   inline word_t d16() { return next_word(); }
   inline byte_t d8() { return next_byte(); }
+  inline signed_byte_t r8() { return static_cast<signed_byte_t>(next_byte()); }
 
   // "microcode" functions
   void nop() const;
@@ -82,21 +83,22 @@ private:
   void dec(const word_t addr);
 
   void rlc(ByteRegister &reg);
-  void rlc(const byte_t addr);
+  void rlc(const word_t addr);
 
   void rl(ByteRegister &reg);
-  void rl(const byte_t addr);
+  void rl(const word_t addr);
 
   void rrc(ByteRegister &reg);
-  void rrc(const byte_t addr);
+  void rrc(const word_t addr);
 
   void rr(ByteRegister &reg);
-  void rr(const byte_t addr);
+  void rr(const word_t addr);
 
   void add(ByteRegister &reg, const ByteRegister &other);
   void add(ByteRegister &reg, const word_t addr);
   void add(ByteRegister &reg);
   void add(WordRegister &reg, const WordRegister &other);
+  void add(WordRegister &reg, const signed_byte_t value);
 
   void adc(ByteRegister &reg, const ByteRegister &other);
   void adc(ByteRegister &reg, const word_t addr);
@@ -181,6 +183,9 @@ private:
   void rst(const word_t addr);
 
   void daa();
+
+  void scf();
+  void ccf();
 
   ByteRegister a, b, c, d, e, h, l;
   ByteRegisterPair af, bc, de, hl;
