@@ -2,7 +2,7 @@
 
 #include "color.hh"
 #include "log.hh"
-#include "mmu.hh"
+#include "mmap.hh"
 #include "util.hh"
 
 #include <string>
@@ -17,27 +17,15 @@ const unsigned int TILES_PER_LINE = 32;
 const unsigned int TILE_LENGTH_PX = 8;
 const word_t BYTES_PER_SPRITE = 4;
 
-const word_t TILESET_0_START = 0x8000;
-const word_t TILESET_0_END = 0x8FFF;
-const word_t TILESET_1_START = 0x8800;
-const word_t TILESET_1_END = 0x97FF;
+const word_t TILESET_0_START = 0x8000 - mmap::VRAM_START;
+const word_t TILESET_0_END = 0x8FFF - mmap::VRAM_START;
+const word_t TILESET_1_START = 0x8800 - mmap::VRAM_START;
+const word_t TILESET_1_END = 0x97FF - mmap::VRAM_START;
 
-const word_t BG_MAP_0_START = 0x9800;
-const word_t BG_MAP_0_END = 0x9BFF;
-const word_t BG_MAP_1_START = 0x9C00;
-const word_t BG_MAP_1_END = 0x9FFF;
-
-const word_t CONTROL_BYTE = 0xFF40;
-const word_t LCD_STATUS = 0xFF41;
-const word_t SCROLL_Y = 0xFF42;
-const word_t SCROLL_X = 0xFF43;
-const word_t LINE = 0xFF44;
-const word_t LY_COMPARE = 0xFF45;
-const word_t BG_PALETTE = 0xFF47;
-const word_t SPRITE_PALETTE_0 = 0xFF48;
-const word_t SPRITE_PALETTE_1 = 0xFF49;
-const word_t WINDOW_Y = 0xFF4A;
-const word_t WINDOW_X = 0xFF4B;
+const word_t BG_MAP_0_START = 0x9800 - mmap::VRAM_START;
+const word_t BG_MAP_0_END = 0x9BFF - mmap::VRAM_START;
+const word_t BG_MAP_1_START = 0x9C00 - mmap::VRAM_START;
+const word_t BG_MAP_1_END = 0x9FFF - mmap::VRAM_START;
 
 const unsigned int CLOCKS_PER_HBLANK = 204;        /* Mode 0 */
 const unsigned int CLOCKS_PER_SCANLINE_OAM = 80;   /* Mode 2 */
@@ -51,19 +39,9 @@ const unsigned int CLOCKS_PER_FRAME =
     (CLOCKS_PER_SCANLINE * SCANLINES_PER_FRAME) + CLOCKS_PER_VBLANK;
 } // namespace
 
-Ppu::Ppu(std::shared_ptr<Mmu> mmu,
-         std::function<void(std::vector<Color> &)> draw_fn,
-         std::function<void()> vblank_cb, std::function<void()> lcdc_status_cb)
-    : control_byte(mmu->addr(CONTROL_BYTE)), lcd_status(mmu->addr(LCD_STATUS)),
-      scroll_y(mmu->addr(SCROLL_Y)), scroll_x(mmu->addr(SCROLL_X)),
-      line(mmu->addr(LINE)), ly_compare(mmu->addr(LY_COMPARE)),
-      window_y(mmu->addr(WINDOW_Y)), window_x(mmu->addr(WINDOW_X)),
-      bg_palette(mmu->addr(BG_PALETTE)),
-      sprite_palette_0(mmu->addr(SPRITE_PALETTE_0)),
-      sprite_palette_1(mmu->addr(SPRITE_PALETTE_1)), mmu_(mmu),
-      frame_buffer_(std::vector<Color>(FRAME_WIDTH * FRAME_HEIGHT)),
-      draw_fn_(draw_fn), vblank_cb_(vblank_cb),
-      lcdc_status_cb_(lcdc_status_cb) {}
+Ppu::Ppu(std::function<void(std::vector<Color> &)> draw_fn)
+    : frame_buffer_(std::vector<Color>(FRAME_WIDTH * FRAME_HEIGHT)),
+      draw_fn_(draw_fn) {}
 
 void Ppu::tick(tcycles_t cycles) {
   cycles_elapsed_ += cycles;
@@ -78,11 +56,12 @@ void Ppu::tick(tcycles_t cycles) {
     if (cycles_elapsed_ >= CLOCKS_PER_SCANLINE_VRAM) {
       cycles_elapsed_ %= CLOCKS_PER_SCANLINE_VRAM;
 
-      if (lcd_status.get_bit(3) ||
-          (lcd_status.get_bit(6) && ly_compare.value() == line.value())) {
-        lcdc_status_cb_();
+      if (lcd_status.interrupt_on_hblank() ||
+          (lcd_status.interrupt_on_ly_lyc_coincide() &&
+           ly_compare.value() == line.value())) {
+        lcd_stat_interrupt_request();
       }
-      lcd_status.write_bit(2, ly_compare == line);
+      lcd_status.write_ly_lyc_coincide(ly_compare == line);
       set_mode_(Mode::HBLANK);
     }
     break;
@@ -92,7 +71,7 @@ void Ppu::tick(tcycles_t cycles) {
       write_scanline_();
       line.increment();
       if (line.value() == 144) {
-        vblank_cb_();
+        vblank_interrupt_request();
         set_mode_(Mode::VBLANK);
       } else {
         set_mode_(Mode::READ_OAM);
@@ -105,8 +84,8 @@ void Ppu::tick(tcycles_t cycles) {
       line.increment();
 
       if (line.value() == 154) {
-        if (sprites_enabled()) {
-          draw_sprites_();
+        if (lcd_control.obj_enable()) {
+          //draw_sprites_();
         }
         set_mode_(Mode::READ_OAM);
         draw_fn_(frame_buffer_);
@@ -120,61 +99,51 @@ void Ppu::tick(tcycles_t cycles) {
   }
 }
 
-bool Ppu::display_enabled() const { return control_byte.get_bit(7); }
-
-bool Ppu::window_tile_map() const { return control_byte.get_bit(6); }
-
-bool Ppu::window_enabled() const { return control_byte.get_bit(5); }
-
-bool Ppu::bg_window_tile_data() const { return control_byte.get_bit(4); }
-
-bool Ppu::bg_tile_map_display() const { return control_byte.get_bit(3); }
-
-bool Ppu::sprite_size() const { return control_byte.get_bit(2); }
-
-bool Ppu::sprites_enabled() const { return control_byte.get_bit(1); }
-
-bool Ppu::bg_enabled() const { return control_byte.get_bit(0); }
-
 void Ppu::set_mode_(Mode mode) {
   mode_ = mode;
   switch (mode) {
   case Mode::READ_OAM:
-    lcd_status.clear_bit(0);
-    lcd_status.set_bit(1);
+    log_debug("[ppu] Entering READ_OAM");
+    // 0b10
+    lcd_status.set_mode_high();
+    lcd_status.clear_mode_low();
     break;
   case Mode::READ_VRAM:
-    lcd_status.set_bit(0);
-    lcd_status.set_bit(1);
+    log_debug("[ppu] Entering READ_VRAM");
+    // 0b11
+    lcd_status.set_mode_high();
+    lcd_status.set_mode_low();
     break;
   case Mode::HBLANK:
-    lcd_status.clear_bit(0);
-    lcd_status.clear_bit(0);
+    log_debug("[ppu] Entering HBLANK");
+    // 0b00
+    lcd_status.clear_mode_high();
+    lcd_status.clear_mode_low();
     break;
   case Mode::VBLANK:
-    lcd_status.set_bit(0);
-    lcd_status.clear_bit(1);
+    log_debug("[ppu] Entering VBLANK");
+    // 0b01
+    lcd_status.clear_mode_high();
+    lcd_status.set_mode_low();
     break;
   }
 }
 
 void Ppu::write_scanline_() {
-  if (!display_enabled()) {
+  if (!lcd_control.lcd_enable() || !lcd_control.bg_window_enable()) {
     return;
   }
 
-  if (bg_enabled()) {
-    write_bg_line_();
-  }
+  write_bg_line_();
 
-  if (window_enabled()) {
+  if (lcd_control.window_enable()) {
     write_window_line_();
   }
 }
 
 void Ppu::write_bg_line_() {
-  bool is_tile_set_zero = bg_window_tile_data();
-  bool is_bg_map_zero = !bg_tile_map_display();
+  bool is_tile_set_zero = lcd_control.bg_window_tile_set();
+  bool is_bg_map_zero = !lcd_control.bg_tile_map();
 
   word_t tile_set_base_addr =
       is_tile_set_zero ? TILESET_0_START : TILESET_1_START;
@@ -200,7 +169,7 @@ void Ppu::write_bg_line_() {
 
     unsigned int tile_id_idx = tile_y * TILES_PER_LINE + tile_x;
     word_t tile_id_address = bg_map_base_addr + tile_id_idx;
-    byte_t tile_id = mmu_->read(tile_id_address);
+    byte_t tile_id = vram.at(tile_id_address); // mmu_->read(tile_id_address));
 
     word_t tile_set_addr =
         tile_set_base_addr +
@@ -208,8 +177,9 @@ void Ppu::write_bg_line_() {
                            : static_cast<std::int8_t>(tile_id) - 128) *
          (8 /* lines */ * 2 /* bytes per line */)) +
         (tile_pixel_y * 2);
-    byte_t pixels0 = mmu_->read(tile_set_addr);
-    byte_t pixels1 = mmu_->read(tile_set_addr + 1);
+    byte_t pixels0 = vram.at(tile_set_addr); // mmu_->read(tile_set_addr));
+    byte_t pixels1 =
+        vram.at(tile_set_addr + 1); // mmu_->read(tile_set_addr + 1));
 
     Color color = get_color_(util::fuse_b(pixels1 >> (7 - tile_pixel_x),
                                           pixels0 >> (7 - tile_pixel_x)),
@@ -219,8 +189,8 @@ void Ppu::write_bg_line_() {
 }
 
 void Ppu::write_window_line_() {
-  bool is_tile_set_zero = bg_window_tile_data();
-  bool is_window_map_zero = !window_tile_map();
+  bool is_tile_set_zero = lcd_control.bg_window_tile_set();
+  bool is_window_map_zero = !lcd_control.window_tile_map();
 
   word_t tile_set_base_addr =
       is_tile_set_zero ? TILESET_0_START : TILESET_1_START;
@@ -248,7 +218,7 @@ void Ppu::write_window_line_() {
 
     unsigned int tile_id_idx = tile_y * TILES_PER_LINE + tile_x;
     word_t tile_id_address = bg_map_base_addr + tile_id_idx;
-    byte_t tile_id = mmu_->read(tile_id_address);
+    byte_t tile_id = vram.at(tile_id_address); // mmu_->read(tile_id_address));
 
     word_t tile_set_addr =
         tile_set_base_addr +
@@ -256,8 +226,9 @@ void Ppu::write_window_line_() {
                            : static_cast<std::int8_t>(tile_id) - 128) *
          (8 /* lines */ * 2 /* bytes per line */)) +
         (tile_pixel_y * 2);
-    byte_t pixels0 = mmu_->read(tile_set_addr);
-    byte_t pixels1 = mmu_->read(tile_set_addr + 1);
+    byte_t pixels0 = vram.at(tile_set_addr); // mmu_->read(tile_set_addr));
+    byte_t pixels1 =
+        vram.at(tile_set_addr + 1); // mmu_->read(tile_set_addr + 1));
 
     Color color = get_color_(util::fuse_b(pixels1 >> (7 - tile_pixel_x),
                                           pixels0 >> (7 - tile_pixel_x)),
@@ -270,16 +241,16 @@ void Ppu::draw_sprites_() {
   for (word_t sprite_idx = 0; sprite_idx < 40; ++sprite_idx) {
     word_t start = 0xFE00 + (sprite_idx * BYTES_PER_SPRITE);
 
-    byte_t sprite_y = mmu_->read(start);
-    byte_t sprite_x = mmu_->read(start + 1);
-    byte_t tile_idx = mmu_->read(start + 2);
-    byte_t sprite_attr = mmu_->read(start + 3);
+    byte_t sprite_y = vram.at(start);        // mmu_->read(start));
+    byte_t sprite_x = vram.at(start + 1);    // mmu_->read(start + 1));
+    byte_t tile_idx = vram.at(start + 2);    // mmu_->read(start + 2));
+    byte_t sprite_attr = vram.at(start + 3); // mmu_->read(start + 3));
 
     // offscreen check
     if (sprite_y == 0 || sprite_y >= 160 || sprite_x == 0 || sprite_x >= 168) {
       return;
     }
-    const byte_t sprite_y_scale = sprite_size() ? 2 : 1;
+    const byte_t sprite_y_scale = lcd_control.obj_size() ? 2 : 1;
 
     word_t pattern_addr = TILESET_0_START + tile_idx * 16;
     bool should_flip_x = util::get_bit(sprite_attr, 5);
@@ -290,8 +261,10 @@ void Ppu::draw_sprites_() {
             should_flip_y ? (TILE_LENGTH_PX * sprite_y_scale) - _y - 1 : _y;
         byte_t x = should_flip_x ? TILESET_0_START - _x - 1 : _x;
         word_t tile_line_addr = pattern_addr + (y * 2);
-        byte_t pixels0 = mmu_->read(tile_line_addr);
-        byte_t pixels1 = mmu_->read(tile_line_addr + 1);
+        byte_t pixels0 =
+            vram.at(tile_line_addr); // mmu_->read(tile_line_addr));
+        byte_t pixels1 =
+            vram.at(tile_line_addr + 1); // mmu_->read(tile_line_addr + 1));
 
         Color color =
             get_color_(util::fuse_b(pixels1 >> (7 - x), pixels0 >> (7 - x)),
@@ -309,7 +282,7 @@ void Ppu::set_pixel_(unsigned int x, unsigned int y, Color color) {
 
 // takes palette into account
 Color Ppu::get_color_(byte_t color,
-                      const AddressRegister &palette_register) const {
+                      const ByteRegister &palette_register) const {
   switch (util::fuse_b(palette_register.value() >> (2 * color),
                        palette_register.value() >> (2 * color + 1))) {
   case 0b00:

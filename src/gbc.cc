@@ -3,7 +3,7 @@
 #include "cpu.hh"
 #include "joypad.hh"
 #include "log.hh"
-#include "mmu.hh"
+#include "memory.hh"
 #include "options.hh"
 #include "ppu.hh"
 #include "sdl_display.hh"
@@ -14,23 +14,20 @@
 namespace bugme {
 
 Gbc::Gbc(CliOptions &cli_options)
-    : cartridge(new Cartridge(read_rom(cli_options.rom_filename))),
-      mmu(new Mmu(cartridge)), cpu(new Cpu(mmu)),
-      display(cli_options.options.headless
-                  ? nullptr
-                  : new SdlDisplay([&](bool should_exit) {
+    : cli_options_(cli_options), cartridge(read_rom(cli_options.rom_filename)),
+      memory(),
+      display([&](bool should_exit) {
                       if (should_exit)
                         this->exit();
-                    })),
-      ppu(new Ppu(
-          mmu,
+                    }),
+      ppu(
           [&](std::vector<Color> &buffer) {
             if (!cli_options.options.headless)
-              display->draw(buffer);
-          },
-          [&]() { cpu->int_vblank(); }, [&]() { cpu->int_lcdc(); })),
-      timer(new Timer(mmu, [&]() { cpu->int_timer(); })),
-      joypad(new Joypad(mmu)), cli_options_(cli_options) {}
+              display.draw(buffer);
+          }),
+      timer(),
+      joypad(),
+      cpu(memory, cartridge, ppu, timer, joypad) {}
 
 int Gbc::run() {
   switch (cli_options_.options.verbosity) {
@@ -52,9 +49,9 @@ int Gbc::run() {
 
   mcycles_t cycles;
   while (!should_exit_) {
-    cycles = cpu->tick();
-    ppu->tick(cycles * 4);
-    timer->tick(cycles * 4);
+    cycles = cpu.tick();
+    ppu.tick(cycles * 4);
+    timer.tick(cycles * 4);
   }
 
   return 0;

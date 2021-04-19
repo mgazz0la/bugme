@@ -13,6 +13,16 @@ typedef std::int8_t signed_byte_t;
 typedef std::uint16_t word_t;
 typedef std::int16_t signed_word_t;
 
+class Noncopyable {
+public:
+    Noncopyable() = default;
+    ~Noncopyable() = default;
+
+private:
+    Noncopyable(const Noncopyable&) = delete;
+    Noncopyable& operator=(const Noncopyable&) = delete;
+};
+
 class Debuggable {
   friend class Debug;
 };

@@ -11,9 +11,9 @@ add_library(options options.cc)
 target_include_directories(options PUBLIC .)
 target_link_libraries(options LINK_PRIVATE log)
 
-add_library(mmu mmu.cc)
-target_include_directories(mmu PUBLIC .)
-target_link_libraries(mmu LINK_PRIVATE cpu log)
+add_library(memory memory.cc)
+target_include_directories(memory PUBLIC .)
+target_link_libraries(memory LINK_PRIVATE log)
 
 add_library(cartridge cartridge.cc)
 target_include_directories(cartridge PUBLIC .)
@@ -43,11 +43,11 @@ target_link_libraries(ppu LINK_PRIVATE display log)
 
 add_library(cpu cpu.cc opcode.cc opcode_internal.cc)
 target_include_directories(cpu PUBLIC .)
-target_link_libraries(cpu LINK_PRIVATE display joypad log mmu ppu timer register)
+target_link_libraries(cpu LINK_PRIVATE display joypad log memory ppu timer register)
 
 add_library(bugmecore gbc.cc)
 target_include_directories(bugmecore PUBLIC .)
-target_link_libraries(bugmecore LINK_PRIVATE display cartridge cpu log mmu timer ppu)
+target_link_libraries(bugmecore LINK_PRIVATE display cartridge cpu log memory timer ppu)
 
 add_executable(bugme main.cc)
 target_link_libraries(bugme LINK_PRIVATE bugmecore sdl_display options)

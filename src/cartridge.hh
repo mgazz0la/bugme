@@ -16,7 +16,7 @@ namespace bugme {
  *  - MBC support
  *  - battery support
  */
-class Cartridge {
+class Cartridge : public Noncopyable {
 public:
   /**
    * Constructor.

@@ -1,19 +1,20 @@
 #ifndef BUGME_CPU_H
 #define BUGME_CPU_H
 
+#include "interrupts.hh"
 #include "register.hh"
 #include <functional>
 #include <map>
 #include <memory>
 
 namespace bugme {
-namespace interrupt {
+namespace interrupt_vectors {
 inline const word_t VBLANK = 0x0040;
 inline const word_t LCDC_STATUS = 0x0048;
 inline const word_t TIMER = 0x0050;
 inline const word_t SERIAL = 0x0058;
 inline const word_t JOYPAD = 0x0060;
-} // namespace interrupt
+} // namespace interrupt_vectors
 
 namespace rst {
 inline const word_t _00 = 0x0000;
@@ -26,22 +27,43 @@ inline const word_t _30 = 0x0030;
 inline const word_t _38 = 0x0038;
 } // namespace rst
 
-class Mmu;
-
-class Cpu {
+/* clang-format off */
+class InterruptEnable : public ControlByte {
 public:
-  explicit Cpu(std::shared_ptr<Mmu> mmu);
+  CONTROL_FLAG(4, joypad_interrupt_enable)
+  CONTROL_FLAG(3, serial_interrupt_enable)
+  CONTROL_FLAG(2, timer_interrupt_enable)
+  CONTROL_FLAG(1, lcd_stat_interrupt_enable)
+  CONTROL_FLAG(0, vblank_interrupt_enable)
+};
+/* clang-format on */
+
+class Memory;
+class Cartridge;
+class PpuIo;
+class TimerIo;
+class JoypadIo;
+
+class Cpu : public Noncopyable {
+public:
+  Cpu(Memory &memory, Cartridge &cartridge, PpuIo &ppuIo, TimerIo &timerIo,
+      JoypadIo &joypadIo);
 
   mcycles_t tick();
   void reset();
 
-  void int_vblank();
-  void int_lcdc();
-  void int_timer();
-  void int_serial();
-  void int_joypad();
-
 private:
+  Memory &memory_;
+  Cartridge &cartridge_;
+  PpuIo &ppuIo_;
+  TimerIo &timerIo_;
+  JoypadIo &joypadIo_;
+
+  ByteRegister boot_rom_control;
+
+  byte_t read_(word_t addr) const;
+  void write_(word_t addr, byte_t byte);
+
   void check_interrupts();
 
   // Alias for reg.value()
@@ -193,11 +215,9 @@ private:
   WordValuedRegister sp;
   FlagRegister f;
 
-  std::shared_ptr<Mmu> mmu_;
-
   bool interrupt_master_enable;
-  AddressRegister interrupt_enable;
-  AddressRegister interrupt_flag;
+  InterruptEnable interrupt_enable;
+  InterruptFlag interrupt_flag;
 
   bool stopped_ = false;
   bool halted_ = false;

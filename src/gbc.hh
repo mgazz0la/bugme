@@ -1,6 +1,13 @@
 #ifndef BUGME_BUGME_H
 #define BUGME_BUGME_H
 
+#include "cartridge.hh"
+#include "cpu.hh"
+#include "memory.hh"
+#include "ppu.hh"
+#include "sdl_display.hh"
+#include "timer.hh"
+#include "joypad.hh"
 #include "types.hh"
 
 #include <memory>
@@ -9,14 +16,7 @@
 
 namespace bugme {
 
-class Cartridge;
 class CliOptions;
-class Cpu;
-class Mmu;
-class Ppu;
-class Display;
-class Timer;
-class Joypad;
 
 /**
  * Monolith class encompassing all gbc functionality.
@@ -30,13 +30,13 @@ class Joypad;
  *
  * \see CliOptions, for configuration options
  */
-class Gbc : Debuggable {
+class Gbc : public Noncopyable, Debuggable {
 public:
   /**
    * ctor
    * \param cli_options Configuration options for gbc.
    */
-  Gbc(CliOptions &cli_options);
+  explicit Gbc(CliOptions &cli_options);
 
   /**
    * Starts the persists the main game loop.
@@ -50,16 +50,17 @@ public:
   void exit();
 
 private:
-  std::shared_ptr<Cartridge> cartridge;
-  std::shared_ptr<Mmu> mmu;
-  std::shared_ptr<Cpu> cpu;
-  std::shared_ptr<Display> display;
-  std::shared_ptr<Ppu> ppu;
-  std::shared_ptr<Timer> timer;
-  std::shared_ptr<Joypad> joypad;
+  CliOptions &cli_options_;
+
+  Cartridge cartridge;
+  Memory memory;
+  SdlDisplay display;
+  Ppu ppu;
+  Timer timer;
+  Joypad joypad;
+  Cpu cpu;
 
   bool should_exit_ = false;
-  CliOptions &cli_options_;
 
   std::vector<byte_t> read_rom(const std::string &filename) const;
 };

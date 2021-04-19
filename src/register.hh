@@ -18,7 +18,7 @@ namespace bugme {
  *
  * \tparam T specifies the size of the underlying value
  */
-template <typename T> class ReadableValue {
+template <typename T> class ReadableValue : Noncopyable {
 public:
   /** \return The underlying value */
   virtual T value() const = 0;
@@ -51,18 +51,6 @@ public:
 
   /** Sets the underlying value to 0. */
   virtual void reset() { set(0); }
-
-  /**
-   * Sets the underlying value to itself plus one.
-   * \note Overflow is expected to be handled by the underlying type T.
-   */
-  virtual void increment() { set(this->value() + 1); }
-
-  /**
-   * Sets the underlying value to itself minus one.
-   * \note Underflow is expected to be handled by the underlying type T.
-   */
-  virtual void decrement() { set(this->value() - 1); }
 
   /**
    * Retrieves the n-th least significant bit from the underlying value.
@@ -106,6 +94,27 @@ public:
   }
 };
 
+template <typename T> class ArithmeticValue : public WriteableValue<T> {
+public:
+  /**
+   * Replaces the underlying value with new_value.
+   * \param new_value The new value of the same underlying type.
+   */
+  virtual void set(T new_value) override = 0;
+
+  /**
+   * Sets the underlying value to itself plus one.
+   * \note Overflow is expected to be handled by the underlying type T.
+   */
+  virtual void increment() { set(this->value() + 1); }
+
+  /**
+   * Sets the underlying value to itself minus one.
+   * \note Underflow is expected to be handled by the underlying type T.
+   */
+  virtual void decrement() { set(this->value() - 1); }
+};
+
 /** A read-only 8-bit value. */
 typedef ReadableValue<byte_t> ReadableByte;
 /** A read-only 16-bit value. */
@@ -114,9 +123,48 @@ typedef ReadableValue<word_t> ReadableWord;
 typedef WriteableValue<byte_t> WriteableByte;
 /** A read-write 16-bit value. */
 typedef WriteableValue<word_t> WriteableWord;
+/** An arithmetic 8-bit value. */
+typedef ArithmeticValue<byte_t> ArithmeticByte;
+/** An arithmetic 16-bit value. */
+typedef ArithmeticValue<word_t> ArithmeticWord;
+
+#define CONTROL_FLAG(bit, name)                                                \
+  public:                                                                      \
+    bool name() { return get_bit(bit); }                                       \
+    void set_##name() { set_bit(bit); }                                        \
+    void clear_##name() { clear_bit(bit); }                                    \
+    void flip_##name() { flip_bit(bit); }                                      \
+    void write_##name(bool v) { write_bit(bit, v); }
+
+#define READONLY_CONTROL_FLAG(bit, name)                                       \
+  public:                                                                      \
+    bool name() { return get_bit(bit); }                                       \
+  protected:                                                                   \
+    void set_##name() { set_bit(bit); }                                        \
+    void clear_##name() { clear_bit(bit); }                                    \
+    void flip_##name() { flip_bit(bit); }                                      \
+    void write_##name(bool v) { write_bit(bit, v); }                           \
+  public:
+
+
+class ControlByte : public WriteableByte {
+public:
+  byte_t value() const override { return value_; }
+
+  virtual void set(byte_t new_value) override { _set(new_value); }
+
+  // So ideally, you would subclass this class and use the CONTROL_FLAG macro
+  // here to implement specific bit flips.
+
+  // See FlagRegister for an example.
+
+private:
+  void _set(byte_t new_value) { value_ = new_value; }
+  byte_t value_ = 0x0;
+};
 
 /** A general-use 8-bit read-write register with bit manipulation helpers.  */
-class ByteRegister : public WriteableByte {
+class ByteRegister : public ArithmeticByte {
 public:
   byte_t value() const override { return value_; }
 
@@ -125,40 +173,6 @@ public:
 private:
   void _set(byte_t new_value) { value_ = new_value; }
   byte_t value_ = 0x0;
-};
-
-struct AddressProvider {
-  AddressProvider() = default;
-  virtual ~AddressProvider() = default;
-
-  virtual byte_t read(word_t addr) const = 0;
-  virtual void write(word_t addr, byte_t value) = 0;
-};
-
-class Address {
-public:
-  Address(std::shared_ptr<AddressProvider> mmu, word_t addr)
-      : mmu_(mmu), addr_(addr) {}
-
-  byte_t read() const { return mmu_->read(addr_); }
-  void write(byte_t v) { mmu_->write(addr_, v); }
-
-private:
-  std::shared_ptr<AddressProvider> mmu_;
-  word_t addr_;
-};
-
-class AddressRegister : public WriteableByte {
-public:
-  AddressRegister() : addr_(nullptr, 0x0) {}
-  AddressRegister(Address addr) : addr_(addr) {}
-  virtual ~AddressRegister() = default;
-
-  byte_t value() const override { return addr_.read(); }
-  virtual void set(byte_t new_value) override { addr_.write(new_value); }
-
-private:
-  Address addr_;
 };
 
 /**
@@ -170,7 +184,7 @@ private:
  * \see WordValuedRegister
  * \see ByteRegisterPair
  */
-class WordRegister : public WriteableWord {
+class WordRegister : public ArithmeticWord {
 public:
   WordRegister() = default;
   virtual ~WordRegister() = default;
@@ -241,101 +255,19 @@ private:
  *       class will always clear the lower nibble of the underlying value. For
  *       example, increment() and decrement() are no-ops on this class.
  */
-class FlagRegister : public WriteableByte {
+class FlagRegister : public ControlByte {
 public:
-  FlagRegister() = default;
-  virtual ~FlagRegister() = default;
-
-  /**
-   * Returns the underlying value
-   * \return the underlying value
-   */
-  byte_t value() const override { return value_; }
-
   /**
    * Sets the underlying value and clears the lower nibble.
    *
    * \param new_value The value to set
    */
-  void set(byte_t new_value) override { value_ = (new_value & 0xF0); }
+  void set(byte_t new_value) override { ControlByte::set(new_value & 0xF0); }
 
-  /** Sets the Z flag to 1. */
-  void set_zero_flag() { set_bit(7); }
-  /** Sets the S flag to 1. */
-  void set_subtract_flag() { set_bit(6); }
-  /** Sets the H flag to 1. */
-  void set_half_carry_flag() { set_bit(5); }
-  /** Sets the C flag to 1. */
-  void set_carry_flag() { set_bit(4); }
-
-  /** Sets the Z flag to 0. */
-  void clear_zero_flag() { clear_bit(7); }
-  /** Sets the S flag to 0. */
-  void clear_subtract_flag() { clear_bit(6); }
-  /** Sets the H flag to 0. */
-  void clear_half_carry_flag() { clear_bit(5); }
-  /** Sets the C flag to 0. */
-  void clear_carry_flag() { clear_bit(4); }
-
-  /** Flips the Z flag. */
-  void flip_zero_flag() { flip_bit(7); }
-  /** Flips the S flag. */
-  void flip_subtract_flag() { flip_bit(6); }
-  /** Flips the H flag. */
-  void flip_half_carry_flag() { flip_bit(5); }
-  /** Flips the C flag. */
-  void flip_carry_flag() { flip_bit(4); }
-
-  /**
-   * Writes the specified value to the Z flag.
-   * \param v The value to write
-   */
-  void write_zero_flag(bool v) { write_bit(7, v); }
-
-  /**
-   * Writes the specified value to the S flag.
-   * \param v The value to write
-   */
-  void write_subtract_flag(bool v) { write_bit(6, v); }
-
-  /**
-   * Writes the specified value to the H flag.
-   * \param v The value to write
-   */
-  void write_half_carry_flag(bool v) { write_bit(5, v); }
-
-  /**
-   * Writes the specified value to the C flag.
-   * \param v The value to write
-   */
-  void write_carry_flag(bool v) { write_bit(4, v); }
-
-  /**
-   * Returns the value of the Z flag.
-   * \return The value of the Z flag.
-   */
-  bool zero_flag() const { return get_bit(7); }
-
-  /**
-   * Returns the value of the S flag.
-   * \return The value of the S flag.
-   */
-  bool subtract_flag() const { return get_bit(6); }
-
-  /**
-   * Returns the value of the H flag.
-   * \return The value of the H flag.
-   */
-  bool half_carry_flag() const { return get_bit(5); }
-
-  /**
-   * Returns the value of the C flag.
-   * \return The value of the C flag.
-   */
-  bool carry_flag() const { return get_bit(4); }
-
-private:
-  byte_t value_ = 0x0;
+  CONTROL_FLAG(7, zero_flag)
+  CONTROL_FLAG(6, subtract_flag)
+  CONTROL_FLAG(5, half_carry_flag)
+  CONTROL_FLAG(4, carry_flag)
 };
 
 } // namespace bugme

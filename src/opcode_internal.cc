@@ -1,5 +1,4 @@
 #include "cpu.hh"
-#include "mmu.hh"
 #include "util.hh"
 
 namespace bugme {
@@ -12,7 +11,7 @@ void Cpu::ld(ByteRegister &reg) {
 }
 
 void Cpu::ld(ByteRegister &reg, const word_t addr) {
-  reg.set(mmu_->read(addr));
+  reg.set(read_(addr));
 }
 
 void Cpu::ld(ByteRegister &reg, const ByteRegister &other) {
@@ -27,16 +26,16 @@ void Cpu::ld(WordRegister &reg, const WordRegister &other) {
 
 void Cpu::ld(const word_t addr) {
   byte_t v = next_byte();
-  mmu_->write(addr, v);
+  write_(addr, v);
 }
 
 void Cpu::ld(const word_t addr, ByteRegister &reg) {
-  mmu_->write(addr, reg.value());
+  write_(addr, reg.value());
 }
 
 void Cpu::ld(const word_t addr, WordRegister &reg) {
-  mmu_->write(addr, reg.low());
-  mmu_->write(addr + 1, reg.high());
+  write_(addr, reg.low());
+  write_(addr + 1, reg.high());
 }
 
 void Cpu::ldhlsp() {
@@ -83,8 +82,8 @@ void Cpu::inc(ByteRegister &reg) {
 void Cpu::inc(WordRegister &reg) { reg.increment(); }
 
 void Cpu::inc(const word_t addr) {
-  byte_t result = static_cast<byte_t>(mmu_->read(addr) + 1);
-  mmu_->write(addr, result);
+  byte_t result = static_cast<byte_t>(read_(addr) + 1);
+  write_(addr, result);
 
   f.write_zero_flag(result == 0);
   f.clear_subtract_flag();
@@ -103,8 +102,8 @@ void Cpu::dec(ByteRegister &reg) {
 void Cpu::dec(WordRegister &reg) { reg.decrement(); }
 
 void Cpu::dec(const word_t addr) {
-  byte_t result = static_cast<byte_t>(mmu_->read(addr) - 1);
-  mmu_->write(addr, result);
+  byte_t result = static_cast<byte_t>(read_(addr) - 1);
+  write_(addr, result);
 
   f.write_zero_flag(result == 0);
   f.set_subtract_flag();
@@ -124,10 +123,10 @@ void Cpu::rlc(ByteRegister &reg) {
 }
 
 void Cpu::rlc(const word_t addr) {
-  word_t v = mmu_->read(addr);
+  word_t v = read_(addr);
   bool carry_bit = (v >> 7) & 1;
   byte_t result = static_cast<byte_t>(v << 1 | carry_bit);
-  mmu_->write(addr, result);
+  write_(addr, result);
 
   f.write_carry_flag(carry_bit);
   f.write_zero_flag(result == 0);
@@ -146,8 +145,8 @@ void Cpu::rl(ByteRegister &reg) {
 }
 
 void Cpu::rl(const word_t addr) {
-  word_t result = (mmu_->read(addr) << 1) | (f.carry_flag() ? 1 : 0);
-  mmu_->write(addr, static_cast<byte_t>(result));
+  word_t result = (read_(addr) << 1) | (f.carry_flag() ? 1 : 0);
+  write_(addr, static_cast<byte_t>(result));
 
   f.clear_subtract_flag();
   f.clear_half_carry_flag();
@@ -168,10 +167,10 @@ void Cpu::rrc(ByteRegister &reg) {
 }
 
 void Cpu::rrc(const word_t addr) {
-  word_t v = mmu_->read(addr);
+  word_t v = read_(addr);
   bool carry_bit = v & 1;
   byte_t result = static_cast<byte_t>((v >> 1) | (carry_bit << 7));
-  mmu_->write(addr, result);
+  write_(addr, result);
 
   f.write_carry_flag(carry_bit);
   f.write_zero_flag(result == 0);
@@ -192,10 +191,10 @@ void Cpu::rr(ByteRegister &reg) {
 }
 
 void Cpu::rr(const word_t addr) {
-  const byte_t value = mmu_->read(addr);
+  const byte_t value = read_(addr);
   word_t result =
       (value >> 1) | ((f.carry_flag() ? 1 : 0) << 7) | ((value & 1) << 8);
-  mmu_->write(addr, static_cast<byte_t>(result));
+  write_(addr, static_cast<byte_t>(result));
 
   f.clear_subtract_flag();
   f.clear_half_carry_flag();
@@ -217,7 +216,7 @@ void Cpu::add(ByteRegister &reg, const ByteRegister &other) {
 
 void Cpu::add(ByteRegister &reg, const word_t addr) {
   byte_t old_register_value = reg.value();
-  byte_t other_value = mmu_->read(addr);
+  byte_t other_value = read_(addr);
 
   word_t result = reg.value() + other_value;
   reg.set(static_cast<byte_t>(result));
@@ -286,7 +285,7 @@ void Cpu::adc(ByteRegister &reg, const ByteRegister &other) {
 
 void Cpu::adc(ByteRegister &reg, const word_t addr) {
   byte_t old_register_value = reg.value();
-  byte_t other_value = mmu_->read(addr);
+  byte_t other_value = read_(addr);
   byte_t carry = f.carry_flag() ? 1 : 0;
 
   word_t result = reg.value() + other_value + carry;
@@ -329,7 +328,7 @@ void Cpu::sub(ByteRegister &reg, const ByteRegister &other) {
 
 void Cpu::sub(ByteRegister &reg, const word_t addr) {
   byte_t old_register_value = reg.value();
-  byte_t other_value = mmu_->read(addr);
+  byte_t other_value = read_(addr);
   word_t result = reg.value() - other_value;
   reg.set(static_cast<byte_t>(result));
 
@@ -371,7 +370,7 @@ void Cpu::sbc(ByteRegister &reg, const ByteRegister &other) {
 
 void Cpu::sbc(ByteRegister &reg, const word_t addr) {
   byte_t old_register_value = reg.value();
-  byte_t other_value = mmu_->read(addr);
+  byte_t other_value = read_(addr);
   byte_t carry = f.carry_flag() ? 1 : 0;
 
   signed_word_t result =
@@ -430,7 +429,7 @@ void Cpu::a_and(const ByteRegister &other) {
 }
 
 void Cpu::a_and(const word_t addr) {
-  a.set(a.value() & mmu_->read(addr));
+  a.set(a.value() & read_(addr));
 
   f.write_zero_flag(a.value() == 0);
   f.set_half_carry_flag();
@@ -457,7 +456,7 @@ void Cpu::a_or(const ByteRegister &other) {
 }
 
 void Cpu::a_or(const word_t addr) {
-  a.set(a.value() | mmu_->read(addr));
+  a.set(a.value() | read_(addr));
 
   f.write_zero_flag(a.value() == 0);
   f.clear_half_carry_flag();
@@ -484,7 +483,7 @@ void Cpu::a_xor(const ByteRegister &other) {
 }
 
 void Cpu::a_xor(const word_t addr) {
-  a.set(a.value() ^ mmu_->read(addr));
+  a.set(a.value() ^ read_(addr));
 
   f.write_zero_flag(a.value() == 0);
   f.clear_half_carry_flag();
@@ -512,10 +511,10 @@ void Cpu::sla(ByteRegister &reg) {
 }
 
 void Cpu::sla(const word_t addr) {
-  byte_t value = mmu_->read(addr);
+  byte_t value = read_(addr);
   bool did_carry = (value & (1 << 7));
   byte_t result = static_cast<byte_t>(value << 1);
-  mmu_->write(addr, result);
+  write_(addr, result);
 
   f.write_zero_flag(result == 0);
   f.write_carry_flag(did_carry);
@@ -537,11 +536,11 @@ void Cpu::sra(ByteRegister &reg) {
 }
 
 void Cpu::sra(const word_t addr) {
-  byte_t value = mmu_->read(addr);
+  byte_t value = read_(addr);
   bool did_carry = value & 1;
   byte_t msb = value & (1 << 7);
   byte_t result = static_cast<byte_t>((value >> 1) | msb);
-  mmu_->write(addr, result);
+  write_(addr, result);
 
   f.write_zero_flag(result == 0);
   f.write_carry_flag(did_carry);
@@ -562,10 +561,10 @@ void Cpu::srl(ByteRegister &reg) {
 }
 
 void Cpu::srl(const word_t addr) {
-  byte_t value = mmu_->read(addr);
+  byte_t value = read_(addr);
   bool did_carry = value & 1;
   byte_t result = static_cast<byte_t>(value >> 1);
-  mmu_->write(addr, result);
+  write_(addr, result);
 
   f.write_zero_flag(result == 0);
   f.write_carry_flag(did_carry);
@@ -587,11 +586,11 @@ void Cpu::swap(ByteRegister &reg) {
 }
 
 void Cpu::swap(const word_t addr) {
-  byte_t v = mmu_->read(addr);
+  byte_t v = read_(addr);
   byte_t low = v & 0x0F;
   byte_t high = ((v & 0xF0) >> 4) & 0x0F;
   byte_t result = util::fuse_nibbles(low, high);
-  mmu_->write(addr, result);
+  write_(addr, result);
 
   f.write_zero_flag(result == 0);
   f.clear_subtract_flag();
@@ -606,7 +605,7 @@ void Cpu::bit(const bit_t bit, const ByteRegister &reg) {
 }
 
 void Cpu::bit(const bit_t bit, const word_t addr) {
-  f.write_zero_flag(!((mmu_->read(addr) >> bit) & 1));
+  f.write_zero_flag(!((read_(addr) >> bit) & 1));
   f.clear_subtract_flag();
   f.set_half_carry_flag();
 }
@@ -623,7 +622,7 @@ void Cpu::cp(ByteRegister &reg) {
 
 void Cpu::cp(const word_t addr) {
   const byte_t value = a.value();
-  const byte_t other_value = mmu_->read(addr);
+  const byte_t other_value = read_(addr);
 
   f.write_zero_flag(value == other_value);
   f.set_subtract_flag();
@@ -644,19 +643,19 @@ void Cpu::cp() {
 void Cpu::res(const bit_t bit, ByteRegister &reg) { reg.clear_bit(bit); }
 
 void Cpu::res(const bit_t bit, const word_t addr) {
-  mmu_->write(addr, mmu_->read(addr) & ~(1 << bit));
+  write_(addr, read_(addr) & ~(1 << bit));
 }
 
 void Cpu::set(const bit_t bit, ByteRegister &reg) { reg.set_bit(bit); }
 
 void Cpu::set(const bit_t bit, const word_t addr) {
-  mmu_->write(addr, mmu_->read(addr) | (1 << bit));
+  write_(addr, read_(addr) | (1 << bit));
 }
 
 void Cpu::pop(WordRegister &reg) {
-  byte_t low = mmu_->read(sp.value());
+  byte_t low = read_(sp.value());
   sp.increment();
-  byte_t high = mmu_->read(sp.value());
+  byte_t high = read_(sp.value());
   sp.increment();
 
   reg.set(util::fuse(high, low));
@@ -664,9 +663,9 @@ void Cpu::pop(WordRegister &reg) {
 
 void Cpu::push(const WordRegister &reg) {
   sp.decrement();
-  mmu_->write(sp.value(), reg.high());
+  write_(sp.value(), reg.high());
   sp.decrement();
-  mmu_->write(sp.value(), reg.low());
+  write_(sp.value(), reg.low());
 }
 
 void Cpu::ret() { pop(pc); }
@@ -684,11 +683,11 @@ void Cpu::reti() {
 }
 
 void Cpu::ldh(const byte_t addr_low, const ByteRegister &reg) {
-  mmu_->write(util::fuse(0xFF, addr_low), reg.value());
+  write_(util::fuse(0xFF, addr_low), reg.value());
 }
 
 void Cpu::ldh(ByteRegister &reg, const byte_t addr_low) {
-  reg.set(mmu_->read(util::fuse(0xFF, addr_low)));
+  reg.set(read_(util::fuse(0xFF, addr_low)));
 }
 
 void Cpu::call() {

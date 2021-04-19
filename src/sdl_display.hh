@@ -1,8 +1,13 @@
+#ifndef BUGME_SDL_DISPLAY_H
+#define BUGME_SDL_DISPLAY_H
+
 #include "display.hh"
 
 #include <functional>
 #include <memory>
 #include <vector>
+
+#include "types.hh"
 
 class SDL_Window;
 class SDL_Renderer;
@@ -12,7 +17,7 @@ namespace bugme {
 
 enum class Color;
 
-class SdlDisplay : public Display {
+class SdlDisplay : public Display, Noncopyable {
 public:
   SdlDisplay(std::function<void(bool)> exit_callback);
   virtual ~SdlDisplay();
@@ -31,3 +36,5 @@ private:
 };
 
 } // namespace bugme
+
+#endif
