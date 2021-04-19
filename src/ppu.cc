@@ -85,7 +85,7 @@ void Ppu::tick(tcycles_t cycles) {
 
       if (line.value() == 154) {
         if (lcd_control.obj_enable()) {
-          //draw_sprites_();
+          draw_sprites_();
         }
         set_mode_(Mode::READ_OAM);
         draw_fn_(frame_buffer_);
@@ -238,42 +238,7 @@ void Ppu::write_window_line_() {
 }
 
 void Ppu::draw_sprites_() {
-  for (word_t sprite_idx = 0; sprite_idx < 40; ++sprite_idx) {
-    word_t start = 0xFE00 + (sprite_idx * BYTES_PER_SPRITE);
-
-    byte_t sprite_y = vram.at(start);        // mmu_->read(start));
-    byte_t sprite_x = vram.at(start + 1);    // mmu_->read(start + 1));
-    byte_t tile_idx = vram.at(start + 2);    // mmu_->read(start + 2));
-    byte_t sprite_attr = vram.at(start + 3); // mmu_->read(start + 3));
-
-    // offscreen check
-    if (sprite_y == 0 || sprite_y >= 160 || sprite_x == 0 || sprite_x >= 168) {
-      return;
-    }
-    const byte_t sprite_y_scale = lcd_control.obj_size() ? 2 : 1;
-
-    word_t pattern_addr = TILESET_0_START + tile_idx * 16;
-    bool should_flip_x = util::get_bit(sprite_attr, 5);
-    bool should_flip_y = util::get_bit(sprite_attr, 6);
-    for (byte_t _y = 0; _y < TILE_LENGTH_PX * sprite_y_scale; ++_y) {
-      for (byte_t _x = 0; _x < TILE_LENGTH_PX; ++_x) {
-        byte_t y =
-            should_flip_y ? (TILE_LENGTH_PX * sprite_y_scale) - _y - 1 : _y;
-        byte_t x = should_flip_x ? TILESET_0_START - _x - 1 : _x;
-        word_t tile_line_addr = pattern_addr + (y * 2);
-        byte_t pixels0 =
-            vram.at(tile_line_addr); // mmu_->read(tile_line_addr));
-        byte_t pixels1 =
-            vram.at(tile_line_addr + 1); // mmu_->read(tile_line_addr + 1));
-
-        Color color =
-            get_color_(util::fuse_b(pixels1 >> (7 - x), pixels0 >> (7 - x)),
-                       util::get_bit(sprite_attr, 4) ? sprite_palette_1
-                                                     : sprite_palette_0);
-        set_pixel_(sprite_x + x - 8, sprite_y + y - 16, color);
-      }
-    }
-  }
+  // TODO
 }
 
 void Ppu::set_pixel_(unsigned int x, unsigned int y, Color color) {

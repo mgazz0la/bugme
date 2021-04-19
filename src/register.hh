@@ -94,25 +94,19 @@ public:
   }
 };
 
-template <typename T> class ArithmeticValue : public WriteableValue<T> {
+class ArithmeticValue {
 public:
-  /**
-   * Replaces the underlying value with new_value.
-   * \param new_value The new value of the same underlying type.
-   */
-  virtual void set(T new_value) override = 0;
-
   /**
    * Sets the underlying value to itself plus one.
    * \note Overflow is expected to be handled by the underlying type T.
    */
-  virtual void increment() { set(this->value() + 1); }
+  virtual void increment() = 0;
 
   /**
    * Sets the underlying value to itself minus one.
    * \note Underflow is expected to be handled by the underlying type T.
    */
-  virtual void decrement() { set(this->value() - 1); }
+  virtual void decrement() = 0;
 };
 
 /** A read-only 8-bit value. */
@@ -123,56 +117,48 @@ typedef ReadableValue<word_t> ReadableWord;
 typedef WriteableValue<byte_t> WriteableByte;
 /** A read-write 16-bit value. */
 typedef WriteableValue<word_t> WriteableWord;
-/** An arithmetic 8-bit value. */
-typedef ArithmeticValue<byte_t> ArithmeticByte;
-/** An arithmetic 16-bit value. */
-typedef ArithmeticValue<word_t> ArithmeticWord;
 
 #define CONTROL_FLAG(bit, name)                                                \
-  public:                                                                      \
-    bool name() { return get_bit(bit); }                                       \
-    void set_##name() { set_bit(bit); }                                        \
-    void clear_##name() { clear_bit(bit); }                                    \
-    void flip_##name() { flip_bit(bit); }                                      \
-    void write_##name(bool v) { write_bit(bit, v); }
+public:                                                                        \
+  bool name() { return get_bit(bit); }                                         \
+  void set_##name() { set_bit(bit); }                                          \
+  void clear_##name() { clear_bit(bit); }                                      \
+  void flip_##name() { flip_bit(bit); }                                        \
+  void write_##name(bool v) { write_bit(bit, v); }
 
 #define READONLY_CONTROL_FLAG(bit, name)                                       \
-  public:                                                                      \
-    bool name() { return get_bit(bit); }                                       \
-  protected:                                                                   \
-    void set_##name() { set_bit(bit); }                                        \
-    void clear_##name() { clear_bit(bit); }                                    \
-    void flip_##name() { flip_bit(bit); }                                      \
-    void write_##name(bool v) { write_bit(bit, v); }                           \
-  public:
+public:                                                                        \
+  bool name() { return get_bit(bit); }                                         \
+                                                                               \
+protected:                                                                     \
+  void set_##name() { set_bit(bit); }                                          \
+  void clear_##name() { clear_bit(bit); }                                      \
+  void flip_##name() { flip_bit(bit); }                                        \
+  void write_##name(bool v) { write_bit(bit, v); }                             \
+                                                                               \
+public:
 
-
-class ControlByte : public WriteableByte {
+class ControlRegister : public WriteableByte {
 public:
   byte_t value() const override { return value_; }
 
-  virtual void set(byte_t new_value) override { _set(new_value); }
+  virtual void set(byte_t new_value) override { value_ = new_value; }
 
   // So ideally, you would subclass this class and use the CONTROL_FLAG macro
   // here to implement specific bit flips.
 
   // See FlagRegister for an example.
 
-private:
-  void _set(byte_t new_value) { value_ = new_value; }
+protected:
   byte_t value_ = 0x0;
 };
 
 /** A general-use 8-bit read-write register with bit manipulation helpers.  */
-class ByteRegister : public ArithmeticByte {
+class ByteRegister : public ControlRegister, ArithmeticValue {
 public:
-  byte_t value() const override { return value_; }
+  virtual void increment() override { this->set(this->value() + 1); }
 
-  virtual void set(byte_t new_value) override { _set(new_value); }
-
-private:
-  void _set(byte_t new_value) { value_ = new_value; }
-  byte_t value_ = 0x0;
+  virtual void decrement() override { this->set(this->value() - 1); }
 };
 
 /**
@@ -184,10 +170,14 @@ private:
  * \see WordValuedRegister
  * \see ByteRegisterPair
  */
-class WordRegister : public ArithmeticWord {
+class WordRegister : public WriteableWord, ArithmeticValue {
 public:
   WordRegister() = default;
   virtual ~WordRegister() = default;
+
+  virtual void increment() override { this->set(this->value() + 1); }
+
+  virtual void decrement() override { this->set(this->value() - 1); }
 
   /** \return The lower 8 bits of the underlying value, as a single byte. */
   virtual byte_t low() const = 0;
@@ -255,14 +245,16 @@ private:
  *       class will always clear the lower nibble of the underlying value. For
  *       example, increment() and decrement() are no-ops on this class.
  */
-class FlagRegister : public ControlByte {
+class FlagRegister : public ControlRegister {
 public:
   /**
    * Sets the underlying value and clears the lower nibble.
    *
    * \param new_value The value to set
    */
-  void set(byte_t new_value) override { ControlByte::set(new_value & 0xF0); }
+  void set(byte_t new_value) override {
+    ControlRegister::set(new_value & 0xF0);
+  }
 
   CONTROL_FLAG(7, zero_flag)
   CONTROL_FLAG(6, subtract_flag)

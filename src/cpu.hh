@@ -28,7 +28,7 @@ inline const word_t _38 = 0x0038;
 } // namespace rst
 
 /* clang-format off */
-class InterruptEnable : public ControlByte {
+class InterruptEnable : public ControlRegister {
 public:
   CONTROL_FLAG(4, joypad_interrupt_enable)
   CONTROL_FLAG(3, serial_interrupt_enable)
@@ -40,14 +40,14 @@ public:
 
 class Memory;
 class Cartridge;
-class PpuIo;
-class TimerIo;
-class JoypadIo;
+class PpuBus;
+class TimerBus;
+class JoypadBus;
 
 class Cpu : public Noncopyable {
 public:
-  Cpu(Memory &memory, Cartridge &cartridge, PpuIo &ppuIo, TimerIo &timerIo,
-      JoypadIo &joypadIo);
+  Cpu(Memory &memory, Cartridge &cartridge, PpuBus &ppuBus, TimerBus &timerBus,
+      JoypadBus &joypadBus);
 
   mcycles_t tick();
   void reset();
@@ -55,14 +55,16 @@ public:
 private:
   Memory &memory_;
   Cartridge &cartridge_;
-  PpuIo &ppuIo_;
-  TimerIo &timerIo_;
-  JoypadIo &joypadIo_;
+  PpuBus &ppuBus_;
+  TimerBus &timerBus_;
+  JoypadBus &joypadBus_;
 
   ByteRegister boot_rom_control;
 
   byte_t read_(word_t addr) const;
   void write_(word_t addr, byte_t byte);
+
+  void dma_transfer_(byte_t byte);
 
   void check_interrupts();
 

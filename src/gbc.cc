@@ -15,19 +15,15 @@ namespace bugme {
 
 Gbc::Gbc(CliOptions &cli_options)
     : cli_options_(cli_options), cartridge(read_rom(cli_options.rom_filename)),
-      memory(),
-      display([&](bool should_exit) {
-                      if (should_exit)
-                        this->exit();
-                    }),
-      ppu(
-          [&](std::vector<Color> &buffer) {
-            if (!cli_options.options.headless)
-              display.draw(buffer);
-          }),
-      timer(),
-      joypad(),
-      cpu(memory, cartridge, ppu, timer, joypad) {}
+      memory(), display([&](bool should_exit) {
+        if (should_exit)
+          this->exit();
+      }),
+      ppu([&](std::vector<Color> &buffer) {
+        if (!cli_options.options.headless)
+          display.draw(buffer);
+      }),
+      timer(), joypad(), cpu(memory, cartridge, ppu, timer, joypad) {}
 
 int Gbc::run() {
   switch (cli_options_.options.verbosity) {

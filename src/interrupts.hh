@@ -14,7 +14,7 @@ enum class Interrupt {
 };
 
 /* clang-format off */
-class InterruptFlag : public ControlByte {
+class InterruptFlag : public ControlRegister {
 public:
   CONTROL_FLAG(4, joypad_interrupt_request)
   CONTROL_FLAG(3, serial_interrupt_request)

@@ -1,7 +1,7 @@
 #ifndef BUGME_JOYPAD_H
 #define BUGME_JOYPAD_H
 
-#include "io.hh"
+#include "bus.hh"
 #include "register.hh"
 #include "types.hh"
 
@@ -12,7 +12,7 @@ enum class Button { Up, Down, Left, Right, A, B, Select, Start };
 
 class Joypad;
 
-struct JoypadIo : Io<Joypad> {
+struct JoypadBus : Bus<Joypad> {
   ByteRegister joyp;
 
   std::function<void()> joypad_interrupt_request_cb = nullptr;
@@ -30,7 +30,7 @@ struct JoypadIo : Io<Joypad> {
   }
 };
 
-class Joypad : public JoypadIo {
+class Joypad : public JoypadBus {
 public:
   Joypad();
 };

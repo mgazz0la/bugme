@@ -10,9 +10,7 @@ void Cpu::ld(ByteRegister &reg) {
   reg.set(v);
 }
 
-void Cpu::ld(ByteRegister &reg, const word_t addr) {
-  reg.set(read_(addr));
-}
+void Cpu::ld(ByteRegister &reg, const word_t addr) { reg.set(read_(addr)); }
 
 void Cpu::ld(ByteRegister &reg, const ByteRegister &other) {
   reg.set(other.value());

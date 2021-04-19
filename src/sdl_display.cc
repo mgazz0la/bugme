@@ -67,7 +67,7 @@ void SdlDisplay::draw(std::vector<Color> &buffer) {
 
   SDL_RenderCopy(renderer_, texture_, nullptr, nullptr);
   SDL_RenderPresent(renderer_);
-  //SDL_Delay(16);
+  // SDL_Delay(16);
 }
 
 void SdlDisplay::process_events_() {

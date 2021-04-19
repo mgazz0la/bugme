@@ -3,11 +3,11 @@
 
 #include "cartridge.hh"
 #include "cpu.hh"
+#include "joypad.hh"
 #include "memory.hh"
 #include "ppu.hh"
 #include "sdl_display.hh"
 #include "timer.hh"
-#include "joypad.hh"
 #include "types.hh"
 
 #include <memory>

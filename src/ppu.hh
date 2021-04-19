@@ -1,10 +1,10 @@
 #ifndef BUGME_PPU_H
 #define BUGME_PPU_H
 
-#include "io.hh"
+#include "bus.hh"
+#include "mmap.hh"
 #include "register.hh"
 #include "types.hh"
-#include "mmap.hh"
 
 #include <functional>
 #include <memory>
@@ -13,7 +13,7 @@
 namespace bugme {
 
 /* clang-format off */
-class LcdControl : public ControlByte {
+class LcdControl : public ControlRegister {
 public:
   CONTROL_FLAG(7,         lcd_enable) // 0=Off, 1=On
   CONTROL_FLAG(6,    window_tile_map) // 0=9800-9BFF, 1=9C00-9FFF
@@ -25,7 +25,7 @@ public:
   CONTROL_FLAG(0,   bg_window_enable) // 0=Off, 1=On
 };
 
-class LcdStatus : public ControlByte {
+class LcdStatus : public ControlRegister {
 public:
   CONTROL_FLAG(6, interrupt_on_ly_lyc_coincide)
   CONTROL_FLAG(5,        interrupt_on_oam_read)
@@ -41,10 +41,13 @@ public:
 /* clang-format on */
 
 class Ppu;
-struct PpuIo : Io<Ppu> {
-  PpuIo() : vram(std::vector<byte_t>(mmap::VRAM_END - mmap::VRAM_START + 1)) {}
+struct PpuBus : Bus<Ppu> {
+  PpuBus()
+      : vram(std::vector<byte_t>(mmap::VRAM_END - mmap::VRAM_START + 1)),
+        oam(std::vector<byte_t>(mmap::OAM_END - mmap::OAM_START + 1)) {}
 
   std::vector<byte_t> vram;
+  std::vector<byte_t> oam;
 
   LcdControl lcd_control;        // 0xFF40
   LcdStatus lcd_status;          // 0xFF41
@@ -88,7 +91,7 @@ struct PpuIo : Io<Ppu> {
 };
 
 enum class Color;
-class Ppu : public PpuIo {
+class Ppu : public PpuBus {
 public:
   explicit Ppu(std::function<void(std::vector<Color> &)> draw_fn);
   virtual ~Ppu() = default;

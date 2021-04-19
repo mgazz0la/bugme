@@ -1,8 +1,8 @@
 #ifndef BUGME_OPCODE_CYCLES_H
 #define BUGME_OPCODE_CYCLES_H
 
-#include <cstdint>
 #include "types.hh"
+#include <cstdint>
 
 namespace bugme {
 namespace opcode {

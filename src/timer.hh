@@ -4,7 +4,7 @@
 #include <functional>
 #include <memory>
 
-#include "io.hh"
+#include "bus.hh"
 #include "register.hh"
 #include "types.hh"
 
@@ -12,7 +12,7 @@ namespace bugme {
 
 class Timer;
 
-struct TimerIo : Io<Timer> {
+struct TimerBus : Bus<Timer> {
   ByteRegister divider;       // 0xFF04
   ByteRegister timer_counter; // 0xFF05
   ByteRegister timer_modulo;  // 0xFF06
@@ -33,7 +33,7 @@ struct TimerIo : Io<Timer> {
   }
 };
 
-class Timer : public TimerIo {
+class Timer : public TimerBus {
 public:
   Timer() = default;
   virtual ~Timer() = default;
