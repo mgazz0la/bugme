@@ -14,6 +14,10 @@
 #include <string>
 #include <vector>
 
+class SDL_Window;
+class SDL_Renderer;
+class SDL_Texture;
+
 namespace bugme {
 
 class CliOptions;
@@ -38,6 +42,8 @@ public:
    */
   explicit Gbc(CliOptions &cli_options);
 
+  virtual ~Gbc();
+
   /**
    * Starts the persists the main game loop.
    *
@@ -52,6 +58,10 @@ public:
 private:
   CliOptions &cli_options_;
 
+  SDL_Window *window_;
+  SDL_Renderer *renderer_;
+  SDL_Texture *texture_;
+
   Cartridge cartridge;
   Memory memory;
   SdlDisplay display;
@@ -62,6 +72,7 @@ private:
 
   bool should_exit_ = false;
 
+  void process_events_();
   std::vector<byte_t> read_rom(const std::string &filename) const;
 };
 

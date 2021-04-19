@@ -1,5 +1,6 @@
 #include "gbc.hh"
 #include "cartridge.hh"
+#include "constants.hh"
 #include "cpu.hh"
 #include "joypad.hh"
 #include "log.hh"
@@ -9,21 +10,47 @@
 #include "sdl_display.hh"
 #include "timer.hh"
 
+#include <SDL.h>
+#include <SDL_syswm.h>
 #include <fstream>
 
 namespace bugme {
 
 Gbc::Gbc(CliOptions &cli_options)
-    : cli_options_(cli_options), cartridge(read_rom(cli_options.rom_filename)),
-      memory(), display([&](bool should_exit) {
-        if (should_exit)
-          this->exit();
-      }),
+    : cli_options_(cli_options),
+      window_(SDL_Init(SDL_INIT_VIDEO) < 0
+                  ? nullptr
+                  : SDL_CreateWindow(
+                        "gbc", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                        GAMEBOY_WIDTH * SCALE, GAMEBOY_HEIGHT * SCALE,
+                        SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI |
+                            SDL_WINDOW_RESIZABLE)),
+      renderer_(window_ == nullptr
+                    ? nullptr
+                    : SDL_CreateRenderer(window_, -1,
+                                         SDL_RENDERER_ACCELERATED |
+                                             SDL_RENDERER_PRESENTVSYNC)),
+      texture_(renderer_ == nullptr
+                   ? nullptr
+                   : SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_ARGB8888,
+                                       SDL_TEXTUREACCESS_STREAMING,
+                                       GAMEBOY_WIDTH, GAMEBOY_HEIGHT)),
+      cartridge(read_rom(cli_options.rom_filename)), memory(),
+      display(renderer_, texture_),
       ppu([&](std::vector<Color> &buffer) {
-        if (!cli_options.options.headless)
+        if (!cli_options.options.headless) {
+          process_events_();
           display.draw(buffer);
+        }
       }),
       timer(), joypad(), cpu(memory, cartridge, ppu, timer, joypad) {}
+
+Gbc::~Gbc() {
+  SDL_DestroyTexture(texture_);
+  SDL_DestroyRenderer(renderer_);
+  SDL_DestroyWindow(window_);
+  SDL_Quit();
+}
 
 int Gbc::run() {
   switch (cli_options_.options.verbosity) {
@@ -56,6 +83,24 @@ int Gbc::run() {
 void Gbc::exit() {
   log_error("[gbc] exiting!");
   should_exit_ = true;
+}
+
+void Gbc::process_events_() {
+  SDL_Event event;
+
+  while (SDL_PollEvent(&event) != 0) {
+    switch (event.type) {
+    case SDL_WINDOWEVENT:
+      if (event.window.event == SDL_WINDOWEVENT_CLOSE) {
+        exit();
+      }
+      break;
+    case SDL_QUIT:
+      log_error("[sdl_display] exiting!");
+      exit();
+      break;
+    }
+  };
 }
 
 std::vector<byte_t> Gbc::read_rom(const std::string &filename) const {

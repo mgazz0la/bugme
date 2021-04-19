@@ -47,7 +47,7 @@ target_link_libraries(cpu LINK_PRIVATE display joypad log memory ppu timer regis
 
 add_library(bugmecore gbc.cc)
 target_include_directories(bugmecore PUBLIC .)
-target_link_libraries(bugmecore LINK_PRIVATE display cartridge cpu log memory timer ppu)
+target_link_libraries(bugmecore LINK_PRIVATE ${SDL2_LIBRARY} display cartridge cpu log memory timer ppu)
 
 add_executable(bugme main.cc)
 target_link_libraries(bugme LINK_PRIVATE bugmecore sdl_display options)
