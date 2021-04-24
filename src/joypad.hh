@@ -27,6 +27,7 @@ class JoypControl : public ControlRegister {
   }
 
   friend class Joypad;
+
 private:
   void update_joyp_() {
     if (!select_action_buttons()) {
