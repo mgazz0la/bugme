@@ -120,7 +120,7 @@ typedef WriteableValue<word_t> WriteableWord;
 
 #define CONTROL_FLAG(bit, name)                                                \
 public:                                                                        \
-  bool name() { return get_bit(bit); }                                         \
+  bool name() const { return get_bit(bit); }                                   \
   void set_##name() { set_bit(bit); }                                          \
   void clear_##name() { clear_bit(bit); }                                      \
   void flip_##name() { flip_bit(bit); }                                        \
@@ -128,7 +128,7 @@ public:                                                                        \
 
 #define READONLY_CONTROL_FLAG(bit, name)                                       \
 public:                                                                        \
-  bool name() { return get_bit(bit); }                                         \
+  bool name() const { return get_bit(bit); }                                   \
                                                                                \
 protected:                                                                     \
   void set_##name() { set_bit(bit); }                                          \
@@ -140,7 +140,7 @@ public:
 
 class ControlRegister : public WriteableByte {
 public:
-  byte_t value() const override { return value_; }
+  virtual byte_t value() const override { return value_; }
 
   virtual void set(byte_t new_value) override { value_ = new_value; }
 

@@ -36,8 +36,7 @@ Gbc::Gbc(CliOptions &cli_options)
                                        SDL_TEXTUREACCESS_STREAMING,
                                        GAMEBOY_WIDTH, GAMEBOY_HEIGHT)),
       cartridge(read_rom(cli_options.rom_filename)), memory(),
-      display(renderer_, texture_),
-      ppu([&](std::vector<Color> &buffer) {
+      display(renderer_, texture_), ppu([&](std::vector<Color> &buffer) {
         if (!cli_options.options.headless) {
           process_events_();
           display.draw(buffer);
@@ -85,11 +84,46 @@ void Gbc::exit() {
   should_exit_ = true;
 }
 
+static Button get_button(int key) {
+  switch (key) {
+  case SDLK_UP:
+    return Button::Up;
+  case SDLK_DOWN:
+    return Button::Down;
+  case SDLK_LEFT:
+    return Button::Left;
+  case SDLK_RIGHT:
+    return Button::Right;
+  case SDLK_x:
+    return Button::A;
+  case SDLK_z:
+    return Button::B;
+  case SDLK_BACKSPACE:
+    return Button::Select;
+  case SDLK_RETURN:
+    return Button::Start;
+  }
+
+  return Button::NONE;
+}
+
 void Gbc::process_events_() {
   SDL_Event event;
 
   while (SDL_PollEvent(&event) != 0) {
     switch (event.type) {
+    case SDL_KEYDOWN:
+      if (event.key.repeat == true) {
+        break;
+      }
+      joypad.button_down(get_button(event.key.keysym.sym));
+      break;
+    case SDL_KEYUP:
+      if (event.key.repeat == true) {
+        break;
+      }
+      joypad.button_up(get_button(event.key.keysym.sym));
+      break;
     case SDL_WINDOWEVENT:
       if (event.window.event == SDL_WINDOWEVENT_CLOSE) {
         exit();
