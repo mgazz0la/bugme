@@ -18,25 +18,22 @@ const unsigned int TILE_LENGTH_PX = 8;
 const word_t BYTES_PER_SPRITE = 4;
 
 const word_t TILESET_0_START = 0x8000 - mmap::VRAM_START;
-const word_t TILESET_0_END = 0x8FFF - mmap::VRAM_START;
 const word_t TILESET_1_START = 0x8800 - mmap::VRAM_START;
-const word_t TILESET_1_END = 0x97FF - mmap::VRAM_START;
-
-const word_t BG_MAP_0_START = 0x9800 - mmap::VRAM_START;
-const word_t BG_MAP_0_END = 0x9BFF - mmap::VRAM_START;
-const word_t BG_MAP_1_START = 0x9C00 - mmap::VRAM_START;
-const word_t BG_MAP_1_END = 0x9FFF - mmap::VRAM_START;
+const word_t BG_MAP_0_START  = 0x9800 - mmap::VRAM_START;
+const word_t BG_MAP_1_START  = 0x9C00 - mmap::VRAM_START;
 
 const unsigned int CLOCKS_PER_HBLANK = 204;        /* Mode 0 */
+const unsigned int CLOCKS_PER_VBLANK = 4560;       /* Mode 1 */
 const unsigned int CLOCKS_PER_SCANLINE_OAM = 80;   /* Mode 2 */
 const unsigned int CLOCKS_PER_SCANLINE_VRAM = 172; /* Mode 3 */
 const unsigned int CLOCKS_PER_SCANLINE =
     (CLOCKS_PER_SCANLINE_OAM + CLOCKS_PER_SCANLINE_VRAM + CLOCKS_PER_HBLANK);
 
-const unsigned int CLOCKS_PER_VBLANK = 4560; /* Mode 1 */
+const unsigned int SCANLINES_PER_VBLANK = 10;
 const unsigned int SCANLINES_PER_FRAME = 144;
 const unsigned int CLOCKS_PER_FRAME =
     (CLOCKS_PER_SCANLINE * SCANLINES_PER_FRAME) + CLOCKS_PER_VBLANK;
+
 } // namespace
 
 Ppu::Ppu(std::function<void(std::vector<Color> &)> draw_fn)
@@ -45,13 +42,18 @@ Ppu::Ppu(std::function<void(std::vector<Color> &)> draw_fn)
 
 void Ppu::tick(tcycles_t cycles) {
   cycles_elapsed_ += cycles;
+
   switch (mode_) {
+
+  /* Mode 2 */
   case Mode::READ_OAM:
     if (cycles_elapsed_ >= CLOCKS_PER_SCANLINE_OAM) {
       cycles_elapsed_ %= CLOCKS_PER_SCANLINE_OAM;
       set_mode_(Mode::READ_VRAM);
     }
     break;
+
+  /* Mode 3 */
   case Mode::READ_VRAM:
     if (cycles_elapsed_ >= CLOCKS_PER_SCANLINE_VRAM) {
       cycles_elapsed_ %= CLOCKS_PER_SCANLINE_VRAM;
@@ -61,16 +63,20 @@ void Ppu::tick(tcycles_t cycles) {
            ly_compare.value() == line.value())) {
         lcd_stat_interrupt_request();
       }
+
       lcd_status.write_ly_lyc_coincide(ly_compare == line);
       set_mode_(Mode::HBLANK);
     }
     break;
+
+  /* Mode 0 */
   case Mode::HBLANK:
     if (cycles_elapsed_ >= CLOCKS_PER_HBLANK) {
       cycles_elapsed_ %= CLOCKS_PER_HBLANK;
+
       write_scanline_();
       line.increment();
-      if (line.value() == 144) {
+      if (line.value() == SCANLINES_PER_FRAME) {
         vblank_interrupt_request();
         set_mode_(Mode::VBLANK);
       } else {
@@ -78,18 +84,27 @@ void Ppu::tick(tcycles_t cycles) {
       }
     }
     break;
+
+  /* Mode 1 */
   case Mode::VBLANK:
     if (cycles_elapsed_ >= CLOCKS_PER_SCANLINE) {
       cycles_elapsed_ %= CLOCKS_PER_SCANLINE;
-      line.increment();
 
-      if (line.value() == 154) {
+      line.increment();
+      // Check if we've reached the end of our vblank.
+      if (line.value() == SCANLINES_PER_FRAME + SCANLINES_PER_VBLANK) {
         if (lcd_control.obj_enable()) {
           draw_sprites_();
         }
-        set_mode_(Mode::READ_OAM);
+
+        // Draw the completed frame buffer now.
         draw_fn_(frame_buffer_);
+
+        // Reset the PPU to the first scanline.
         line.reset();
+        set_mode_(Mode::READ_OAM);
+
+        // Wipe the buffer for the next frame.
         for (unsigned int px = 0; px < FRAME_WIDTH * FRAME_HEIGHT; ++px) {
           frame_buffer_.at(px) = Color::WHITE;
         }

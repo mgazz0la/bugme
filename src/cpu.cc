@@ -29,10 +29,8 @@ Cpu::Cpu(Memory &memory, Cartridge &cartridge, PpuBus &ppuBus,
       [&]() { interrupt_flag.set_vblank_interrupt_request(); });
   ppuBus_.register_lcd_stat_interrupt_request_cb(
       [&]() { interrupt_flag.set_lcd_stat_interrupt_request(); });
-
   timerBus_.register_timer_interrupt_request_cb(
       [&]() { interrupt_flag.set_timer_interrupt_request(); });
-
   joypadBus_.register_joypad_interrupt_request_cb(
       [&]() { interrupt_flag.set_joypad_interrupt_request(); });
 }
