@@ -31,7 +31,6 @@ browser at `html/index.html` to view.
 ## Missing Functionality
 
 * Sprite support
-* Joypad
 * Debugger
 * Sound
 
