@@ -10,34 +10,38 @@
 namespace bugme {
 
 namespace {
-const unsigned int FRAME_WIDTH = 160;
-const unsigned int FRAME_HEIGHT = 144;
-const unsigned int BG_MAP_LENGTH = 256;
-const unsigned int TILES_PER_LINE = 32;
-const unsigned int TILE_LENGTH_PX = 8;
-const word_t BYTES_PER_SPRITE = 4;
 
-const word_t TILESET_0_START = 0x8000 - mmap::VRAM_START;
-const word_t TILESET_1_START = 0x8800 - mmap::VRAM_START;
-const word_t BG_MAP_0_START  = 0x9800 - mmap::VRAM_START;
-const word_t BG_MAP_1_START  = 0x9C00 - mmap::VRAM_START;
+/** Width of the Gameboy frame, in pixels. */
+inline const unsigned int FRAME_WIDTH_PX = 160;
+/** Height of the Gameboy frame, in pixels. */
+inline const unsigned int FRAME_HEIGHT_PX = 144;
 
-const unsigned int CLOCKS_PER_HBLANK = 204;        /* Mode 0 */
-const unsigned int CLOCKS_PER_VBLANK = 4560;       /* Mode 1 */
-const unsigned int CLOCKS_PER_SCANLINE_OAM = 80;   /* Mode 2 */
-const unsigned int CLOCKS_PER_SCANLINE_VRAM = 172; /* Mode 3 */
-const unsigned int CLOCKS_PER_SCANLINE =
+inline const unsigned int BG_MAP_LENGTH = 256;
+inline const unsigned int TILES_PER_LINE = 32;
+inline const unsigned int TILE_LENGTH_PX = 8;
+inline const unsigned int BYTES_PER_SPRITE = 4;
+
+inline const word_t TILESET_0_START = 0x8000 - mmap::VRAM_START;
+inline const word_t TILESET_1_START = 0x8800 - mmap::VRAM_START;
+inline const word_t BG_MAP_0_START  = 0x9800 - mmap::VRAM_START;
+inline const word_t BG_MAP_1_START  = 0x9C00 - mmap::VRAM_START;
+
+inline const unsigned int CLOCKS_PER_HBLANK = 204;        /* Mode 0 */
+inline const unsigned int CLOCKS_PER_VBLANK = 4560;       /* Mode 1 */
+inline const unsigned int CLOCKS_PER_SCANLINE_OAM = 80;   /* Mode 2 */
+inline const unsigned int CLOCKS_PER_SCANLINE_VRAM = 172; /* Mode 3 */
+inline const unsigned int CLOCKS_PER_SCANLINE =
     (CLOCKS_PER_SCANLINE_OAM + CLOCKS_PER_SCANLINE_VRAM + CLOCKS_PER_HBLANK);
 
-const unsigned int SCANLINES_PER_VBLANK = 10;
-const unsigned int SCANLINES_PER_FRAME = 144;
-const unsigned int CLOCKS_PER_FRAME =
+inline const unsigned int SCANLINES_PER_VBLANK = 10;
+inline const unsigned int SCANLINES_PER_FRAME = 144;
+inline const unsigned int CLOCKS_PER_FRAME =
     (CLOCKS_PER_SCANLINE * SCANLINES_PER_FRAME) + CLOCKS_PER_VBLANK;
 
 } // namespace
 
 Ppu::Ppu(std::function<void(std::vector<Color> &)> draw_fn)
-    : frame_buffer_(std::vector<Color>(FRAME_WIDTH * FRAME_HEIGHT)),
+    : frame_buffer_(std::vector<Color>(FRAME_WIDTH_PX * FRAME_HEIGHT_PX)),
       draw_fn_(draw_fn) {}
 
 void Ppu::tick(tcycles_t cycles) {
@@ -105,7 +109,7 @@ void Ppu::tick(tcycles_t cycles) {
         set_mode_(Mode::READ_OAM);
 
         // Wipe the buffer for the next frame.
-        for (unsigned int px = 0; px < FRAME_WIDTH * FRAME_HEIGHT; ++px) {
+        for (unsigned int px = 0; px < FRAME_WIDTH_PX * FRAME_HEIGHT_PX; ++px) {
           frame_buffer_.at(px) = Color::WHITE;
         }
       }
@@ -165,7 +169,7 @@ void Ppu::write_bg_line_() {
   word_t bg_map_base_addr = is_bg_map_zero ? BG_MAP_0_START : BG_MAP_1_START;
 
   unsigned int y = line.value();
-  for (unsigned int x = 0; x < FRAME_WIDTH; ++x) {
+  for (unsigned int x = 0; x < FRAME_WIDTH_PX; ++x) {
     // adjust for scroll
     unsigned int frame_y = y + scroll_y.value();
     unsigned int frame_x = x + scroll_x.value();
@@ -214,10 +218,10 @@ void Ppu::write_window_line_() {
 
   unsigned int y = line.value();
   unsigned int frame_y = y - window_y.value();
-  if (frame_y >= FRAME_HEIGHT) {
+  if (frame_y >= FRAME_HEIGHT_PX) {
     return;
   }
-  for (unsigned int x = 0; x < FRAME_WIDTH; ++x) {
+  for (unsigned int x = 0; x < FRAME_WIDTH_PX; ++x) {
     // adjust for window
     unsigned int frame_x = x + window_x.value() - 7; // ??
 
@@ -257,7 +261,7 @@ void Ppu::draw_sprites_() {
 }
 
 void Ppu::set_pixel_(unsigned int x, unsigned int y, Color color) {
-  frame_buffer_.at(y * FRAME_WIDTH + x) = color;
+  frame_buffer_.at(y * FRAME_WIDTH_PX + x) = color;
 }
 
 // takes palette into account

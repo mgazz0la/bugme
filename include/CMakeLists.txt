@@ -1,0 +1,54 @@
+add_library(register INTERFACE)
+target_include_directories(register INTERFACE .)
+
+add_library(display INTERFACE)
+target_include_directories(display INTERFACE .)
+
+add_library(log log.cc)
+target_include_directories(log PUBLIC .)
+
+add_library(options options.cc)
+target_include_directories(options PUBLIC .)
+target_link_libraries(options LINK_PRIVATE log)
+
+add_library(memory memory.cc)
+target_include_directories(memory PUBLIC .)
+target_link_libraries(memory LINK_PRIVATE log)
+
+add_library(cartridge cartridge.cc)
+target_include_directories(cartridge PUBLIC .)
+target_link_libraries(cartridge LINK_PRIVATE log)
+
+add_library(debug debug.cc)
+target_include_directories(debug PUBLIC .)
+target_link_libraries(debug LINK_PRIVATE log)
+
+add_library(timer timer.cc)
+target_include_directories(timer PUBLIC .)
+target_link_libraries(timer LINK_PRIVATE register log)
+
+add_library(joypad joypad.cc)
+target_include_directories(joypad PUBLIC .)
+target_link_libraries(joypad LINK_PRIVATE register log)
+
+find_package(SDL2 REQUIRED)
+include_directories(${SDL2_INCLUDE_DIR})
+add_library(sdl_display sdl_display.cc)
+target_include_directories(sdl_display PUBLIC .)
+target_link_libraries(sdl_display ${SDL2_LIBRARY} display log)
+
+add_library(ppu ppu.cc)
+target_include_directories(ppu PUBLIC .)
+target_link_libraries(ppu LINK_PRIVATE display log)
+
+add_library(cpu cpu.cc opcode.cc opcode_internal.cc)
+target_include_directories(cpu PUBLIC .)
+target_link_libraries(cpu LINK_PRIVATE display joypad log memory ppu timer register)
+
+add_library(bugmecore gbc.cc)
+target_include_directories(bugmecore PUBLIC .)
+target_link_libraries(bugmecore LINK_PRIVATE ${SDL2_LIBRARY} display cartridge cpu log memory timer ppu)
+
+add_executable(bugme main.cc)
+target_link_libraries(bugme LINK_PRIVATE bugmecore sdl_display options)
+install(TARGETS bugme DESTINATION bin)
