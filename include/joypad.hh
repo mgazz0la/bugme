@@ -1,5 +1,5 @@
-#ifndef BUGME_JOYPAD_H
-#define BUGME_JOYPAD_H
+#ifndef BUGME_JOYPAD_HH
+#define BUGME_JOYPAD_HH
 
 #include "bus.hh"
 #include "register.hh"

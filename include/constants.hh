@@ -1,10 +1,8 @@
-#ifndef BUGME_CONSTANTS_H
-#define BUGME_CONSTANTS_H
+#ifndef BUGME_CONSTANTS_HH
+#define BUGME_CONSTANTS_HH
 
 namespace bugme {
 namespace {
-inline const unsigned int SCALE = 3;
-
 inline const unsigned int GAMEBOY_WIDTH = 160;
 inline const unsigned int GAMEBOY_HEIGHT = 144;
 } // namespace

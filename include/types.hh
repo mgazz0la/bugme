@@ -1,5 +1,5 @@
-#ifndef BUGME_TYPE_H
-#define BUGME_TYPE_H
+#ifndef BUGME_TYPE_HH
+#define BUGME_TYPE_HH
 
 #include <cstdint>
 

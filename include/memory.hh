@@ -1,5 +1,5 @@
-#ifndef BUGME_MEMORY_H
-#define BUGME_MEMORY_H
+#ifndef BUGME_MEMORY_HH
+#define BUGME_MEMORY_HH
 
 #include "types.hh"
 #include <vector>

@@ -1,5 +1,5 @@
-#ifndef BUGME_DISPLAY_H
-#define BUGME_DISPLAY_H
+#ifndef BUGME_DISPLAY_HH
+#define BUGME_DISPLAY_HH
 
 #include <vector>
 

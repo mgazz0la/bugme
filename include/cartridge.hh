@@ -1,5 +1,5 @@
-#ifndef BUGME_CARTRIDGE_H
-#define BUGME_CARTRIDGE_H
+#ifndef BUGME_CARTRIDGE_HH
+#define BUGME_CARTRIDGE_HH
 
 #include "types.hh"
 

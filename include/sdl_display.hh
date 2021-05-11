@@ -1,5 +1,5 @@
-#ifndef BUGME_SDL_DISPLAY_H
-#define BUGME_SDL_DISPLAY_H
+#ifndef BUGME_SDL_DISPLAY_HH
+#define BUGME_SDL_DISPLAY_HH
 
 #include "display.hh"
 

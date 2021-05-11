@@ -1,5 +1,5 @@
-#ifndef BUGME_PPU_H
-#define BUGME_PPU_H
+#ifndef BUGME_PPU_HH
+#define BUGME_PPU_HH
 
 #include "bus.hh"
 #include "mmap.hh"

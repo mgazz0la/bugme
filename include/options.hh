@@ -1,5 +1,5 @@
-#ifndef BUGME_OPTIONS_H
-#define BUGME_OPTIONS_H
+#ifndef BUGME_OPTIONS_HH
+#define BUGME_OPTIONS_HH
 
 #include <string>
 

@@ -1,5 +1,5 @@
-#ifndef BUGME_OPCODE_NAMES_H
-#define BUGME_OPCODE_NAMES_H
+#ifndef BUGME_OPCODE_NAMES_HH
+#define BUGME_OPCODE_NAMES_HH
 
 #include <string>
 

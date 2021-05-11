@@ -1,5 +1,5 @@
-#ifndef BUGME_TIMER_H
-#define BUGME_TIMER_H
+#ifndef BUGME_TIMER_HH
+#define BUGME_TIMER_HH
 
 #include <functional>
 #include <memory>

@@ -1,5 +1,5 @@
-#ifndef BUGME_BUS_H
-#define BUGME_BUS_H
+#ifndef BUGME_BUS_HH
+#define BUGME_BUS_HH
 
 #include "types.hh"
 

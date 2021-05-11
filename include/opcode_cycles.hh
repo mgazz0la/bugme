@@ -1,5 +1,5 @@
-#ifndef BUGME_OPCODE_CYCLES_H
-#define BUGME_OPCODE_CYCLES_H
+#ifndef BUGME_OPCODE_CYCLES_HH
+#define BUGME_OPCODE_CYCLES_HH
 
 #include "types.hh"
 #include <cstdint>

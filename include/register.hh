@@ -1,5 +1,5 @@
-#ifndef BUGME_REGISTER_H
-#define BUGME_REGISTER_H
+#ifndef BUGME_REGISTER_HH
+#define BUGME_REGISTER_HH
 
 #include "log.hh"
 #include "types.hh"

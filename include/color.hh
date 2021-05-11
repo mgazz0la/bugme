@@ -1,5 +1,5 @@
-#ifndef BUGME_COLOR_H
-#define BUGME_COLOR_H
+#ifndef BUGME_COLOR_HH
+#define BUGME_COLOR_HH
 
 #include <cstdint>
 

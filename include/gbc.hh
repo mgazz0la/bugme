@@ -1,5 +1,5 @@
-#ifndef BUGME_BUGME_H
-#define BUGME_BUGME_H
+#ifndef BUGME_BUGME_HH
+#define BUGME_BUGME_HH
 
 #include "cartridge.hh"
 #include "cpu.hh"

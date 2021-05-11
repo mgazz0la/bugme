@@ -1,5 +1,5 @@
-#ifndef BUGME_BOOTROM_H
-#define BUGME_BOOTROM_H
+#ifndef BUGME_BOOTROM_HH
+#define BUGME_BOOTROM_HH
 
 #include "types.hh"
 

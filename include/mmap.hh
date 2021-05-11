@@ -1,5 +1,5 @@
-#ifndef BUGME_MMAP_H
-#define BUGME_MMAP_H
+#ifndef BUGME_MMAP_HH
+#define BUGME_MMAP_HH
 
 #include "types.hh"
 

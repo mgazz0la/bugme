@@ -1,5 +1,5 @@
-#ifndef BUGME_DEBUG_H
-#define BUGME_DEBUG_H
+#ifndef BUGME_DEBUG_HH
+#define BUGME_DEBUG_HH
 
 namespace bugme {
 class Debug {

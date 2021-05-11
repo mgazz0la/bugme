@@ -1,5 +1,5 @@
-#ifndef BUGME_LOG_H
-#define BUGME_LOG_H
+#ifndef BUGME_LOG_HH
+#define BUGME_LOG_HH
 
 /*
  * Copyright (C) 2015 Alex Smith

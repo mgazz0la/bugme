@@ -1,5 +1,5 @@
-#ifndef BUGME_INTERRUPTS_H
-#define BUGME_INTERRUPTS_H
+#ifndef BUGME_INTERRUPTS_HH
+#define BUGME_INTERRUPTS_HH
 
 #include "register.hh"
 

@@ -1,5 +1,5 @@
-#ifndef BUGME_CPU_H
-#define BUGME_CPU_H
+#ifndef BUGME_CPU_HH
+#define BUGME_CPU_HH
 
 #include "interrupts.hh"
 #include "register.hh"

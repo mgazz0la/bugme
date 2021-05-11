@@ -1,5 +1,5 @@
-#ifndef BUGME_UTIL_H
-#define BUGME_UTIL_H
+#ifndef BUGME_UTIL_HH
+#define BUGME_UTIL_HH
 
 #include "types.hh"
 
