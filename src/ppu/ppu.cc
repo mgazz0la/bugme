@@ -16,15 +16,25 @@ inline const unsigned int FRAME_WIDTH_PX = 160;
 /** Height of the Gameboy frame, in pixels. */
 inline const unsigned int FRAME_HEIGHT_PX = 144;
 
-inline const unsigned int BG_MAP_LENGTH = 256;
+/**
+ * The size of the square background map, in pixels.
+ *
+ * The background map is a 32x32 grid of tiles (each 8x8 pixels for a total
+ * size of 256x256 pixels.
+ *
+ * As such, the Gameboy frame is smaller than this map and may scroll around it.
+ */
+inline const unsigned int BG_MAP_SIZE_PX = 256;
 inline const unsigned int TILES_PER_LINE = 32;
 inline const unsigned int TILE_LENGTH_PX = 8;
-inline const unsigned int BYTES_PER_SPRITE = 4;
+
+inline const unsigned int BYTES_PER_SPRITE_ENTRY = 4;
+inline const unsigned int BYTES_PER_TILE = 16;
 
 inline const word_t TILESET_0_START = 0x8000 - mmap::VRAM_START;
 inline const word_t TILESET_1_START = 0x8800 - mmap::VRAM_START;
-inline const word_t BG_MAP_0_START  = 0x9800 - mmap::VRAM_START;
-inline const word_t BG_MAP_1_START  = 0x9C00 - mmap::VRAM_START;
+inline const word_t BG_MAP_0_START = 0x9800 - mmap::VRAM_START;
+inline const word_t BG_MAP_1_START = 0x9C00 - mmap::VRAM_START;
 
 inline const unsigned int CLOCKS_PER_HBLANK = 204;        /* Mode 0 */
 inline const unsigned int CLOCKS_PER_VBLANK = 4560;       /* Mode 1 */
@@ -175,8 +185,8 @@ void Ppu::write_bg_line_() {
     unsigned int frame_x = x + scroll_x.value();
 
     // wraparound
-    unsigned int bg_map_x = frame_x % BG_MAP_LENGTH;
-    unsigned int bg_map_y = frame_y % BG_MAP_LENGTH;
+    unsigned int bg_map_x = frame_x % BG_MAP_SIZE_PX;
+    unsigned int bg_map_y = frame_y % BG_MAP_SIZE_PX;
 
     // ascertain the tile coords
     unsigned int tile_x = bg_map_x / TILE_LENGTH_PX;
@@ -188,7 +198,7 @@ void Ppu::write_bg_line_() {
 
     unsigned int tile_id_idx = tile_y * TILES_PER_LINE + tile_x;
     word_t tile_id_address = bg_map_base_addr + tile_id_idx;
-    byte_t tile_id = vram.at(tile_id_address); // mmu_->read(tile_id_address));
+    byte_t tile_id = vram.at(tile_id_address);
 
     word_t tile_set_addr =
         tile_set_base_addr +
@@ -196,9 +206,8 @@ void Ppu::write_bg_line_() {
                            : static_cast<std::int8_t>(tile_id) - 128) *
          (8 /* lines */ * 2 /* bytes per line */)) +
         (tile_pixel_y * 2);
-    byte_t pixels0 = vram.at(tile_set_addr); // mmu_->read(tile_set_addr));
-    byte_t pixels1 =
-        vram.at(tile_set_addr + 1); // mmu_->read(tile_set_addr + 1));
+    byte_t pixels0 = vram.at(tile_set_addr);
+    byte_t pixels1 = vram.at(tile_set_addr + 1);
 
     Color color = get_color_(util::fuse_b(pixels1 >> (7 - tile_pixel_x),
                                           pixels0 >> (7 - tile_pixel_x)),
@@ -221,6 +230,7 @@ void Ppu::write_window_line_() {
   if (frame_y >= FRAME_HEIGHT_PX) {
     return;
   }
+
   for (unsigned int x = 0; x < FRAME_WIDTH_PX; ++x) {
     // adjust for window
     unsigned int frame_x = x + window_x.value() - 7; // ??
@@ -237,7 +247,7 @@ void Ppu::write_window_line_() {
 
     unsigned int tile_id_idx = tile_y * TILES_PER_LINE + tile_x;
     word_t tile_id_address = bg_map_base_addr + tile_id_idx;
-    byte_t tile_id = vram.at(tile_id_address); // mmu_->read(tile_id_address));
+    byte_t tile_id = vram.at(tile_id_address);
 
     word_t tile_set_addr =
         tile_set_base_addr +
@@ -245,9 +255,8 @@ void Ppu::write_window_line_() {
                            : static_cast<std::int8_t>(tile_id) - 128) *
          (8 /* lines */ * 2 /* bytes per line */)) +
         (tile_pixel_y * 2);
-    byte_t pixels0 = vram.at(tile_set_addr); // mmu_->read(tile_set_addr));
-    byte_t pixels1 =
-        vram.at(tile_set_addr + 1); // mmu_->read(tile_set_addr + 1));
+    byte_t pixels0 = vram.at(tile_set_addr);
+    byte_t pixels1 = vram.at(tile_set_addr + 1);
 
     Color color = get_color_(util::fuse_b(pixels1 >> (7 - tile_pixel_x),
                                           pixels0 >> (7 - tile_pixel_x)),
@@ -257,7 +266,54 @@ void Ppu::write_window_line_() {
 }
 
 void Ppu::draw_sprites_() {
-  // TODO
+  for (unsigned int sprite_idx = 0; sprite_idx < 40; ++sprite_idx) {
+    word_t sprite_addr = sprite_idx * BYTES_PER_SPRITE_ENTRY;
+
+    byte_t sprite_y = oam.at(sprite_addr);
+    byte_t sprite_x = oam.at(sprite_addr + 1);
+
+    // Don't draw off-screen sprites.
+    if (sprite_y == 0 || sprite_y >= 160) {
+      continue;
+    }
+    if (sprite_x == 0 || sprite_x >= 168) {
+      continue;
+    }
+
+    sprite_y -= 16;
+    sprite_x -= 8;
+
+    byte_t sprite_pattern_idx = oam.at(sprite_addr + 2);
+    byte_t sprite_attrs = oam.at(sprite_addr + 3);
+
+    bool palette_num = util::get_bit(sprite_attrs, 4);
+
+    bool should_flip_x = util::get_bit(sprite_attrs, 5);
+    bool should_flip_y = util::get_bit(sprite_attrs, 6);
+
+    // Let's also ignore background shiz.
+    // bool is_below_bg = util::get_bit(sprite_attrs, 7);
+
+    // Sprite tiles may only exist in tileset 0.
+    word_t tile_address = sprite_pattern_idx * BYTES_PER_TILE;
+
+    for (unsigned int _tile_y = 0; _tile_y < TILE_LENGTH_PX; ++_tile_y) {
+      for (unsigned int _tile_x = 0; _tile_x < TILE_LENGTH_PX; ++_tile_x) {
+        unsigned int tile_y =
+            should_flip_y ? (TILE_LENGTH_PX - _tile_y - 1) : _tile_y;
+        unsigned int tile_x =
+            should_flip_x ? (TILE_LENGTH_PX - _tile_x - 1) : _tile_x;
+        word_t tile_pixels_addr = tile_address + (tile_y * 2);
+        byte_t pixels0 = vram.at(tile_pixels_addr);
+        byte_t pixels1 = vram.at(tile_pixels_addr + 1);
+
+        Color color = get_color_(
+            util::fuse_b(pixels1 >> (7 - tile_x), pixels0 >> (7 - tile_x)),
+            palette_num ? sprite_palette_1 : sprite_palette_0);
+        set_pixel_(sprite_x + tile_x, sprite_y + tile_y, color);
+      }
+    }
+  }
 }
 
 void Ppu::set_pixel_(unsigned int x, unsigned int y, Color color) {

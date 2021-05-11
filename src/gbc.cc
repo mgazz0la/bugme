@@ -22,7 +22,7 @@ Gbc::Gbc(CliOptions &cli_options)
                   ? nullptr
                   : SDL_CreateWindow(
                         "gbc", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                        GAMEBOY_WIDTH * SCALE, GAMEBOY_HEIGHT * SCALE,
+                        GAMEBOY_WIDTH * 4, GAMEBOY_HEIGHT * 4,
                         SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI |
                             SDL_WINDOW_RESIZABLE)),
       renderer_(window_ == nullptr

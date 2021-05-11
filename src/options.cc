@@ -9,6 +9,7 @@ namespace bugme {
 CliOptions get_cli_options(int argc, char *argv[]) {
   if (argc < 2) {
     log_error("ROM file required");
+    exit(2);
   }
 
   CliOptions cliOptions;
