@@ -30,7 +30,6 @@ browser at `html/index.html` to view.
 
 ## Missing Functionality
 
-* Sprite support
 * Debugger
 * Sound
 
