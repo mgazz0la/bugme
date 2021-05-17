@@ -25,7 +25,7 @@ Logger global_logger;
 const char *COLOR_TRACE = "\033[1;30m";
 const char *COLOR_DEBUG = "\033[1;37m";
 const char *COLOR_UNIMPLEMENTED = "\033[1;35m";
-const char *COLOR_INFO = "\033[1;34m";
+const char *COLOR_INFO = "\033[1;36m";
 const char *COLOR_WARNING = "\033[1;33m";
 const char *COLOR_ERROR = "\033[1;31m";
 const char *COLOR_RESET = "\033[0m";

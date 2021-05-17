@@ -18,7 +18,7 @@ namespace bugme {
 
 Gbc::Gbc(CliOptions &cli_options)
     : cli_options_(cli_options),
-      window_(SDL_Init(SDL_INIT_VIDEO) < 0
+      window_(SDL_Init(SDL_INIT_VIDEO) < 0 || cli_options_.options.headless
                   ? nullptr
                   : SDL_CreateWindow(
                         "gbc", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -79,8 +79,8 @@ int Gbc::run() {
   return 0;
 }
 
-void Gbc::exit() {
-  log_error("[gbc] exiting!");
+void Gbc::exit(exitno_t exit_code) {
+  log_info("[gbc] exiting [%d]", exit_code);
   should_exit_ = true;
 }
 
@@ -126,12 +126,9 @@ void Gbc::process_events_() {
       break;
     case SDL_WINDOWEVENT:
       if (event.window.event == SDL_WINDOWEVENT_CLOSE) {
-        exit();
+        log_warn("[gbc] received window close event");
+        exit(exit::EXIT_WINDOW_CLOSE);
       }
-      break;
-    case SDL_QUIT:
-      log_error("[sdl_display] exiting!");
-      exit();
       break;
     }
   };
@@ -152,7 +149,7 @@ std::vector<byte_t> Gbc::read_rom(const std::string &filename) const {
 
   ifstream.close();
 
-  log_info("[gbc] read %d KB from %s", file_contents.size() / 1024,
+  log_info("[gbc] successfully read %d KB from %s", file_contents.size() / 1024,
            filename.c_str());
   return std::vector<byte_t>(file_contents.begin(), file_contents.end());
 }

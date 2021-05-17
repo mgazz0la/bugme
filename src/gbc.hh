@@ -3,6 +3,7 @@
 
 #include "cartridge.hh"
 #include "cpu.hh"
+#include "error.hh"
 #include "joypad.hh"
 #include "memory.hh"
 #include "ppu.hh"
@@ -52,8 +53,11 @@ public:
    */
   int run();
 
-  /** Halts execution and begins tear-down.  */
-  void exit();
+  /** Halts execution and begins tear-down.
+   *
+   * \param exit_code A code describing what prompted the exit. See error.hh
+   */
+  void exit(exitno_t exit_code);
 
 private:
   CliOptions &cli_options_;
