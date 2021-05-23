@@ -19,9 +19,9 @@
 
 namespace bugme {
 
-Cpu::Cpu(Memory &memory, Cartridge &cartridge, PpuBus &ppuBus,
+Cpu::Cpu(Memory &memory, CartridgeBus &cartridgeBus, PpuBus &ppuBus,
          TimerBus &timerBus, JoypadBus &joypadBus)
-    : memory_(memory), cartridge_(cartridge), ppuBus_(ppuBus),
+    : memory_(memory), cartridgeBus_(cartridgeBus), ppuBus_(ppuBus),
       timerBus_(timerBus), joypadBus_(joypadBus), af(a, f), bc(b, c), de(d, e),
       hl(h, l) {
   reset();
@@ -44,7 +44,7 @@ byte_t Cpu::read_(word_t addr) const {
       return boot::ROM[addr];
     }
 
-    return cartridge_.read(addr);
+    return cartridgeBus_.read(addr);
   }
 
   // vram
@@ -149,7 +149,7 @@ void Cpu::write_(word_t addr, byte_t byte) {
   // cartridge rom
   if (util::in_range(addr, mmap::CARTRIDGE_ROM_START,
                      mmap::CARTRIDGE_ROM_END)) {
-    memory_.write(addr, byte);
+    cartridgeBus_.write(addr, byte);
     return;
   }
 

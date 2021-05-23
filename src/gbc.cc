@@ -35,7 +35,7 @@ Gbc::Gbc(CliOptions &cli_options)
                    : SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_ARGB8888,
                                        SDL_TEXTUREACCESS_STREAMING,
                                        GAMEBOY_WIDTH, GAMEBOY_HEIGHT)),
-      cartridge(read_rom(cli_options.rom_filename)), memory(),
+      cartridge(get_cartridge(read_rom(cli_options.rom_filename))), memory(),
       display(renderer_, texture_), ppu([&](std::vector<Color> &buffer) {
         if (!cli_options.options.headless) {
           process_events_();

@@ -39,22 +39,22 @@ public:
 /* clang-format on */
 
 class Memory;
-class Cartridge;
+class CartridgeBus;
 class PpuBus;
 class TimerBus;
 class JoypadBus;
 
 class Cpu : public Noncopyable {
 public:
-  Cpu(Memory &memory, Cartridge &cartridge, PpuBus &ppuBus, TimerBus &timerBus,
-      JoypadBus &joypadBus);
+  Cpu(Memory &memory, CartridgeBus &cartridgeBus, PpuBus &ppuBus,
+      TimerBus &timerBus, JoypadBus &joypadBus);
 
   mcycles_t tick();
   void reset();
 
 private:
   Memory &memory_;
-  Cartridge &cartridge_;
+  CartridgeBus &cartridgeBus_;
   PpuBus &ppuBus_;
   TimerBus &timerBus_;
   JoypadBus &joypadBus_;
