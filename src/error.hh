@@ -14,7 +14,6 @@ inline exitno_t EXIT_SIGINT = 2;
 
 namespace error {
 inline errno_t SUCCESS = 0;
-inline errno_t UNRECOGNIZED_CARTRIDGE_TYPE = 1;
 } // namespace error
 
 } // namespace bugme

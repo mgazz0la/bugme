@@ -1,7 +1,6 @@
 #ifndef BUGME_CARTRIDGE_HH
 #define BUGME_CARTRIDGE_HH
 
-#include "bus.hh"
 #include "types.hh"
 
 #include <string>
@@ -9,7 +8,6 @@
 
 namespace bugme {
 
-// TODO: Organize and give better types to these entries.
 struct CartridgeHeader {
   byte_t entrypoint[4];
   byte_t logo[48];
@@ -26,27 +24,33 @@ struct CartridgeHeader {
   byte_t global_checksum[2];
 };
 
-class Cartridge;
-struct CartridgeBus : public Bus<Cartridge> {
-  virtual byte_t read(word_t addr) const;
-  virtual void write(word_t addr, byte_t value);
-};
-class Cartridge : public CartridgeBus {};
-
-class RomOnlyCartridge final : public Cartridge {
+/**
+ * Representation of a Gameboy cartridge.
+ *
+ * This class currently only encapsulates ROM data. Future plans for the class
+ * include:
+ *  - MBC support (in progress)
+ *  - battery support
+ */
+class Cartridge : public Noncopyable {
 public:
-  RomOnlyCartridge(std::vector<byte_t> rom_data);
+  /**
+   * Constructor.
+   *
+   * \param rom_data Hexdump vector of the Gameboy ROM.
+   */
+  Cartridge(std::vector<byte_t> rom_data);
 
-  byte_t read(word_t addr) const override;
-  void write(word_t addr, byte_t value) override;
+  /**
+   * Retrieves the byte at address addr
+   *
+   * \param addr The address (index) at which to fetch from the Gameboy ROM.
+   */
+  byte_t read(word_t addr) const;
 
 private:
   std::vector<byte_t> rom_data_;
   CartridgeHeader header_;
 };
-
-extern Cartridge get_cartridge(std::vector<byte_t> rom_data,
-                               std::vector<byte_t> ram_data = {});
-
 } // namespace bugme
 #endif
