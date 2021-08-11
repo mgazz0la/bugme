@@ -15,13 +15,13 @@
 #include <string>
 #include <vector>
 
-class SDL_Window;
-class SDL_Renderer;
-class SDL_Texture;
+struct SDL_Window;
+struct SDL_Renderer;
+struct SDL_Texture;
 
 namespace bugme {
 
-class CliOptions;
+struct CliOptions;
 
 /**
  * Monolith class encompassing all gbc functionality.

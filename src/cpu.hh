@@ -40,9 +40,9 @@ public:
 
 class Memory;
 class Cartridge;
-class PpuBus;
-class TimerBus;
-class JoypadBus;
+struct PpuBus;
+struct TimerBus;
+struct JoypadBus;
 
 class Cpu : public Noncopyable {
 public:

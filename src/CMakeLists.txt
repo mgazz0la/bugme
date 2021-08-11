@@ -13,8 +13,8 @@ target_link_libraries(memory LINK_PRIVATE log)
 add_library(cartridge cartridge.cc)
 target_link_libraries(cartridge LINK_PRIVATE log)
 
-add_library(debug debug.cc)
-target_link_libraries(debug LINK_PRIVATE log)
+#add_library(debug debug.cc)
+#target_link_libraries(debug LINK_PRIVATE log)
 
 add_library(timer timer.cc)
 target_link_libraries(timer LINK_PRIVATE log)

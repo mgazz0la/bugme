@@ -9,9 +9,9 @@
 
 #include "types.hh"
 
-class SDL_Window;
-class SDL_Renderer;
-class SDL_Texture;
+struct SDL_Window;
+struct SDL_Renderer;
+struct SDL_Texture;
 
 namespace bugme {
 

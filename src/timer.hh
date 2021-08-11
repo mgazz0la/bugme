@@ -43,7 +43,7 @@ public:
 private:
   tcycles_t div_cycle_counter_ = 0;
   tcycles_t tima_counter_ = 0;
-  bool is_stopped_ = false;
+  //bool is_stopped_ = false;
 };
 
 } // namespace bugme

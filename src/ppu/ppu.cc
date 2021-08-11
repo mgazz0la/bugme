@@ -37,7 +37,7 @@ inline const word_t BG_MAP_0_START = 0x9800 - mmap::VRAM_START;
 inline const word_t BG_MAP_1_START = 0x9C00 - mmap::VRAM_START;
 
 inline const unsigned int CLOCKS_PER_HBLANK = 204;        /* Mode 0 */
-inline const unsigned int CLOCKS_PER_VBLANK = 4560;       /* Mode 1 */
+//inline const unsigned int CLOCKS_PER_VBLANK = 4560;       /* Mode 1 */
 inline const unsigned int CLOCKS_PER_SCANLINE_OAM = 80;   /* Mode 2 */
 inline const unsigned int CLOCKS_PER_SCANLINE_VRAM = 172; /* Mode 3 */
 inline const unsigned int CLOCKS_PER_SCANLINE =
@@ -45,8 +45,8 @@ inline const unsigned int CLOCKS_PER_SCANLINE =
 
 inline const unsigned int SCANLINES_PER_VBLANK = 10;
 inline const unsigned int SCANLINES_PER_FRAME = 144;
-inline const unsigned int CLOCKS_PER_FRAME =
-    (CLOCKS_PER_SCANLINE * SCANLINES_PER_FRAME) + CLOCKS_PER_VBLANK;
+//inline const unsigned int CLOCKS_PER_FRAME =
+//    (CLOCKS_PER_SCANLINE * SCANLINES_PER_FRAME) + CLOCKS_PER_VBLANK;
 
 } // namespace
 
