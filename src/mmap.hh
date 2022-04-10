@@ -41,14 +41,14 @@ inline const word_t BOOT_ROM_CONTROL = 0xFF50;
 
 namespace joypad {
 inline const word_t JOYP = 0xFF00;
-} // namespace joypad
+}  // namespace joypad
 
 namespace timer {
 inline const word_t DIV = 0xFF04;
 inline const word_t TIMA = 0xFF05;
 inline const word_t TMA = 0xFF06;
 inline const word_t TAC = 0xFF07;
-} // namespace timer
+}  // namespace timer
 
 namespace ppu {
 inline const word_t LCD_CONTROL = 0xFF40;
@@ -63,8 +63,8 @@ inline const word_t SPRITE_PALETTE_0 = 0xFF48;
 inline const word_t SPRITE_PALETTE_1 = 0xFF49;
 inline const word_t WINDOW_Y = 0xFF4A;
 inline const word_t WINDOW_X = 0xFF4B;
-} // namespace ppu
+}  // namespace ppu
 
-} // namespace mmap
-} // namespace bugme
+}  // namespace mmap
+}  // namespace bugme
 #endif

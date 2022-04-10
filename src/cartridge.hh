@@ -1,10 +1,10 @@
 #ifndef BUGME_CARTRIDGE_HH
 #define BUGME_CARTRIDGE_HH
 
-#include "types.hh"
-
 #include <string>
 #include <vector>
+
+#include "types.hh"
 
 namespace bugme {
 
@@ -33,7 +33,7 @@ struct CartridgeHeader {
  *  - battery support
  */
 class Cartridge : public Noncopyable {
-public:
+ public:
   /**
    * Constructor.
    *
@@ -48,9 +48,9 @@ public:
    */
   byte_t read(word_t addr) const;
 
-private:
+ private:
   std::vector<byte_t> rom_data_;
   CartridgeHeader header_;
 };
-} // namespace bugme
+}  // namespace bugme
 #endif

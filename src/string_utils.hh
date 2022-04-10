@@ -68,5 +68,5 @@ vector<string> split(string str, char delim) {
 
   return elems;
 }
-} // namespace bugme
+}  // namespace bugme
 #endif

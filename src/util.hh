@@ -29,12 +29,11 @@ inline byte_t low(word_t word) { return static_cast<byte_t>(word); }
 inline byte_t high(word_t word) { return static_cast<byte_t>(word >> 8); }
 
 inline bool in_range(word_t n, word_t low, word_t high) {
-  if (high < low)
-    throw "what are you doing?";
+  if (high < low) throw "what are you doing?";
   return ((low <= n) && (n <= high));
 }
 
 inline bool get_bit(byte_t n, bit_t bit) { return ((n >> bit) & 0x1); }
-} // namespace util
-} // namespace bugme
+}  // namespace util
+}  // namespace bugme
 #endif

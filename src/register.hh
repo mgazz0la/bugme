@@ -1,12 +1,12 @@
 #ifndef BUGME_REGISTER_HH
 #define BUGME_REGISTER_HH
 
-#include "log.hh"
-#include "types.hh"
 #include <cstdint>
-
 #include <functional>
 #include <memory>
+
+#include "log.hh"
+#include "types.hh"
 
 namespace bugme {
 
@@ -18,8 +18,9 @@ namespace bugme {
  *
  * \tparam T specifies the size of the underlying value
  */
-template <typename T> class ReadableValue : Noncopyable {
-public:
+template <typename T>
+class ReadableValue : Noncopyable {
+ public:
   /** \return The underlying value */
   virtual T value() const = 0;
 
@@ -41,8 +42,9 @@ public:
  *
  * \tparam T specifies the size of the underlying value
  */
-template <typename T> class WriteableValue : public ReadableValue<T> {
-public:
+template <typename T>
+class WriteableValue : public ReadableValue<T> {
+ public:
   /**
    * Replaces the underlying value with new_value.
    * \param new_value The new value of the same underlying type.
@@ -95,7 +97,7 @@ public:
 };
 
 class ArithmeticValue {
-public:
+ public:
   /**
    * Sets the underlying value to itself plus one.
    * \note Overflow is expected to be handled by the underlying type T.
@@ -118,28 +120,28 @@ typedef WriteableValue<byte_t> WriteableByte;
 /** A read-write 16-bit value. */
 typedef WriteableValue<word_t> WriteableWord;
 
-#define CONTROL_FLAG(bit, name)                                                \
-public:                                                                        \
-  bool name() const { return get_bit(bit); }                                   \
-  void set_##name() { set_bit(bit); }                                          \
-  void clear_##name() { clear_bit(bit); }                                      \
-  void flip_##name() { flip_bit(bit); }                                        \
+#define CONTROL_FLAG(bit, name)              \
+ public:                                     \
+  bool name() const { return get_bit(bit); } \
+  void set_##name() { set_bit(bit); }        \
+  void clear_##name() { clear_bit(bit); }    \
+  void flip_##name() { flip_bit(bit); }      \
   void write_##name(bool v) { write_bit(bit, v); }
 
-#define READONLY_CONTROL_FLAG(bit, name)                                       \
-public:                                                                        \
-  bool name() const { return get_bit(bit); }                                   \
-                                                                               \
-protected:                                                                     \
-  void set_##name() { set_bit(bit); }                                          \
-  void clear_##name() { clear_bit(bit); }                                      \
-  void flip_##name() { flip_bit(bit); }                                        \
-  void write_##name(bool v) { write_bit(bit, v); }                             \
-                                                                               \
-public:
+#define READONLY_CONTROL_FLAG(bit, name)           \
+ public:                                           \
+  bool name() const { return get_bit(bit); }       \
+                                                   \
+ protected:                                        \
+  void set_##name() { set_bit(bit); }              \
+  void clear_##name() { clear_bit(bit); }          \
+  void flip_##name() { flip_bit(bit); }            \
+  void write_##name(bool v) { write_bit(bit, v); } \
+                                                   \
+ public:
 
 class ControlRegister : public WriteableByte {
-public:
+ public:
   virtual byte_t value() const override { return value_; }
 
   virtual void set(byte_t new_value) override { value_ = new_value; }
@@ -149,13 +151,13 @@ public:
 
   // See FlagRegister for an example.
 
-protected:
+ protected:
   byte_t value_ = 0x0;
 };
 
 /** A general-use 8-bit read-write register with bit manipulation helpers.  */
 class ByteRegister : public ControlRegister, ArithmeticValue {
-public:
+ public:
   virtual void increment() override { this->set(this->value() + 1); }
 
   virtual void decrement() override { this->set(this->value() - 1); }
@@ -171,7 +173,7 @@ public:
  * \see ByteRegisterPair
  */
 class WordRegister : public WriteableWord, ArithmeticValue {
-public:
+ public:
   WordRegister() = default;
   virtual ~WordRegister() = default;
 
@@ -188,7 +190,7 @@ public:
 
 /** A WordRegister implemented by a single 16-bit value.  */
 class WordValuedRegister : public WordRegister {
-public:
+ public:
   virtual ~WordValuedRegister() = default;
 
   word_t value() const override { return value_; }
@@ -199,7 +201,7 @@ public:
 
   byte_t high() const override { return static_cast<byte_t>(value_ >> 8); }
 
-private:
+ private:
   word_t value_ = 0x0;
 };
 
@@ -211,7 +213,7 @@ private:
  *       non-const methods to possibly mutate the referenced WriteableByte's.
  */
 class ByteRegisterPair : public WordRegister {
-public:
+ public:
   ByteRegisterPair(WriteableByte &high, WriteableByte &low)
       : high_(high), low_(low) {}
   virtual ~ByteRegisterPair() = default;
@@ -229,7 +231,7 @@ public:
 
   byte_t high() const override { return high_.value(); }
 
-private:
+ private:
   WriteableByte &high_;
   WriteableByte &low_;
 };
@@ -246,7 +248,7 @@ private:
  *       example, increment() and decrement() are no-ops on this class.
  */
 class FlagRegister : public ControlRegister {
-public:
+ public:
   /**
    * Sets the underlying value and clears the lower nibble.
    *
@@ -262,6 +264,6 @@ public:
   CONTROL_FLAG(4, carry_flag)
 };
 
-} // namespace bugme
+}  // namespace bugme
 
 #endif

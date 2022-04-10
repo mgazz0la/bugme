@@ -1,8 +1,9 @@
 #ifndef BUGME_OPCODE_CYCLES_HH
 #define BUGME_OPCODE_CYCLES_HH
 
-#include "types.hh"
 #include <cstdint>
+
+#include "types.hh"
 
 namespace bugme {
 namespace opcode {
@@ -104,7 +105,7 @@ inline const mcycles_t CB_CYCLES[256] = {
 };
 /* clang-format on */
 
-} // namespace opcode
-} // namespace bugme
+}  // namespace opcode
+}  // namespace bugme
 
 #endif

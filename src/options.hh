@@ -16,5 +16,5 @@ struct CliOptions {
 };
 
 extern CliOptions get_cli_options(int argc, char *argv[]);
-} // namespace bugme
+}  // namespace bugme
 #endif

@@ -1,6 +1,10 @@
 #ifndef BUGME_BUGME_HH
 #define BUGME_BUGME_HH
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "cartridge.hh"
 #include "cpu.hh"
 #include "error.hh"
@@ -10,10 +14,6 @@
 #include "sdl_display.hh"
 #include "timer.hh"
 #include "types.hh"
-
-#include <memory>
-#include <string>
-#include <vector>
 
 struct SDL_Window;
 struct SDL_Renderer;
@@ -36,7 +36,7 @@ struct CliOptions;
  * \see CliOptions, for configuration options
  */
 class Gbc : public Noncopyable, Debuggable {
-public:
+ public:
   /**
    * ctor
    * \param cli_options Configuration options for gbc.
@@ -59,7 +59,7 @@ public:
    */
   void exit(exitno_t exit_code);
 
-private:
+ private:
   CliOptions &cli_options_;
 
   SDL_Window *window_;
@@ -80,5 +80,5 @@ private:
   std::vector<byte_t> read_rom(const std::string &filename) const;
 };
 
-} // namespace bugme
+}  // namespace bugme
 #endif

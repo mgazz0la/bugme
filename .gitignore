@@ -7,3 +7,5 @@ data/*
 html/*
 latex/*
 linux_sdl.supp
+.cache
+*.gb

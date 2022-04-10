@@ -24,5 +24,5 @@ public:
 };
 /* clang-format on */
 
-} // namespace bugme
+}  // namespace bugme
 #endif

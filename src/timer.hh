@@ -13,10 +13,10 @@ namespace bugme {
 class Timer;
 
 struct TimerBus : Bus<Timer> {
-  ByteRegister divider;       // 0xFF04
-  ByteRegister timer_counter; // 0xFF05
-  ByteRegister timer_modulo;  // 0xFF06
-  ByteRegister timer_control; // 0xFF07
+  ByteRegister divider;        // 0xFF04
+  ByteRegister timer_counter;  // 0xFF05
+  ByteRegister timer_modulo;   // 0xFF06
+  ByteRegister timer_control;  // 0xFF07
 
   std::function<void()> timer_interrupt_request_cb = nullptr;
 
@@ -34,18 +34,18 @@ struct TimerBus : Bus<Timer> {
 };
 
 class Timer : public TimerBus {
-public:
+ public:
   Timer() = default;
   virtual ~Timer() = default;
 
   void tick(tcycles_t cycles);
 
-private:
+ private:
   tcycles_t div_cycle_counter_ = 0;
   tcycles_t tima_counter_ = 0;
-  //bool is_stopped_ = false;
+  // bool is_stopped_ = false;
 };
 
-} // namespace bugme
+}  // namespace bugme
 
 #endif

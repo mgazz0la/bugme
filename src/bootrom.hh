@@ -28,7 +28,7 @@ inline const byte_t ROM[256] = {
 };
 /* clang-format on */
 
-} // namespace boot
-} // namespace bugme
+}  // namespace boot
+}  // namespace bugme
 
 #endif

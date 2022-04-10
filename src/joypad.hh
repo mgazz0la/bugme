@@ -1,22 +1,22 @@
 #ifndef BUGME_JOYPAD_HH
 #define BUGME_JOYPAD_HH
 
+#include <memory>
+
 #include "bus.hh"
 #include "register.hh"
 #include "types.hh"
-
-#include <memory>
 
 namespace bugme {
 enum class Button { NONE, Up, Down, Left, Right, A, B, Select, Start };
 
 class JoypControl : public ControlRegister {
-  CONTROL_FLAG(5, select_action_buttons)    // 0 = selected
-  CONTROL_FLAG(4, select_direction_buttons) // 0 = selected
-  READONLY_CONTROL_FLAG(3, down_or_start)   // 0 = pressed
-  READONLY_CONTROL_FLAG(2, up_or_select)    // 0 = pressed
-  READONLY_CONTROL_FLAG(1, left_or_b)       // 0 = pressed
-  READONLY_CONTROL_FLAG(0, right_or_a)      // 0 = pressed
+  CONTROL_FLAG(5, select_action_buttons)     // 0 = selected
+  CONTROL_FLAG(4, select_direction_buttons)  // 0 = selected
+  READONLY_CONTROL_FLAG(3, down_or_start)    // 0 = pressed
+  READONLY_CONTROL_FLAG(2, up_or_select)     // 0 = pressed
+  READONLY_CONTROL_FLAG(1, left_or_b)        // 0 = pressed
+  READONLY_CONTROL_FLAG(0, right_or_a)       // 0 = pressed
 
   void set(byte_t new_value) override {
     byte_t old_value = value();
@@ -28,7 +28,7 @@ class JoypControl : public ControlRegister {
 
   friend class Joypad;
 
-private:
+ private:
   void update_joyp_() {
     if (!select_action_buttons()) {
       write_down_or_start(!start_);
@@ -67,14 +67,14 @@ struct JoypadBus : Bus<Joypad> {
 };
 
 class Joypad : public JoypadBus {
-public:
+ public:
   Joypad();
 
   void button_down(Button button);
   void button_up(Button button);
 
-private:
+ private:
   void update_joyp_();
 };
-} // namespace bugme
+}  // namespace bugme
 #endif

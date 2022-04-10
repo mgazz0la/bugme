@@ -16,9 +16,9 @@
 
 #include "log.hh"
 
-#include "string_utils.hh"
-
 #include <cstdarg>
+
+#include "string_utils.hh"
 
 namespace bugme {
 Logger global_logger;
@@ -63,22 +63,22 @@ bool Logger::should_log(LogLevel level) const {
 
 inline const char *Logger::level_color(LogLevel level) const {
   switch (level) {
-  case LogLevel::Trace:
-    return COLOR_TRACE;
-  case LogLevel::Debug:
-    return COLOR_DEBUG;
-  case LogLevel::Unimplemented:
-    return COLOR_UNIMPLEMENTED;
-  case LogLevel::Info:
-    return COLOR_INFO;
-  case LogLevel::Warning:
-    return COLOR_WARNING;
-  case LogLevel::Error:
-    return COLOR_ERROR;
+    case LogLevel::Trace:
+      return COLOR_TRACE;
+    case LogLevel::Debug:
+      return COLOR_DEBUG;
+    case LogLevel::Unimplemented:
+      return COLOR_UNIMPLEMENTED;
+    case LogLevel::Info:
+      return COLOR_INFO;
+    case LogLevel::Warning:
+      return COLOR_WARNING;
+    case LogLevel::Error:
+      return COLOR_ERROR;
   }
   return "";
 }
 
 void log_set_level(LogLevel level) { global_logger.set_level(level); }
 
-} // namespace bugme
+}  // namespace bugme

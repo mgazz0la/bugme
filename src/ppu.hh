@@ -1,14 +1,14 @@
 #ifndef BUGME_PPU_HH
 #define BUGME_PPU_HH
 
+#include <functional>
+#include <memory>
+#include <vector>
+
 #include "bus.hh"
 #include "mmap.hh"
 #include "register.hh"
 #include "types.hh"
-
-#include <functional>
-#include <memory>
-#include <vector>
 
 namespace bugme {
 
@@ -49,18 +49,18 @@ struct PpuBus : Bus<Ppu> {
   std::vector<byte_t> vram;
   std::vector<byte_t> oam;
 
-  LcdControl lcd_control;        // 0xFF40
-  LcdStatus lcd_status;          // 0xFF41
-  ByteRegister scroll_y;         // 0xFF42
-  ByteRegister scroll_x;         // 0xFF43
-  ByteRegister line;             // 0xFF44
-  ByteRegister ly_compare;       // 0xFF45
-  ByteRegister dma_transfer;     // 0xFF46
-  ByteRegister bg_palette;       // 0xFF47
-  ByteRegister sprite_palette_0; // 0xFF48
-  ByteRegister sprite_palette_1; // 0xFF49
-  ByteRegister window_y;         // 0xFF4A
-  ByteRegister window_x;         // 0xFF4B
+  LcdControl lcd_control;         // 0xFF40
+  LcdStatus lcd_status;           // 0xFF41
+  ByteRegister scroll_y;          // 0xFF42
+  ByteRegister scroll_x;          // 0xFF43
+  ByteRegister line;              // 0xFF44
+  ByteRegister ly_compare;        // 0xFF45
+  ByteRegister dma_transfer;      // 0xFF46
+  ByteRegister bg_palette;        // 0xFF47
+  ByteRegister sprite_palette_0;  // 0xFF48
+  ByteRegister sprite_palette_1;  // 0xFF49
+  ByteRegister window_y;          // 0xFF4A
+  ByteRegister window_x;          // 0xFF4B
 
   std::function<void()> vblank_interrupt_request_cb = nullptr;
   std::function<void()> lcd_stat_interrupt_request_cb = nullptr;
@@ -92,13 +92,13 @@ struct PpuBus : Bus<Ppu> {
 
 enum class Color;
 class Ppu : public PpuBus {
-public:
+ public:
   explicit Ppu(std::function<void(std::vector<Color> &)> draw_fn);
   virtual ~Ppu() = default;
 
   void tick(tcycles_t cycles);
 
-private:
+ private:
   enum class Mode { READ_OAM, READ_VRAM, HBLANK, VBLANK };
 
   void set_mode_(Mode mode);
@@ -115,5 +115,5 @@ private:
   std::function<void(std::vector<Color> &)> draw_fn_;
 };
 
-} // namespace bugme
+}  // namespace bugme
 #endif

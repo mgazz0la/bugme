@@ -550,4 +550,4 @@ void Cpu::op_cb_fe() { set(7, _(hl)); }
 void Cpu::op_cb_ff() { set(7, a); }
 /* clang-format on */
 
-} // namespace bugme
+}  // namespace bugme

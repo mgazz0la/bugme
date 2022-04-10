@@ -1,5 +1,9 @@
 #include "cpu.hh"
 
+#include <cstdint>
+#include <iostream>
+#include <sstream>
+
 #include "bootrom.hh"
 #include "cartridge.hh"
 #include "joypad.hh"
@@ -13,16 +17,18 @@
 #include "timer.hh"
 #include "util.hh"
 
-#include <cstdint>
-#include <iostream>
-#include <sstream>
-
 namespace bugme {
 
 Cpu::Cpu(Memory &memory, Cartridge &cartridge, PpuBus &ppuBus,
          TimerBus &timerBus, JoypadBus &joypadBus)
-    : memory_(memory), cartridge_(cartridge), ppuBus_(ppuBus),
-      timerBus_(timerBus), joypadBus_(joypadBus), af(a, f), bc(b, c), de(d, e),
+    : memory_(memory),
+      cartridge_(cartridge),
+      ppuBus_(ppuBus),
+      timerBus_(timerBus),
+      joypadBus_(joypadBus),
+      af(a, f),
+      bc(b, c),
+      de(d, e),
       hl(h, l) {
   reset();
   ppuBus_.register_vblank_interrupt_request_cb(
@@ -84,51 +90,51 @@ byte_t Cpu::read_(word_t addr) const {
   // i/o registers
   if (util::in_range(addr, mmap::IO_REGISTERS_START, mmap::IO_REGISTERS_END)) {
     switch (addr) {
-    case mmap::joypad::JOYP:
-      return joypadBus_.joyp.value();
+      case mmap::joypad::JOYP:
+        return joypadBus_.joyp.value();
 
-    case mmap::timer::DIV:
-      return timerBus_.divider.value();
-    case mmap::timer::TIMA:
-      return timerBus_.timer_counter.value();
-    case mmap::timer::TMA:
-      return timerBus_.timer_modulo.value();
-    case mmap::timer::TAC:
-      return timerBus_.timer_control.value();
+      case mmap::timer::DIV:
+        return timerBus_.divider.value();
+      case mmap::timer::TIMA:
+        return timerBus_.timer_counter.value();
+      case mmap::timer::TMA:
+        return timerBus_.timer_modulo.value();
+      case mmap::timer::TAC:
+        return timerBus_.timer_control.value();
 
-    case mmap::INTERRUPTS_FLAG:
-      return interrupt_flag.value();
+      case mmap::INTERRUPTS_FLAG:
+        return interrupt_flag.value();
 
-    case mmap::ppu::LCD_CONTROL:
-      return ppuBus_.lcd_control.value();
-    case mmap::ppu::LCD_STATUS:
-      return ppuBus_.lcd_status.value();
-    case mmap::ppu::SCROLL_Y:
-      return ppuBus_.scroll_y.value();
-    case mmap::ppu::SCROLL_X:
-      return ppuBus_.scroll_x.value();
-    case mmap::ppu::LINE:
-      return ppuBus_.line.value();
-    case mmap::ppu::LY_COMPARE:
-      return ppuBus_.ly_compare.value();
-    case mmap::ppu::DMA_TRANSFER:
-      return ppuBus_.dma_transfer.value();
-    case mmap::ppu::BG_PALETTE:
-      return ppuBus_.bg_palette.value();
-    case mmap::ppu::SPRITE_PALETTE_0:
-      return ppuBus_.sprite_palette_0.value();
-    case mmap::ppu::SPRITE_PALETTE_1:
-      return ppuBus_.sprite_palette_1.value();
-    case mmap::ppu::WINDOW_Y:
-      return ppuBus_.window_y.value();
-    case mmap::ppu::WINDOW_X:
-      return ppuBus_.window_x.value();
+      case mmap::ppu::LCD_CONTROL:
+        return ppuBus_.lcd_control.value();
+      case mmap::ppu::LCD_STATUS:
+        return ppuBus_.lcd_status.value();
+      case mmap::ppu::SCROLL_Y:
+        return ppuBus_.scroll_y.value();
+      case mmap::ppu::SCROLL_X:
+        return ppuBus_.scroll_x.value();
+      case mmap::ppu::LINE:
+        return ppuBus_.line.value();
+      case mmap::ppu::LY_COMPARE:
+        return ppuBus_.ly_compare.value();
+      case mmap::ppu::DMA_TRANSFER:
+        return ppuBus_.dma_transfer.value();
+      case mmap::ppu::BG_PALETTE:
+        return ppuBus_.bg_palette.value();
+      case mmap::ppu::SPRITE_PALETTE_0:
+        return ppuBus_.sprite_palette_0.value();
+      case mmap::ppu::SPRITE_PALETTE_1:
+        return ppuBus_.sprite_palette_1.value();
+      case mmap::ppu::WINDOW_Y:
+        return ppuBus_.window_y.value();
+      case mmap::ppu::WINDOW_X:
+        return ppuBus_.window_x.value();
 
-    case mmap::BOOT_ROM_CONTROL:
-      return boot_rom_control.value();
+      case mmap::BOOT_ROM_CONTROL:
+        return boot_rom_control.value();
 
-    default:
-      return memory_.read(addr);
+      default:
+        return memory_.read(addr);
     }
   }
 
@@ -197,74 +203,74 @@ void Cpu::write_(word_t addr, byte_t byte) {
   // i/o registers
   if (util::in_range(addr, mmap::IO_REGISTERS_START, mmap::IO_REGISTERS_END)) {
     switch (addr) {
-    case mmap::joypad::JOYP:
-      // hack to make sure that no buttons are pressed?
-      joypadBus_.joyp.set(byte | 0b1111);
-      return;
+      case mmap::joypad::JOYP:
+        // hack to make sure that no buttons are pressed?
+        joypadBus_.joyp.set(byte | 0b1111);
+        return;
 
-    case mmap::timer::DIV:
-      // DIV register -- writes 0 on attempt
-      timerBus_.divider.set(0);
-      return;
-    case mmap::timer::TIMA:
-      timerBus_.timer_counter.set(byte);
-      return;
-    case mmap::timer::TMA:
-      timerBus_.timer_modulo.set(byte);
-      return;
-    case mmap::timer::TAC:
-      timerBus_.timer_control.set(byte);
-      return;
+      case mmap::timer::DIV:
+        // DIV register -- writes 0 on attempt
+        timerBus_.divider.set(0);
+        return;
+      case mmap::timer::TIMA:
+        timerBus_.timer_counter.set(byte);
+        return;
+      case mmap::timer::TMA:
+        timerBus_.timer_modulo.set(byte);
+        return;
+      case mmap::timer::TAC:
+        timerBus_.timer_control.set(byte);
+        return;
 
-    case mmap::INTERRUPTS_FLAG:
-      interrupt_flag.set(byte);
-      return;
+      case mmap::INTERRUPTS_FLAG:
+        interrupt_flag.set(byte);
+        return;
 
-    case mmap::ppu::LCD_CONTROL:
-      ppuBus_.lcd_control.set(byte);
-      return;
-    case mmap::ppu::LCD_STATUS:
-      ppuBus_.lcd_status.set(byte);
-      return;
-    case mmap::ppu::SCROLL_Y:
-      ppuBus_.scroll_y.set(byte);
-      return;
-    case mmap::ppu::SCROLL_X:
-      ppuBus_.scroll_x.set(byte);
-      return;
-    case mmap::ppu::LINE:
-      ppuBus_.line.set(byte);
-      return;
-    case mmap::ppu::LY_COMPARE:
-      ppuBus_.ly_compare.set(byte);
-      return;
-    case mmap::ppu::DMA_TRANSFER:
-      ppuBus_.dma_transfer.set(byte);
-      dma_transfer_(byte);
-      return;
-    case mmap::ppu::BG_PALETTE:
-      ppuBus_.bg_palette.set(byte);
-      return;
-    case mmap::ppu::SPRITE_PALETTE_0:
-      ppuBus_.sprite_palette_0.set(byte);
-      return;
-    case mmap::ppu::SPRITE_PALETTE_1:
-      ppuBus_.sprite_palette_1.set(byte);
-      return;
-    case mmap::ppu::WINDOW_Y:
-      ppuBus_.window_y.set(byte);
-      return;
-    case mmap::ppu::WINDOW_X:
-      ppuBus_.window_x.set(byte);
-      return;
+      case mmap::ppu::LCD_CONTROL:
+        ppuBus_.lcd_control.set(byte);
+        return;
+      case mmap::ppu::LCD_STATUS:
+        ppuBus_.lcd_status.set(byte);
+        return;
+      case mmap::ppu::SCROLL_Y:
+        ppuBus_.scroll_y.set(byte);
+        return;
+      case mmap::ppu::SCROLL_X:
+        ppuBus_.scroll_x.set(byte);
+        return;
+      case mmap::ppu::LINE:
+        ppuBus_.line.set(byte);
+        return;
+      case mmap::ppu::LY_COMPARE:
+        ppuBus_.ly_compare.set(byte);
+        return;
+      case mmap::ppu::DMA_TRANSFER:
+        ppuBus_.dma_transfer.set(byte);
+        dma_transfer_(byte);
+        return;
+      case mmap::ppu::BG_PALETTE:
+        ppuBus_.bg_palette.set(byte);
+        return;
+      case mmap::ppu::SPRITE_PALETTE_0:
+        ppuBus_.sprite_palette_0.set(byte);
+        return;
+      case mmap::ppu::SPRITE_PALETTE_1:
+        ppuBus_.sprite_palette_1.set(byte);
+        return;
+      case mmap::ppu::WINDOW_Y:
+        ppuBus_.window_y.set(byte);
+        return;
+      case mmap::ppu::WINDOW_X:
+        ppuBus_.window_x.set(byte);
+        return;
 
-    case mmap::BOOT_ROM_CONTROL:
-      boot_rom_control.set(byte);
-      return;
+      case mmap::BOOT_ROM_CONTROL:
+        boot_rom_control.set(byte);
+        return;
 
-    default:
-      memory_.write(addr, byte);
-      return;
+      default:
+        memory_.write(addr, byte);
+        return;
     }
   }
 
@@ -381,7 +387,7 @@ void Cpu::check_interrupts() {
     halt_bug_no_step_mode_ = true;
   }
 
-  halted_ = false; // unhalt now that we found an interrupt
+  halted_ = false;  // unhalt now that we found an interrupt
 }
 
 byte_t Cpu::next_byte() {
@@ -401,4 +407,4 @@ word_t Cpu::next_word() {
   return word;
 }
 
-} // namespace bugme
+}  // namespace bugme

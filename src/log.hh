@@ -31,7 +31,7 @@ enum class LogLevel {
 };
 
 class Logger {
-public:
+ public:
   Logger() = default;
 
   void log(LogLevel level, const char *fmt, ...);
@@ -40,7 +40,7 @@ public:
   void enable_tracing();
   void disable_tracing();
 
-private:
+ private:
   bool should_log(LogLevel level) const;
   const char *level_color(LogLevel level) const;
 
@@ -60,12 +60,12 @@ extern const char *COLOR_RESET;
 
 #define log_trace(...) global_logger.log(LogLevel::Trace, ##__VA_ARGS__);
 #define log_debug(...) global_logger.log(LogLevel::Debug, ##__VA_ARGS__);
-#define log_unimplemented(...)                                                 \
+#define log_unimplemented(...) \
   global_logger.log(LogLevel::Unimplemented, ##__VA_ARGS__);
 #define log_info(...) global_logger.log(LogLevel::Info, ##__VA_ARGS__);
 #define log_warn(...) global_logger.log(LogLevel::Warning, ##__VA_ARGS__);
 #define log_error(...) global_logger.log(LogLevel::Error, ##__VA_ARGS__);
 
 extern void log_set_level(LogLevel level);
-} // namespace bugme
+}  // namespace bugme
 #endif

@@ -6,5 +6,5 @@ class Debug {
   Debug() = default;
   virtual ~Debug() = default;
 };
-} // namespace bugme
+}  // namespace bugme
 #endif

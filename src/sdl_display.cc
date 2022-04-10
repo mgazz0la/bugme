@@ -1,11 +1,11 @@
 #include "sdl_display.hh"
 
+#include <SDL.h>
+#include <SDL_syswm.h>
+
 #include "color.hh"
 #include "constants.hh"
 #include "log.hh"
-
-#include <SDL.h>
-#include <SDL_syswm.h>
 
 namespace bugme {
 
@@ -34,16 +34,16 @@ void SdlDisplay::draw(std::vector<Color> &buffer) {
 
 std::uint32_t SdlDisplay::convert_color_(Color color) {
   switch (color) {
-  case Color::WHITE:
-    return DmgRealColor::WHITE;
-  case Color::LIGHT_GRAY:
-    return DmgRealColor::LIGHT_GRAY;
-  case Color::DARK_GRAY:
-    return DmgRealColor::DARK_GRAY;
-  case Color::BLACK:
-    return DmgRealColor::BLACK;
+    case Color::WHITE:
+      return DmgRealColor::WHITE;
+    case Color::LIGHT_GRAY:
+      return DmgRealColor::LIGHT_GRAY;
+    case Color::DARK_GRAY:
+      return DmgRealColor::DARK_GRAY;
+    case Color::BLACK:
+      return DmgRealColor::BLACK;
   }
 
   return DmgRealColor::BLACK;
 }
-} // namespace bugme
+}  // namespace bugme

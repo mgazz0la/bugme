@@ -20,8 +20,9 @@ namespace bugme {
  * components themselves (for example, the Ppu class holds all of its relevant
  * registers, and the Cpu class knows to access the Ppu bus to access them).
  */
-template <class T> struct Bus : public Noncopyable {};
+template <class T>
+struct Bus : public Noncopyable {};
 
-} // namespace bugme
+}  // namespace bugme
 
 #endif

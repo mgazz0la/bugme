@@ -1,11 +1,11 @@
 #include "ppu.hh"
 
+#include <string>
+
 #include "color.hh"
 #include "log.hh"
 #include "mmap.hh"
 #include "util.hh"
-
-#include <string>
 
 namespace bugme {
 
@@ -36,8 +36,8 @@ inline const word_t TILESET_1_START = 0x8800 - mmap::VRAM_START;
 inline const word_t BG_MAP_0_START = 0x9800 - mmap::VRAM_START;
 inline const word_t BG_MAP_1_START = 0x9C00 - mmap::VRAM_START;
 
-inline const unsigned int CLOCKS_PER_HBLANK = 204;        /* Mode 0 */
-//inline const unsigned int CLOCKS_PER_VBLANK = 4560;       /* Mode 1 */
+inline const unsigned int CLOCKS_PER_HBLANK = 204; /* Mode 0 */
+// inline const unsigned int CLOCKS_PER_VBLANK = 4560;       /* Mode 1 */
 inline const unsigned int CLOCKS_PER_SCANLINE_OAM = 80;   /* Mode 2 */
 inline const unsigned int CLOCKS_PER_SCANLINE_VRAM = 172; /* Mode 3 */
 inline const unsigned int CLOCKS_PER_SCANLINE =
@@ -45,10 +45,10 @@ inline const unsigned int CLOCKS_PER_SCANLINE =
 
 inline const unsigned int SCANLINES_PER_VBLANK = 10;
 inline const unsigned int SCANLINES_PER_FRAME = 144;
-//inline const unsigned int CLOCKS_PER_FRAME =
-//    (CLOCKS_PER_SCANLINE * SCANLINES_PER_FRAME) + CLOCKS_PER_VBLANK;
+// inline const unsigned int CLOCKS_PER_FRAME =
+//     (CLOCKS_PER_SCANLINE * SCANLINES_PER_FRAME) + CLOCKS_PER_VBLANK;
 
-} // namespace
+}  // namespace
 
 Ppu::Ppu(std::function<void(std::vector<Color> &)> draw_fn)
     : frame_buffer_(std::vector<Color>(FRAME_WIDTH_PX * FRAME_HEIGHT_PX)),
@@ -58,103 +58,103 @@ void Ppu::tick(tcycles_t cycles) {
   cycles_elapsed_ += cycles;
 
   switch (mode_) {
-
-  /* Mode 2 */
-  case Mode::READ_OAM:
-    if (cycles_elapsed_ >= CLOCKS_PER_SCANLINE_OAM) {
-      cycles_elapsed_ %= CLOCKS_PER_SCANLINE_OAM;
-      set_mode_(Mode::READ_VRAM);
-    }
-    break;
-
-  /* Mode 3 */
-  case Mode::READ_VRAM:
-    if (cycles_elapsed_ >= CLOCKS_PER_SCANLINE_VRAM) {
-      cycles_elapsed_ %= CLOCKS_PER_SCANLINE_VRAM;
-
-      if (lcd_status.interrupt_on_hblank() ||
-          (lcd_status.interrupt_on_ly_lyc_coincide() &&
-           ly_compare.value() == line.value())) {
-        lcd_stat_interrupt_request();
+    /* Mode 2 */
+    case Mode::READ_OAM:
+      if (cycles_elapsed_ >= CLOCKS_PER_SCANLINE_OAM) {
+        cycles_elapsed_ %= CLOCKS_PER_SCANLINE_OAM;
+        set_mode_(Mode::READ_VRAM);
       }
+      break;
 
-      lcd_status.write_ly_lyc_coincide(ly_compare == line);
-      set_mode_(Mode::HBLANK);
-    }
-    break;
+    /* Mode 3 */
+    case Mode::READ_VRAM:
+      if (cycles_elapsed_ >= CLOCKS_PER_SCANLINE_VRAM) {
+        cycles_elapsed_ %= CLOCKS_PER_SCANLINE_VRAM;
 
-  /* Mode 0 */
-  case Mode::HBLANK:
-    if (cycles_elapsed_ >= CLOCKS_PER_HBLANK) {
-      cycles_elapsed_ %= CLOCKS_PER_HBLANK;
-
-      write_scanline_();
-      line.increment();
-      if (line.value() == SCANLINES_PER_FRAME) {
-        vblank_interrupt_request();
-        set_mode_(Mode::VBLANK);
-      } else {
-        set_mode_(Mode::READ_OAM);
-      }
-    }
-    break;
-
-  /* Mode 1 */
-  case Mode::VBLANK:
-    if (cycles_elapsed_ >= CLOCKS_PER_SCANLINE) {
-      cycles_elapsed_ %= CLOCKS_PER_SCANLINE;
-
-      line.increment();
-      // Check if we've reached the end of our vblank.
-      if (line.value() == SCANLINES_PER_FRAME + SCANLINES_PER_VBLANK) {
-        if (lcd_control.obj_enable()) {
-          draw_sprites_();
+        if (lcd_status.interrupt_on_hblank() ||
+            (lcd_status.interrupt_on_ly_lyc_coincide() &&
+             ly_compare.value() == line.value())) {
+          lcd_stat_interrupt_request();
         }
 
-        // Draw the completed frame buffer now.
-        draw_fn_(frame_buffer_);
+        lcd_status.write_ly_lyc_coincide(ly_compare == line);
+        set_mode_(Mode::HBLANK);
+      }
+      break;
 
-        // Reset the PPU to the first scanline.
-        line.reset();
-        set_mode_(Mode::READ_OAM);
+    /* Mode 0 */
+    case Mode::HBLANK:
+      if (cycles_elapsed_ >= CLOCKS_PER_HBLANK) {
+        cycles_elapsed_ %= CLOCKS_PER_HBLANK;
 
-        // Wipe the buffer for the next frame.
-        for (unsigned int px = 0; px < FRAME_WIDTH_PX * FRAME_HEIGHT_PX; ++px) {
-          frame_buffer_.at(px) = Color::WHITE;
+        write_scanline_();
+        line.increment();
+        if (line.value() == SCANLINES_PER_FRAME) {
+          vblank_interrupt_request();
+          set_mode_(Mode::VBLANK);
+        } else {
+          set_mode_(Mode::READ_OAM);
         }
       }
-    }
-    break;
+      break;
+
+    /* Mode 1 */
+    case Mode::VBLANK:
+      if (cycles_elapsed_ >= CLOCKS_PER_SCANLINE) {
+        cycles_elapsed_ %= CLOCKS_PER_SCANLINE;
+
+        line.increment();
+        // Check if we've reached the end of our vblank.
+        if (line.value() == SCANLINES_PER_FRAME + SCANLINES_PER_VBLANK) {
+          if (lcd_control.obj_enable()) {
+            draw_sprites_();
+          }
+
+          // Draw the completed frame buffer now.
+          draw_fn_(frame_buffer_);
+
+          // Reset the PPU to the first scanline.
+          line.reset();
+          set_mode_(Mode::READ_OAM);
+
+          // Wipe the buffer for the next frame.
+          for (unsigned int px = 0; px < FRAME_WIDTH_PX * FRAME_HEIGHT_PX;
+               ++px) {
+            frame_buffer_.at(px) = Color::WHITE;
+          }
+        }
+      }
+      break;
   }
 }
 
 void Ppu::set_mode_(Mode mode) {
   mode_ = mode;
   switch (mode) {
-  case Mode::READ_OAM:
-    log_debug("[ppu] Entering READ_OAM");
-    // 0b10
-    lcd_status.set_mode_high();
-    lcd_status.clear_mode_low();
-    break;
-  case Mode::READ_VRAM:
-    log_debug("[ppu] Entering READ_VRAM");
-    // 0b11
-    lcd_status.set_mode_high();
-    lcd_status.set_mode_low();
-    break;
-  case Mode::HBLANK:
-    log_debug("[ppu] Entering HBLANK");
-    // 0b00
-    lcd_status.clear_mode_high();
-    lcd_status.clear_mode_low();
-    break;
-  case Mode::VBLANK:
-    log_debug("[ppu] Entering VBLANK");
-    // 0b01
-    lcd_status.clear_mode_high();
-    lcd_status.set_mode_low();
-    break;
+    case Mode::READ_OAM:
+      log_debug("[ppu] Entering READ_OAM");
+      // 0b10
+      lcd_status.set_mode_high();
+      lcd_status.clear_mode_low();
+      break;
+    case Mode::READ_VRAM:
+      log_debug("[ppu] Entering READ_VRAM");
+      // 0b11
+      lcd_status.set_mode_high();
+      lcd_status.set_mode_low();
+      break;
+    case Mode::HBLANK:
+      log_debug("[ppu] Entering HBLANK");
+      // 0b00
+      lcd_status.clear_mode_high();
+      lcd_status.clear_mode_low();
+      break;
+    case Mode::VBLANK:
+      log_debug("[ppu] Entering VBLANK");
+      // 0b01
+      lcd_status.clear_mode_high();
+      lcd_status.set_mode_low();
+      break;
   }
 }
 
@@ -233,7 +233,7 @@ void Ppu::write_window_line_() {
 
   for (unsigned int x = 0; x < FRAME_WIDTH_PX; ++x) {
     // adjust for window
-    unsigned int frame_x = x + window_x.value() - 7; // ??
+    unsigned int frame_x = x + window_x.value() - 7;  // ??
 
     // windows don't wraparound
 
@@ -325,18 +325,18 @@ Color Ppu::get_color_(byte_t color,
                       const ByteRegister &palette_register) const {
   switch (util::fuse_b(palette_register.value() >> (2 * color),
                        palette_register.value() >> (2 * color + 1))) {
-  case 0b00:
-    return Color::WHITE;
-  case 0b01:
-    return Color::LIGHT_GRAY;
-  case 0b10:
-    return Color::DARK_GRAY;
-  case 0b11:
-    return Color::BLACK;
-  default:
-    log_warn("UNKNOWN COLOR: 0x%x",
-             (palette_register.value() >> (6 - (2 * color))) & 0x3);
-    return Color::WHITE;
+    case 0b00:
+      return Color::WHITE;
+    case 0b01:
+      return Color::LIGHT_GRAY;
+    case 0b10:
+      return Color::DARK_GRAY;
+    case 0b11:
+      return Color::BLACK;
+    default:
+      log_warn("UNKNOWN COLOR: 0x%x",
+               (palette_register.value() >> (6 - (2 * color))) & 0x3);
+      return Color::WHITE;
   }
 }
-} // namespace bugme
+}  // namespace bugme

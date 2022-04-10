@@ -4,5 +4,5 @@
 #include "opcode_cycles.hh"
 #include "opcode_names.hh"
 
-namespace bugme {} // namespace bugme
+namespace bugme {}  // namespace bugme
 #endif

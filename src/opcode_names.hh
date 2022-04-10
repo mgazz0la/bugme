@@ -556,7 +556,7 @@ static const std::string CB_NAMES[256] = {
 };
 /* clang-format on */
 
-} // namespace opcode
-} // namespace bugme
+}  // namespace opcode
+}  // namespace bugme
 
 #endif

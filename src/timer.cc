@@ -14,7 +14,7 @@ void Timer::tick(tcycles_t cycles) {
   }
 
   if (!timer_control.get_bit(2)) {
-    return; // timer disabled
+    return;  // timer disabled
   }
 
   tima_counter_ += cycles;
@@ -30,4 +30,4 @@ void Timer::tick(tcycles_t cycles) {
   }
 }
 
-} // namespace bugme
+}  // namespace bugme

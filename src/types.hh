@@ -14,11 +14,11 @@ typedef std::uint16_t word_t;
 typedef std::int16_t signed_word_t;
 
 class Noncopyable {
-public:
+ public:
   Noncopyable() = default;
   ~Noncopyable() = default;
 
-private:
+ private:
   Noncopyable(const Noncopyable &) = delete;
   Noncopyable &operator=(const Noncopyable &) = delete;
 };
@@ -27,6 +27,6 @@ class Debuggable {
   friend class Debug;
 };
 
-} // namespace bugme
+}  // namespace bugme
 
 #endif

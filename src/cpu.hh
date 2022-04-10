@@ -1,11 +1,12 @@
 #ifndef BUGME_CPU_HH
 #define BUGME_CPU_HH
 
-#include "interrupts.hh"
-#include "register.hh"
 #include <functional>
 #include <map>
 #include <memory>
+
+#include "interrupts.hh"
+#include "register.hh"
 
 namespace bugme {
 namespace interrupt_vectors {
@@ -14,7 +15,7 @@ inline const word_t LCDC_STATUS = 0x0048;
 inline const word_t TIMER = 0x0050;
 inline const word_t SERIAL = 0x0058;
 inline const word_t JOYPAD = 0x0060;
-} // namespace interrupt_vectors
+}  // namespace interrupt_vectors
 
 namespace rst {
 inline const word_t _00 = 0x0000;
@@ -25,7 +26,7 @@ inline const word_t _20 = 0x0020;
 inline const word_t _28 = 0x0028;
 inline const word_t _30 = 0x0030;
 inline const word_t _38 = 0x0038;
-} // namespace rst
+}  // namespace rst
 
 /* clang-format off */
 class InterruptEnable : public ControlRegister {
@@ -45,14 +46,14 @@ struct TimerBus;
 struct JoypadBus;
 
 class Cpu : public Noncopyable {
-public:
+ public:
   Cpu(Memory &memory, Cartridge &cartridge, PpuBus &ppuBus, TimerBus &timerBus,
       JoypadBus &joypadBus);
 
   mcycles_t tick();
   void reset();
 
-private:
+ private:
   Memory &memory_;
   Cartridge &cartridge_;
   PpuBus &ppuBus_;
@@ -266,5 +267,5 @@ private:
   /* clang-format on */
 };
 
-} // namespace bugme
+}  // namespace bugme
 #endif

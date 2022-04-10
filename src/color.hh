@@ -11,6 +11,6 @@ namespace DmgRealColor {
 inline const std::uint32_t WHITE = 0x9BBC0F, LIGHT_GRAY = 0x8BAC0F,
                            DARK_GRAY = 0x306230, BLACK = 0x0F380F;
 }
-} // namespace bugme
+}  // namespace bugme
 
 #endif

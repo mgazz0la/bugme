@@ -8,11 +8,11 @@ namespace bugme {
 enum class Color;
 
 class Display {
-public:
+ public:
   virtual ~Display() = default;
   virtual void draw(std::vector<Color> &) = 0;
 };
 
-} // namespace bugme
+}  // namespace bugme
 
 #endif

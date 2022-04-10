@@ -1,9 +1,9 @@
 #include "options.hh"
 
-#include "log.hh"
-
 #include <string>
 #include <vector>
+
+#include "log.hh"
 
 namespace bugme {
 CliOptions get_cli_options(int argc, char *argv[]) {
@@ -34,4 +34,4 @@ CliOptions get_cli_options(int argc, char *argv[]) {
   }
   return cliOptions;
 }
-} // namespace bugme
+}  // namespace bugme

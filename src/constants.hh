@@ -5,6 +5,6 @@ namespace bugme {
 namespace {
 inline const unsigned int GAMEBOY_WIDTH = 160;
 inline const unsigned int GAMEBOY_HEIGHT = 144;
-} // namespace
-} // namespace bugme
+}  // namespace
+}  // namespace bugme
 #endif

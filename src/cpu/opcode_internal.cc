@@ -412,7 +412,7 @@ void Cpu::jr_if(bool condition) {
     did_branch_ = true;
     jr();
   } else {
-    next_byte(); // gotta waste this arg
+    next_byte();  // gotta waste this arg
     return;
   }
 }
@@ -699,7 +699,7 @@ void Cpu::call_if(bool condition) {
     call();
     did_branch_ = true;
   } else {
-    next_word(); // waste the arg
+    next_word();  // waste the arg
   }
 }
 
@@ -715,7 +715,7 @@ void Cpu::jp_if(bool condition) {
     jp();
     did_branch_ = true;
   } else {
-    next_word(); // waste the arg
+    next_word();  // waste the arg
   }
 }
 
